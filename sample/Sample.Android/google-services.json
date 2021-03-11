@@ -1,0 +1,389 @@
+{
+  "project_info": {
+    "project_number": "785212949830",
+    "firebase_url": "https://easierlife-521b0.firebaseio.com",
+    "project_id": "easierlife-521b0",
+    "storage_bucket": "easierlife-521b0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785212949830:android:8e9966ffb1dc1173",
+        "android_client_info": {
+          "package_name": "com.eswe.assist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw0sotBgfCszGrj8dcmONR4h0_CuEIUS4"
+        },
+        {
+          "current_key": "AIzaSyBDoahAl8Z7GbwoysX0eNyG4TNizecQcPE"
+        },
+        {
+          "current_key": "AIzaSyCtqBa81Xf18ZLqKmNQk73yS4NnRIE9LJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "785212949830-16kv5e3nqebkisl2e5b7v5i03g6g9mtb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.energis.assist"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785212949830:android:ff558688ef72ff23a2d147",
+        "android_client_info": {
+          "package_name": "de.behome.smarthome"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw0sotBgfCszGrj8dcmONR4h0_CuEIUS4"
+        },
+        {
+          "current_key": "AIzaSyBDoahAl8Z7GbwoysX0eNyG4TNizecQcPE"
+        },
+        {
+          "current_key": "AIzaSyCtqBa81Xf18ZLqKmNQk73yS4NnRIE9LJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "785212949830-16kv5e3nqebkisl2e5b7v5i03g6g9mtb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.energis.assist"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785212949830:android:6d9717b2421b63ad",
+        "android_client_info": {
+          "package_name": "de.easierlife.ambioassist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw0sotBgfCszGrj8dcmONR4h0_CuEIUS4"
+        },
+        {
+          "current_key": "AIzaSyBDoahAl8Z7GbwoysX0eNyG4TNizecQcPE"
+        },
+        {
+          "current_key": "AIzaSyCtqBa81Xf18ZLqKmNQk73yS4NnRIE9LJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "785212949830-16kv5e3nqebkisl2e5b7v5i03g6g9mtb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.energis.assist"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785212949830:android:f0c4195915e43b95",
+        "android_client_info": {
+          "package_name": "de.easierlife.hartmann"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw0sotBgfCszGrj8dcmONR4h0_CuEIUS4"
+        },
+        {
+          "current_key": "AIzaSyBDoahAl8Z7GbwoysX0eNyG4TNizecQcPE"
+        },
+        {
+          "current_key": "AIzaSyCtqBa81Xf18ZLqKmNQk73yS4NnRIE9LJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "785212949830-16kv5e3nqebkisl2e5b7v5i03g6g9mtb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.energis.assist"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785212949830:android:9dacf6f423401fcb",
+        "android_client_info": {
+          "package_name": "de.easierlife.newApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw0sotBgfCszGrj8dcmONR4h0_CuEIUS4"
+        },
+        {
+          "current_key": "AIzaSyBDoahAl8Z7GbwoysX0eNyG4TNizecQcPE"
+        },
+        {
+          "current_key": "AIzaSyCtqBa81Xf18ZLqKmNQk73yS4NnRIE9LJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "785212949830-16kv5e3nqebkisl2e5b7v5i03g6g9mtb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.energis.assist"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785212949830:android:3d3ad7c025ae7334",
+        "android_client_info": {
+          "package_name": "de.eins.family_care"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw0sotBgfCszGrj8dcmONR4h0_CuEIUS4"
+        },
+        {
+          "current_key": "AIzaSyBDoahAl8Z7GbwoysX0eNyG4TNizecQcPE"
+        },
+        {
+          "current_key": "AIzaSyCtqBa81Xf18ZLqKmNQk73yS4NnRIE9LJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "785212949830-16kv5e3nqebkisl2e5b7v5i03g6g9mtb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.energis.assist"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785212949830:android:07635dfe26d8d378",
+        "android_client_info": {
+          "package_name": "de.energis.assist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw0sotBgfCszGrj8dcmONR4h0_CuEIUS4"
+        },
+        {
+          "current_key": "AIzaSyBDoahAl8Z7GbwoysX0eNyG4TNizecQcPE"
+        },
+        {
+          "current_key": "AIzaSyCtqBa81Xf18ZLqKmNQk73yS4NnRIE9LJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "785212949830-16kv5e3nqebkisl2e5b7v5i03g6g9mtb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.energis.assist"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785212949830:android:90538679871e8fb1a2d147",
+        "android_client_info": {
+          "package_name": "de.mvv.heimassistent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw0sotBgfCszGrj8dcmONR4h0_CuEIUS4"
+        },
+        {
+          "current_key": "AIzaSyBDoahAl8Z7GbwoysX0eNyG4TNizecQcPE"
+        },
+        {
+          "current_key": "AIzaSyCtqBa81Xf18ZLqKmNQk73yS4NnRIE9LJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "785212949830-16kv5e3nqebkisl2e5b7v5i03g6g9mtb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.energis.assist"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785212949830:android:4380d7a0b74cdf0ba2d147",
+        "android_client_info": {
+          "package_name": "io.notifo.xamarin.sample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw0sotBgfCszGrj8dcmONR4h0_CuEIUS4"
+        },
+        {
+          "current_key": "AIzaSyBDoahAl8Z7GbwoysX0eNyG4TNizecQcPE"
+        },
+        {
+          "current_key": "AIzaSyCtqBa81Xf18ZLqKmNQk73yS4NnRIE9LJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "785212949830-16kv5e3nqebkisl2e5b7v5i03g6g9mtb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.energis.assist"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
