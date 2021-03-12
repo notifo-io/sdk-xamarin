@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using NotifoIO.SDK;
+using Xamarin.Forms;
 
 namespace Sample
 {
@@ -8,7 +9,7 @@ namespace Sample
         {
             InitializeComponent();
 
-            GreetingLabel.Text = Notifo.SDK.Notifo.Greeting;
+            GreetingLabel.Text = Notifo.Greeting;
         }
     }
 }

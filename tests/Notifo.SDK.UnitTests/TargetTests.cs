@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace Notifo.SDK.UnitTests
+namespace NotifoIO.SDK.UnitTests
 {
     public class TargetTests
     {

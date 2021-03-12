@@ -1,4 +1,4 @@
-﻿namespace Notifo.SDK
+﻿namespace NotifoIO.SDK
 {
     public partial class Notifo
     {
