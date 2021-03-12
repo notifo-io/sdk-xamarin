@@ -1,5 +1,7 @@
-﻿using Plugin.FirebasePushNotification;
+﻿using NotifoIO.SDK;
+using Plugin.FirebasePushNotification;
 using Xamarin.Forms;
+
 
 namespace Sample
 {
@@ -9,12 +11,18 @@ namespace Sample
 		{
 			InitializeComponent();
 
+			var pushEventsProvider = new CrossPushPluginEventsProvider(CrossFirebasePushNotification.Current);
+
+			Notifo.Current
+				.SetApiKey("ca2emdxkkrkp4kevlbwkcyvscvqejgg1e5pznlgk8dex")
+				.SetPushEventsProvider(pushEventsProvider);
+
 			MainPage = new MainPage();
 		}
 
 		protected override void OnStart()
 		{
-			CrossFirebasePushNotification.Current.OnTokenRefresh += Current_OnTokenRefresh;
+
 		}
 
 		protected override void OnSleep()
@@ -23,11 +31,6 @@ namespace Sample
 
 		protected override void OnResume()
 		{
-		}
-
-		private void Current_OnTokenRefresh(object source, FirebasePushNotificationTokenEventArgs e)
-		{
-			System.Diagnostics.Debug.WriteLine($"TOKEN : {e.Token}");
 		}
 	}
 }

@@ -2,9 +2,10 @@
 	<PropertyGroup>
     	<TargetFrameworks>netstandard2.0;xamarinios10;monoandroid10.0;</TargetFrameworks>
     	<RootNamespace>NotifoIO.SDK</RootNamespace>
+      <LangVersion>8.0</LangVersion>
   	</PropertyGroup>
-  
-	<ItemGroup>
+
+  <ItemGroup>
 		<Compile Remove="**\*.netstandard.cs" />
 		<Compile Remove="**\*.android.cs" />
 		<Compile Remove="**\*.ios.cs" />
@@ -21,5 +22,10 @@
 
 	<ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
 		<Compile Include="**\*.android.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Polly" Version="7.2.1" />
+	  <PackageReference Include="System.Text.Json" Version="5.0.1" />
 	</ItemGroup>
 </Project>
