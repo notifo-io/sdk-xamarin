@@ -14,7 +14,8 @@ namespace Sample
 			var pushEventsProvider = new CrossPushPluginEventsProvider(CrossFirebasePushNotification.Current);
 
 			Notifo.Current
-				.SetApiKey("ca2emdxkkrkp4kevlbwkcyvscvqejgg1e5pznlgk8dex")
+				.SetBaseUrl("https://notifo.easierlife.com")
+				.SetApiKey("7hht0pqtsqyvkeco9h7434wrnbrpld6s1hmdu08e0tkx")
 				.SetPushEventsProvider(pushEventsProvider);
 
 			MainPage = new MainPage();

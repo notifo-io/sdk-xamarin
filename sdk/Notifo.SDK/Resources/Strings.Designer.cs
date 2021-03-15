@@ -61,6 +61,24 @@ namespace NotifoIO.SDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You were trying to subscribe to the NotificationReceived event, but not supply the push notification events provider. Use the SetPushEventsProvider method to inject push events provider implementation..
+        /// </summary>
+        internal static string NotificationReceivedEventSubscribeException {
+            get {
+                return ResourceManager.GetString("NotificationReceivedEventSubscribeException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You were trying to unsubscribe from the NotificationReceived event, but not supply the push notification events provider. Use the SetPushEventsProvider method to inject push events provider implementation..
+        /// </summary>
+        internal static string NotificationReceivedEventUnsubscribeException {
+            get {
+                return ResourceManager.GetString("NotificationReceivedEventUnsubscribeException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fail to refresh push token on the server..
         /// </summary>
         internal static string TokenRefreshFailException {

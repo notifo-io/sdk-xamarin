@@ -20,6 +20,26 @@ namespace NotifoIO.SDK
 		private string apiKey;
 		private string baseUrl = "https://app.notifo.io";
 
+
+		public event EventHandler<NotificationDataEventArgs> OnNotificationReceived
+		{
+			add
+			{
+				if (pushEventsProvider == null)
+					throw new InvalidOperationException(Strings.NotificationReceivedEventSubscribeException);
+
+				pushEventsProvider.OnNotificationReceived += value;
+			}
+
+			remove
+			{
+				if (pushEventsProvider == null)
+					throw new InvalidOperationException(Strings.NotificationReceivedEventUnsubscribeException);
+
+				pushEventsProvider.OnNotificationReceived -= value;
+			}
+		}
+
 		public NotifoMobilePush(HttpClient httpClient)
 		{
 			this.httpClient = httpClient;
@@ -67,9 +87,10 @@ namespace NotifoIO.SDK
 				httpClient.DefaultRequestHeaders.Clear();
 				httpClient.DefaultRequestHeaders.Add("ApiKey", apiKey);
 
-				retryPolicy.ExecuteAsync(async () => {
+				retryPolicy.ExecuteAsync(async () =>
+				{
 					var response = await httpClient.PostAsync(url, content);
-					if(!response.IsSuccessStatusCode)
+					if (!response.IsSuccessStatusCode)
 					{
 						Log.Error(Strings.TokenRefreshFailStatusCode, response.StatusCode);
 					}
