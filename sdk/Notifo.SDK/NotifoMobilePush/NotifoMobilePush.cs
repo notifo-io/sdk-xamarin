@@ -90,7 +90,11 @@ namespace NotifoIO.SDK
 				retryPolicy.ExecuteAsync(async () =>
 				{
 					var response = await httpClient.PostAsync(url, content);
-					if (!response.IsSuccessStatusCode)
+					if (response.IsSuccessStatusCode)
+					{
+						Log.Debug(Strings.TokenRefreshSuccess, e.Token);
+					}
+					else
 					{
 						Log.Error(Strings.TokenRefreshFailStatusCode, response.StatusCode);
 					}

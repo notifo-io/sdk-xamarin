@@ -129,4 +129,7 @@
   <data name="TokenRefreshFailStatusCode" xml:space="preserve">
     <value>Fail to refresh push token on the server. Server response code: {0}</value>
   </data>
+  <data name="TokenRefreshSuccess" xml:space="preserve">
+    <value>Token was successfully refreshed. Token: {0}</value>
+  </data>
 </root>

@@ -95,5 +95,14 @@ namespace NotifoIO.SDK.Resources {
                 return ResourceManager.GetString("TokenRefreshFailStatusCode", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Token was successfully refreshed. Token: {0}.
+        /// </summary>
+        internal static string TokenRefreshSuccess {
+            get {
+                return ResourceManager.GetString("TokenRefreshSuccess", resourceCulture);
+            }
+        }
     }
 }
