@@ -8,8 +8,6 @@ namespace NotifoIO.SDK
 {
 	public partial class Notifo
 	{
-		public static readonly string Greeting = $"Hello Notifo from {PlatformName}";
-				
 		private static readonly Lazy<INotifoMobilePush> Instance = new Lazy<INotifoMobilePush>(() => SetupNotifoMobilePush(), LazyThreadSafetyMode.PublicationOnly);
 		public static INotifoMobilePush Current => Instance.Value;
 
