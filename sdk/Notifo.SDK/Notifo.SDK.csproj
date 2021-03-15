@@ -26,6 +26,26 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Polly" Version="7.2.1" />
+	  <PackageReference Include="Serilog" Version="2.10.0" />
+	  <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
 	  <PackageReference Include="System.Text.Json" Version="5.0.1" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'xamarinios10'">
+	  <PackageReference Include="Serilog.Sinks.Xamarin">
+	    <Version>0.2.0.64</Version>
+	  </PackageReference>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'monoandroid10.0'">
+	  <PackageReference Include="Serilog.Sinks.Xamarin">
+	    <Version>0.2.0.64</Version>
+	  </PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Resources\Strings.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	  </Compile>
 	</ItemGroup>
 </Project>

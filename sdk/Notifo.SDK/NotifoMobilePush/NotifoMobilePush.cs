@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using NotifoIO.SDK.Resources;
 using Polly;
 using Polly.Retry;
+using Serilog;
 
 namespace NotifoIO.SDK
 {
@@ -66,11 +67,17 @@ namespace NotifoIO.SDK
 				httpClient.DefaultRequestHeaders.Clear();
 				httpClient.DefaultRequestHeaders.Add("ApiKey", apiKey);
 
-				retryPolicy.ExecuteAsync(async () => await httpClient.PostAsync(url, content));
+				retryPolicy.ExecuteAsync(async () => {
+					var response = await httpClient.PostAsync(url, content);
+					if(!response.IsSuccessStatusCode)
+					{
+						Log.Error(Strings.TokenRefreshFailStatusCode, response.StatusCode);
+					}
+				});
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine(ex);
+				Log.Error(ex, Strings.TokenRefreshFailException);
 			}
 		}
 
