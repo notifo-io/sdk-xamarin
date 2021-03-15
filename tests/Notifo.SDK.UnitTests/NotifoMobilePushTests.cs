@@ -232,7 +232,7 @@ namespace NotifoIO.SDK.UnitTests
 
 			public void RaiseOnNotificationReceivedEvent()
 			{
-				var args = new NotificationDataEventArgs(new Dictionary<string, object>());
+				var args = new NotificationDataEventArgs(new Notification());
 				OnNotificationReceivedEvent(args);
 			}
 		}

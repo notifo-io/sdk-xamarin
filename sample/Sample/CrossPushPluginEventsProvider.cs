@@ -29,7 +29,8 @@ namespace Sample
 
 		private void FirebasePushNotification_OnNotificationReceived(object source, FirebasePushNotificationDataEventArgs e)
 		{
-			var args = new NotificationDataEventArgs(e.Data);
+			var notification = Notification.FromFirebase(e.Data);
+			var args = new NotificationDataEventArgs(notification);
 			OnNotificationReceivedEvent(args);
 		}
 
