@@ -61,6 +61,24 @@ namespace NotifoIO.SDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You were trying to subscribe to the NotificationOpened event, but not supply the push notification events provider. Use the SetPushEventsProvider method to inject push events provider implementation..
+        /// </summary>
+        internal static string NotificationOpenedEventSubscribeException {
+            get {
+                return ResourceManager.GetString("NotificationOpenedEventSubscribeException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You were trying to unsubscribe from the NotificationOpened event, but not supply the push notification events provider. Use the SetPushEventsProvider method to inject push events provider implementation..
+        /// </summary>
+        internal static string NotificationOpenedEventUnsubscribeException {
+            get {
+                return ResourceManager.GetString("NotificationOpenedEventUnsubscribeException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You were trying to subscribe to the NotificationReceived event, but not supply the push notification events provider. Use the SetPushEventsProvider method to inject push events provider implementation..
         /// </summary>
         internal static string NotificationReceivedEventSubscribeException {

@@ -40,6 +40,25 @@ namespace NotifoIO.SDK
 			}
 		}
 
+		public event EventHandler<NotificationResponseEventArgs> OnNotificationOpened
+		{
+			add
+			{
+				if (pushEventsProvider == null)
+					throw new InvalidOperationException(Strings.NotificationOpenedEventSubscribeException);
+
+				pushEventsProvider.OnNotificationOpened += value;
+			}
+
+			remove
+			{
+				if (pushEventsProvider == null)
+					throw new InvalidOperationException(Strings.NotificationOpenedEventUnsubscribeException);
+
+				pushEventsProvider.OnNotificationOpened -= value;
+			}
+		}
+
 		public NotifoMobilePush(HttpClient httpClient)
 		{
 			this.httpClient = httpClient;

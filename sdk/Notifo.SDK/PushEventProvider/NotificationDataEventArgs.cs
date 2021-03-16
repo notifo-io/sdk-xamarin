@@ -1,12 +1,14 @@
-﻿namespace NotifoIO.SDK
+﻿using System.Collections.Generic;
+
+namespace NotifoIO.SDK
 {
 	public class NotificationDataEventArgs
 	{
-		public Notification Notification { get; }
+		public IDictionary<string, object> Data { get; }
 
-		public NotificationDataEventArgs(Notification notification)
+		public NotificationDataEventArgs(IDictionary<string, object> data)
 		{
-			Notification = notification;
+			Data = data;
 		}
 	}
 }

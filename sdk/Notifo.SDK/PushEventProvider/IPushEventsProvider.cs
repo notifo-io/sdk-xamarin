@@ -7,5 +7,7 @@ namespace NotifoIO.SDK
 		event EventHandler<TokenRefreshEventArgs> OnTokenRefresh;
 
 		event EventHandler<NotificationDataEventArgs> OnNotificationReceived;
+
+		event EventHandler<NotificationResponseEventArgs> OnNotificationOpened;
 	}
 }

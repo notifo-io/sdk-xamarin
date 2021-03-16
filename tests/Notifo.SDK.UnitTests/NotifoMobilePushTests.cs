@@ -205,12 +205,52 @@ namespace NotifoIO.SDK.UnitTests
 			invokeCount.Should().Be(1);
 		}
 
+		[Fact]
+		public void OnNotificationOpened_ShouldThrowException_IfEventsProviderNotSupplied()
+		{
+			var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+			var httpClient = new HttpClient(handlerMock.Object);
+
+			var notifoMobilePush = new NotifoMobilePush(httpClient);
+
+			Action subscribe = () => notifoMobilePush.OnNotificationOpened += (s, e) => { };
+			subscribe.Should().Throw<InvalidOperationException>(Strings.NotificationOpenedEventSubscribeException);
+
+			Action unsubscribe = () => notifoMobilePush.OnNotificationOpened -= (s, e) => { };
+			unsubscribe.Should().Throw<InvalidOperationException>(Strings.NotificationOpenedEventUnsubscribeException);
+		}
+
+		[Fact]
+		public void OnNotificationOpened_ShouldSubscribeAndUnsubscribe_IfEventsProviderSupplied()
+		{
+			var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+			var httpClient = new HttpClient(handlerMock.Object);
+			var eventsProvider = new EventsProviderMock();
+
+			var notifoMobilePush = new NotifoMobilePush(httpClient);
+			notifoMobilePush.SetPushEventsProvider(eventsProvider);
+
+			int invokeCount = 0;
+			void eventHandler(object s, NotificationResponseEventArgs e) => invokeCount += 1;
+
+			notifoMobilePush.OnNotificationOpened += eventHandler;
+
+			eventsProvider.RaiseOnNotificationOpenedEvent();
+			invokeCount.Should().Be(1);
+
+			notifoMobilePush.OnNotificationOpened -= eventHandler;
+
+			eventsProvider.RaiseOnNotificationOpenedEvent();
+			invokeCount.Should().Be(1);
+		}
+
 
 
 		private class EventsProviderMock : IPushEventsProvider
 		{
 			public event EventHandler<TokenRefreshEventArgs> OnTokenRefresh;
 			public event EventHandler<NotificationDataEventArgs> OnNotificationReceived;
+			public event EventHandler<NotificationResponseEventArgs> OnNotificationOpened;
 
 			protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args)
 			{
@@ -232,8 +272,20 @@ namespace NotifoIO.SDK.UnitTests
 
 			public void RaiseOnNotificationReceivedEvent()
 			{
-				var args = new NotificationDataEventArgs(new Notification());
+				var args = new NotificationDataEventArgs(new Dictionary<string, object>());
 				OnNotificationReceivedEvent(args);
+			}
+
+			protected virtual void OnNotificationOpenedEvent(NotificationResponseEventArgs args)
+			{
+				var handler = OnNotificationOpened;
+				handler?.Invoke(this, args);
+			}
+
+			public void RaiseOnNotificationOpenedEvent()
+			{
+				var args = new NotificationResponseEventArgs(new Dictionary<string, object>());
+				OnNotificationOpenedEvent(args);
 			}
 		}
 	}

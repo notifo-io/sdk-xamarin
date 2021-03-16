@@ -6,40 +6,48 @@
     BackgroundColor="White">
 
     <StackLayout>
-        <CollectionView
-            Margin="0,8,0,0"
-            HorizontalOptions="FillAndExpand"
-            ItemsSource="{Binding Notifications}"
-            VerticalOptions="FillAndExpand">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
+        <RefreshView x:Name="RefreshView" Refreshing="RefreshView_Refreshing">
+            <CollectionView
+                Margin="0,8,0,0"
+                HorizontalOptions="FillAndExpand"
+                ItemsSource="{Binding Events}"
+                VerticalOptions="FillAndExpand">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout>
+                            <Label
+                                Margin="8,0"
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                Text="{Binding Subject}"
+                                TextColor="Black" />
+                            <Label
+                                Margin="8,0"
+                                FontSize="14"
+                                Text="{Binding Body}"
+                                TextColor="Black" />
+                            <Label
+                                Margin="8,0"
+                                FontSize="14"
+                                HorizontalTextAlignment="End"
+                                Text="{Binding FormattedCreated}"
+                                TextColor="Gray" />
+                            <BoxView BackgroundColor="LightGray" HeightRequest="1" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
                     <StackLayout>
                         <Label
-                            Margin="8,0"
-                            FontAttributes="Bold"
-                            FontSize="18"
-                            Text="{Binding Title}"
-                            TextColor="Black" />
-                        <Label
-                            Margin="8,0"
-                            FontSize="14"
-                            Text="{Binding Body}"
-                            TextColor="Black" />
-                        <BoxView BackgroundColor="LightGray" HeightRequest="1" />
+                            Margin="0,20,0,0"
+                            FontSize="20"
+                            HorizontalOptions="Center"
+                            Text="Loading events..."
+                            TextColor="Gray"
+                            VerticalOptions="Center" />
                     </StackLayout>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-            <CollectionView.EmptyView>
-                <StackLayout>
-                    <Label
-                        Margin="0,20,0,0"
-                        FontSize="20"
-                        HorizontalOptions="Center"
-                        Text="No notifications so far"
-                        TextColor="Gray"
-                        VerticalOptions="Center" />
-                </StackLayout>
-            </CollectionView.EmptyView>
-        </CollectionView>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
     </StackLayout>
 </ContentPage>
