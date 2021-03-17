@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading;
 using Serilog;
 
@@ -15,8 +14,8 @@ namespace NotifoIO.SDK
 		{
 			ConfigureLogger();
 
-			var httpClient = new HttpClient();
-			return new NotifoMobilePush(httpClient);
+			var httpService = new HttpService();
+			return new NotifoMobilePush(httpService);
 		}
 
 		private static void ConfigureLogger()
