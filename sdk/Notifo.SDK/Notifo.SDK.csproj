@@ -3,6 +3,7 @@
     	<TargetFrameworks>netstandard2.0;xamarinios10;monoandroid10.0;</TargetFrameworks>
     	<RootNamespace>NotifoIO.SDK</RootNamespace>
       <LangVersion>8.0</LangVersion>
+      <Nullable>enable</Nullable>
   	</PropertyGroup>
 
   <ItemGroup>

@@ -11,9 +11,9 @@ namespace NotifoIO.SDK
 	{
 		private readonly IHttpService httpService;
 
-		private string apiKey;
+		private string? apiKey;
 		private string baseUrl = "https://app.notifo.io";
-		private IPushEventsProvider pushEventsProvider;
+		private IPushEventsProvider? pushEventsProvider;
 
 		public event EventHandler<NotificationDataEventArgs> OnNotificationReceived
 		{
@@ -93,7 +93,7 @@ namespace NotifoIO.SDK
 			var content = new StringContent(JsonSerializer.Serialize(payload, JsonSerializerOptions()), Encoding.UTF8, "application/json");
 			try
 			{
-				var response = await httpService.PostAsync(url, content, apiKey);
+				var response = await httpService.PostAsync(url, content, apiKey!);
 				if (response.IsSuccessStatusCode)
 				{
 					Log.Debug(Strings.TokenRefreshSuccess, e.Token);
