@@ -14,6 +14,7 @@ namespace NotifoIO.SDK.FirebasePlugin
 			FirebasePushNotificationManager.Initialize(context, resetToken, createDefaultNotificationChannel, autoRegistration);
 			Notifo.Current.UseFirebasePluginEventsProvider();
 		}
+
 		public static void Initialize(Context context, NotificationUserCategory[] notificationCategories, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
 		{
 			ConfigureDefaultChannel();
@@ -21,6 +22,7 @@ namespace NotifoIO.SDK.FirebasePlugin
 			FirebasePushNotificationManager.Initialize(context, notificationCategories, resetToken, createDefaultNotificationChannel, autoRegistration);
 			Notifo.Current.UseFirebasePluginEventsProvider();
 		}
+
 		public static void Initialize(Context context, IPushNotificationHandler pushNotificationHandler, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
 		{
 			ConfigureDefaultChannel();
@@ -28,11 +30,13 @@ namespace NotifoIO.SDK.FirebasePlugin
 			FirebasePushNotificationManager.Initialize(context, pushNotificationHandler, resetToken, createDefaultNotificationChannel, autoRegistration);
 			Notifo.Current.UseFirebasePluginEventsProvider();
 		}
+
 		public static void ProcessIntent(Activity activity, Intent intent, bool enableDelayedResponse = true)
 		{
 			FirebasePushNotificationManager.ProcessIntent(activity, intent, enableDelayedResponse);
 			Notifo.Current.UseFirebasePluginEventsProvider();
 		}
+
 		private static void ConfigureDefaultChannel()
 		{
 			if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
