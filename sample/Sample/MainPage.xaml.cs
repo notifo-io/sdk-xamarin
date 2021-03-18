@@ -54,11 +54,6 @@ namespace Sample
 			{
 				try
 				{
-					if (RefreshView.IsRefreshing)
-						return;
-
-					RefreshView.IsRefreshing = true;
-
 					string url = $"{Constants.ApiUrl}/api/apps/{Constants.AppId}/events/?query=users/{Constants.UserId}";
 					var response = await httpClient.GetAsync(url);
 
