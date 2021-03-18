@@ -124,9 +124,6 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Plugin.FirebasePushNotification">
-      <Version>3.3.10</Version>
-    </PackageReference>
     <PackageReference Include="Refractored.MvvmHelpers">
       <Version>1.6.2</Version>
     </PackageReference>
@@ -138,9 +135,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\sdk\Notifo.SDK\Notifo.SDK.csproj">
-      <Project>{4f928a67-c5e7-44e2-be71-6ed155afed9c}</Project>
-      <Name>Notifo.SDK</Name>
+    <ProjectReference Include="..\..\sdk\Notifo.SDK.FirebasePlugin\Notifo.SDK.FirebasePlugin.csproj">
+      <Project>{258dee06-bb0d-404b-b981-43b091744bd3}</Project>
+      <Name>Notifo.SDK.FirebasePlugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sample\Sample.csproj">
       <Project>{D59C868F-F97E-4931-B667-094C1FBC822E}</Project>

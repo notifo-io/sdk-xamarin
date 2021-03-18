@@ -1,8 +1,7 @@
 ﻿using System;
 using Android.App;
-using Android.OS;
 using Android.Runtime;
-using Plugin.FirebasePushNotification;
+using NotifoIO.SDK.FirebasePlugin;
 
 namespace Sample.Droid
 {
@@ -16,17 +15,10 @@ namespace Sample.Droid
 		public override void OnCreate()
 		{
 			base.OnCreate();
-
-			if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-			{
-				FirebasePushNotificationManager.DefaultNotificationChannelId = "FirebasePushNotificationChannel";
-				FirebasePushNotificationManager.DefaultNotificationChannelName = "General";
-			}
-
 #if DEBUG
-			FirebasePushNotificationManager.Initialize(this, resetToken: true);
+			NotifoFirebasePlugin.Initialize(this, resetToken: true);
 #else
-            FirebasePushNotificationManager.Initialize(this,false);
+            NotifoFirebasePlugin.Initialize(this,false);
 #endif
 		}
 	}

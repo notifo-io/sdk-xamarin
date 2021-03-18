@@ -1,6 +1,6 @@
 ﻿using System;
 using Foundation;
-using Plugin.FirebasePushNotification;
+using NotifoIO.SDK.FirebasePlugin;
 using UIKit;
 
 namespace Sample.iOS
@@ -13,24 +13,24 @@ namespace Sample.iOS
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
 
-			FirebasePushNotificationManager.Initialize(options, true);
+			NotifoFirebasePlugin.Initialize(options, true);
 
 			return base.FinishedLaunching(app, options);
         }
 
 		public override void RegisteredForRemoteNotifications(UIApplication application, NSData deviceToken)
 		{
-			FirebasePushNotificationManager.DidRegisterRemoteNotifications(deviceToken);
+			NotifoFirebasePlugin.DidRegisterRemoteNotifications(deviceToken);
 		}
 
 		public override void FailedToRegisterForRemoteNotifications(UIApplication application, NSError error)
 		{
-			FirebasePushNotificationManager.RemoteNotificationRegistrationFailed(error);
+			NotifoFirebasePlugin.RemoteNotificationRegistrationFailed(error);
 		}
 
 		public override void DidReceiveRemoteNotification(UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
 		{
-			FirebasePushNotificationManager.DidReceiveMessage(userInfo);
+			NotifoFirebasePlugin.DidReceiveMessage(userInfo);
 			completionHandler(UIBackgroundFetchResult.NewData);
 		}
 	}

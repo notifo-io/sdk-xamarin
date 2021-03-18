@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{514F5B61
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo.SDK.UnitTests", "tests\Notifo.SDK.UnitTests\Notifo.SDK.UnitTests.csproj", "{1F863C31-C0C7-42F7-9609-B122866B6356}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notifo.SDK", "sdk\Notifo.SDK\Notifo.SDK.csproj", "{4F928A67-C5E7-44E2-BE71-6ED155AFED9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo.SDK", "sdk\Notifo.SDK\Notifo.SDK.csproj", "{4F928A67-C5E7-44E2-BE71-6ED155AFED9C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sdk", "sdk", "{4D2C377A-D9F6-4EF3-A342-1B5A84F391DB}"
 EndProject
@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notifo.SDK.FirebasePlugin", "sdk\Notifo.SDK.FirebasePlugin\Notifo.SDK.FirebasePlugin.csproj", "{258DEE06-BB0D-404B-B981-43B091744BD3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -112,6 +114,18 @@ Global
 		{4F928A67-C5E7-44E2-BE71-6ED155AFED9C}.Release|iPhone.Build.0 = Release|Any CPU
 		{4F928A67-C5E7-44E2-BE71-6ED155AFED9C}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{4F928A67-C5E7-44E2-BE71-6ED155AFED9C}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{258DEE06-BB0D-404B-B981-43B091744BD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{258DEE06-BB0D-404B-B981-43B091744BD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{258DEE06-BB0D-404B-B981-43B091744BD3}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{258DEE06-BB0D-404B-B981-43B091744BD3}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{258DEE06-BB0D-404B-B981-43B091744BD3}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{258DEE06-BB0D-404B-B981-43B091744BD3}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{258DEE06-BB0D-404B-B981-43B091744BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{258DEE06-BB0D-404B-B981-43B091744BD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{258DEE06-BB0D-404B-B981-43B091744BD3}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{258DEE06-BB0D-404B-B981-43B091744BD3}.Release|iPhone.Build.0 = Release|Any CPU
+		{258DEE06-BB0D-404B-B981-43B091744BD3}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{258DEE06-BB0D-404B-B981-43B091744BD3}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,6 +136,7 @@ Global
 		{DD43F8B0-1925-477A-9FF5-BE3E01350E30} = {4270D4B1-5081-4E4F-8BDF-61ED888E936E}
 		{1F863C31-C0C7-42F7-9609-B122866B6356} = {514F5B61-451C-41EA-801F-9AE1B052A971}
 		{4F928A67-C5E7-44E2-BE71-6ED155AFED9C} = {4D2C377A-D9F6-4EF3-A342-1B5A84F391DB}
+		{258DEE06-BB0D-404B-B981-43B091744BD3} = {4D2C377A-D9F6-4EF3-A342-1B5A84F391DB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87BCC08F-EAE5-4433-97FE-0DE5A56DBF78}

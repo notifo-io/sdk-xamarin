@@ -3,7 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
-using Plugin.FirebasePushNotification;
+using NotifoIO.SDK.FirebasePlugin;
 
 namespace Sample.Droid
 {
@@ -21,13 +21,13 @@ namespace Sample.Droid
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             LoadApplication(new App());
 
-			FirebasePushNotificationManager.ProcessIntent(this, Intent);
+			NotifoFirebasePlugin.ProcessIntent(this, Intent);
 		}
 
 		protected override void OnNewIntent(Intent intent)
 		{
 			base.OnNewIntent(intent);
-			FirebasePushNotificationManager.ProcessIntent(this, intent);
+			NotifoFirebasePlugin.ProcessIntent(this, intent);
 		}
 
 		public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)

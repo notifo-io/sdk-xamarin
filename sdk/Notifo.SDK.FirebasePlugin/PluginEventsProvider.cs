@@ -1,21 +1,20 @@
 ﻿using System;
-using NotifoIO.SDK;
 using Plugin.FirebasePushNotification;
 
-namespace Sample
+namespace NotifoIO.SDK.FirebasePlugin
 {
-	public class CrossPushPluginEventsProvider : IPushEventsProvider
+	internal class PluginEventsProvider : IPushEventsProvider
 	{
-		public event EventHandler<TokenRefreshEventArgs> OnTokenRefresh;
-		public event EventHandler<NotificationDataEventArgs> OnNotificationReceived;
-		public event EventHandler<NotificationResponseEventArgs> OnNotificationOpened;
+		public event EventHandler<TokenRefreshEventArgs>? OnTokenRefresh;
+		public event EventHandler<NotificationDataEventArgs>? OnNotificationReceived;
+		public event EventHandler<NotificationResponseEventArgs>? OnNotificationOpened;
 
-		public CrossPushPluginEventsProvider(IFirebasePushNotification firebasePushNotification)
+		public PluginEventsProvider()
 		{
-			firebasePushNotification.OnTokenRefresh += FirebasePushNotification_OnTokenRefresh;
-			firebasePushNotification.OnNotificationReceived += FirebasePushNotification_OnNotificationReceived;
-			firebasePushNotification.OnNotificationOpened += FirebasePushNotification_OnNotificationOpened;
-		}	
+			CrossFirebasePushNotification.Current.OnTokenRefresh += FirebasePushNotification_OnTokenRefresh;
+			CrossFirebasePushNotification.Current.OnNotificationReceived += FirebasePushNotification_OnNotificationReceived;
+			CrossFirebasePushNotification.Current.OnNotificationOpened += FirebasePushNotification_OnNotificationOpened;
+		}
 
 		private void FirebasePushNotification_OnTokenRefresh(object source, FirebasePushNotificationTokenEventArgs e)
 		{

@@ -1,5 +1,4 @@
 ﻿using NotifoIO.SDK;
-using Plugin.FirebasePushNotification;
 using Xamarin.Forms;
 
 
@@ -11,12 +10,9 @@ namespace Sample
 		{
 			InitializeComponent();
 
-			var pushEventsProvider = new CrossPushPluginEventsProvider(CrossFirebasePushNotification.Current);
-
 			Notifo.Current
 				.SetBaseUrl(Constants.ApiUrl)
-				.SetApiKey(Constants.UserApiKey)
-				.SetPushEventsProvider(pushEventsProvider);
+				.SetApiKey(Constants.UserApiKey);
 
 			MainPage = new MainPage();
 		}
