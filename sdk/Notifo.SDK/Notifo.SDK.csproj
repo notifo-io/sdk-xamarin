@@ -4,6 +4,13 @@
     	<RootNamespace>NotifoIO.SDK</RootNamespace>
       <LangVersion>8.0</LangVersion>
       <Nullable>enable</Nullable>
+      <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+      <PackageId>Notifo.Xamarin.SDK</PackageId>
+      <Version>0.0.1</Version>
+      <Authors>Notifo</Authors>
+      <Product>Notifo</Product>
+      <Description>Notifo for Xamarin</Description>
+      <PackageTags>notifo, xamarin, push</PackageTags>
   	</PropertyGroup>
 
   <ItemGroup>
