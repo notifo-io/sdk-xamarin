@@ -7,6 +7,14 @@
     <RootNamespace>NotifoIO.SDK.FirebasePlugin</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>	
+  
   <ItemGroup>
 		<Compile Remove="**\*.netstandard.cs" />
 		<Compile Remove="**\*.android.cs" />
@@ -27,9 +35,13 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Plugin.FirebasePushNotification" Version="3.3.10" />
+	  <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Notifo.SDK\Notifo.SDK.csproj" />
-	</ItemGroup>  
+	</ItemGroup>
 </Project>
