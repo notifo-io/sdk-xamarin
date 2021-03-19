@@ -8,7 +8,7 @@
 		<Authors>sebastianstehle</Authors>
 		<Company>Squidex UG (haftungsbeschränkt)</Company>
 		<Copyright>MIT</Copyright>
-		<Description>Xamarin SDK for Notifo</Description>
+		<Description>Notifo SDK for Xamarin</Description>
 		<PackageId>Notifo.Xamarin.Core</PackageId>
 		<PackageIcon>logo-squared.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>

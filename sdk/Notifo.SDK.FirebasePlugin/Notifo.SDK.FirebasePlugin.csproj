@@ -9,7 +9,7 @@
 	<Authors>sebastianstehle</Authors>
 	<Company>Squidex UG (haftungsbeschränkt)</Company>
 	<Copyright>MIT</Copyright>
-	<Description>Xamarin SDK for Notifo - Plugin.FirebasePushNotification integration.</Description>
+	<Description>Notifo SDK for Xamarin - Plugin.FirebasePushNotification integration.</Description>
 	<PackageId>Notifo.Xamarin.Firebase</PackageId>
 	<PackageIcon>logo-squared.png</PackageIcon>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
