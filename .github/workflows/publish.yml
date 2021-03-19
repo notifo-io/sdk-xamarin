@@ -17,6 +17,8 @@ jobs:
           nuget restore
           cd sdk/Notifo.SDK/
           msbuild Notifo.SDK.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:OutputPath=../..
+          cd ../Notifo.SDK.FirebasePlugin/
+          msbuild Notifo.SDK.FirebasePlugin.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:OutputPath=../..
       - name: Publish NuGet
         run: |
           dotnet nuget push *.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
