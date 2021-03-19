@@ -181,6 +181,86 @@ namespace NotifoIO.SDK.UnitTests
 
 			eventsProvider.RaiseOnNotificationOpenedEvent();
 			invokeCount.Should().Be(1);
-		}		
+		}
+
+		[Fact]
+		public void SetEventsProvider_ShouldNotSubscribeMutipleTimes_ForTheSameProvider()
+		{
+			var eventsProvider = new EventsProviderMock();
+			var mocker = new AutoMocker();
+			var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+			notifoMobilePush
+				.SetApiKey("test api key")
+				.SetPushEventsProvider(eventsProvider)
+				.SetPushEventsProvider(eventsProvider);
+
+			eventsProvider.RaiseOnTokenRefreshEvent();
+
+			var httpServiceMock = mocker.GetMock<IHttpService>();
+			httpServiceMock
+				.Verify
+				(
+					x => x.PostAsync
+						(
+							It.IsAny<string>(),
+							It.IsAny<HttpContent>(),
+							It.IsAny<string>()
+						),
+					Times.Once()
+				);
+		}
+
+		[Fact]
+		public void SetEventsProvider_ShouldUnsubscribeCurrentProvider_IfNewProviderSupplied()
+		{
+			var eventsProviderA = new EventsProviderMock();
+			var eventsProviderB = new EventsProviderMock();
+
+			var mocker = new AutoMocker();
+			var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+			notifoMobilePush
+				.SetApiKey("test api key")
+				.SetPushEventsProvider(eventsProviderA);
+
+			int invokeOpenCount = 0;
+			void eventOpenHandler(object s, NotificationResponseEventArgs e) => invokeOpenCount += 1;
+
+			int invokeReceivedCount = 0;
+			void eventReceivedHandler(object s, NotificationDataEventArgs e) => invokeReceivedCount += 1;
+
+			notifoMobilePush.OnNotificationOpened += eventOpenHandler;
+			notifoMobilePush.OnNotificationReceived += eventReceivedHandler;
+
+			notifoMobilePush.SetPushEventsProvider(eventsProviderB);
+			notifoMobilePush.OnNotificationOpened += eventOpenHandler;
+			notifoMobilePush.OnNotificationReceived += eventReceivedHandler;
+
+
+			eventsProviderA.RaiseOnTokenRefreshEvent();
+			eventsProviderB.RaiseOnTokenRefreshEvent();
+
+			var httpServiceMock = mocker.GetMock<IHttpService>();
+			httpServiceMock
+				.Verify
+				(
+					x => x.PostAsync
+						(
+							It.IsAny<string>(),
+							It.IsAny<HttpContent>(),
+							It.IsAny<string>()
+						),
+					Times.Once()
+				);
+
+			eventsProviderA.RaiseOnNotificationOpenedEvent();
+			eventsProviderB.RaiseOnNotificationOpenedEvent();
+
+			invokeOpenCount.Should().Be(1);
+
+			eventsProviderA.RaiseOnNotificationReceivedEvent();
+			eventsProviderB.RaiseOnNotificationReceivedEvent();
+
+			invokeReceivedCount.Should().Be(1);
+		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using NotifoIO.SDK;
+using NotifoIO.SDK.FirebasePlugin;
 using Xamarin.Forms;
 
 
@@ -12,7 +13,8 @@ namespace Sample
 
 			Notifo.Current
 				.SetBaseUrl(Constants.ApiUrl)
-				.SetApiKey(Constants.UserApiKey);
+				.SetApiKey(Constants.UserApiKey)
+				.UseFirebasePluginEventsProvider();
 
 			MainPage = new MainPage();
 		}

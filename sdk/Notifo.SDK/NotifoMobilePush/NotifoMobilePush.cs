@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -15,6 +16,9 @@ namespace NotifoIO.SDK
 		private string baseUrl = "https://app.notifo.io";
 		private IPushEventsProvider? pushEventsProvider;
 
+		private List<EventHandler<NotificationResponseEventArgs>> openedNotificationEvents;
+		private List<EventHandler<NotificationDataEventArgs>> receivedNotificationEvents;
+
 		public event EventHandler<NotificationDataEventArgs> OnNotificationReceived
 		{
 			add
@@ -22,6 +26,7 @@ namespace NotifoIO.SDK
 				if (pushEventsProvider == null)
 					throw new InvalidOperationException(Strings.NotificationReceivedEventSubscribeException);
 
+				receivedNotificationEvents.Add(value);
 				pushEventsProvider.OnNotificationReceived += value;
 			}
 
@@ -30,6 +35,7 @@ namespace NotifoIO.SDK
 				if (pushEventsProvider == null)
 					throw new InvalidOperationException(Strings.NotificationReceivedEventUnsubscribeException);
 
+				receivedNotificationEvents.Remove(value);
 				pushEventsProvider.OnNotificationReceived -= value;
 			}
 		}
@@ -41,6 +47,7 @@ namespace NotifoIO.SDK
 				if (pushEventsProvider == null)
 					throw new InvalidOperationException(Strings.NotificationOpenedEventSubscribeException);
 
+				openedNotificationEvents.Add(value);
 				pushEventsProvider.OnNotificationOpened += value;
 			}
 
@@ -49,6 +56,7 @@ namespace NotifoIO.SDK
 				if (pushEventsProvider == null)
 					throw new InvalidOperationException(Strings.NotificationOpenedEventUnsubscribeException);
 
+				openedNotificationEvents.Remove(value);
 				pushEventsProvider.OnNotificationOpened -= value;
 			}
 		}
@@ -56,6 +64,9 @@ namespace NotifoIO.SDK
 		public NotifoMobilePush(IHttpService httpService)
 		{
 			this.httpService = httpService;
+
+			openedNotificationEvents = new List<EventHandler<NotificationResponseEventArgs>>();
+			receivedNotificationEvents = new List<EventHandler<NotificationDataEventArgs>>();
 		}
 
 		public INotifoMobilePush SetApiKey(string apiKey)
@@ -72,6 +83,14 @@ namespace NotifoIO.SDK
 
 		public INotifoMobilePush SetPushEventsProvider(IPushEventsProvider pushEventsProvider)
 		{
+			if (this.pushEventsProvider == pushEventsProvider)
+				return this;
+
+			if (this.pushEventsProvider != null)
+			{
+				UnsubscribeEventsFromCurrentProvider();
+			}
+
 			this.pushEventsProvider = pushEventsProvider;
 			this.pushEventsProvider.OnTokenRefresh += PushEventsProvider_OnTokenRefresh;
 
@@ -107,6 +126,26 @@ namespace NotifoIO.SDK
 			{
 				Log.Error(ex, Strings.TokenRefreshFailException);
 			}
+		}
+
+		private void UnsubscribeEventsFromCurrentProvider()
+		{
+			if (pushEventsProvider == null)
+				return;
+
+			pushEventsProvider.OnTokenRefresh -= PushEventsProvider_OnTokenRefresh;
+
+			foreach (var oe in openedNotificationEvents)
+			{
+				pushEventsProvider.OnNotificationOpened -= oe;
+			}
+			openedNotificationEvents.Clear();
+
+			foreach (var re in receivedNotificationEvents)
+			{
+				pushEventsProvider.OnNotificationReceived -= re;
+			}
+			receivedNotificationEvents.Clear();
 		}
 
 		private JsonSerializerOptions JsonSerializerOptions() =>
