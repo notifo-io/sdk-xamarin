@@ -10,7 +10,7 @@ using Plugin.FirebasePushNotification;
 
 namespace NotifoIO.SDK.FirebasePlugin
 {
-    public partial class NotifoFirebasePlugin
+    public class NotifoFirebasePlugin
     {
         public static void Initialize(NSDictionary options, NotificationUserCategory[] notificationUserCategories, bool autoRegistration = true)
         {

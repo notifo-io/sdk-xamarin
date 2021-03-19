@@ -57,7 +57,7 @@ namespace Sample
 
         private void RefreshEventsAsync()
         {
-            Device.BeginInvokeOnMainThread(async () =>
+            Device.InvokeOnMainThreadAsync(async () =>
             {
                 try
                 {

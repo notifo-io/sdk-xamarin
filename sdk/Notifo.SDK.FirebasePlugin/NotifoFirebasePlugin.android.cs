@@ -12,7 +12,7 @@ using Plugin.FirebasePushNotification;
 
 namespace NotifoIO.SDK.FirebasePlugin
 {
-    public partial class NotifoFirebasePlugin
+    public class NotifoFirebasePlugin
     {
         public static void Initialize(Context context, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
         {

@@ -11,7 +11,7 @@ using Serilog;
 
 namespace NotifoIO.SDK
 {
-    public partial class Notifo
+    public class Notifo
     {
         private static readonly Lazy<INotifoMobilePush> Instance = new Lazy<INotifoMobilePush>(() => SetupNotifoMobilePush(), LazyThreadSafetyMode.PublicationOnly);
         public static INotifoMobilePush Current => Instance.Value;

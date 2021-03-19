@@ -33,7 +33,7 @@ namespace NotifoIO.SDK.UnitTests
             httpServiceMock
                 .Verify(
                     x => x.PostAsync(
-                            It.Is<string>(url => url.EndsWith("/api/mobilepush")),
+                            It.Is<string>(url => url.EndsWith("/api/mobilepush", StringComparison.InvariantCultureIgnoreCase)),
                             It.IsAny<HttpContent>(),
                             It.IsAny<string>()
                         ),
@@ -117,10 +117,14 @@ namespace NotifoIO.SDK.UnitTests
             var mocker = new AutoMocker();
             var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
 
-            Action subscribe = () => notifoMobilePush.OnNotificationReceived += (s, e) => { };
+            void EventHandler(object s, NotificationDataEventArgs e)
+            {
+            }
+
+            Action subscribe = () => notifoMobilePush.OnNotificationReceived += EventHandler;
             subscribe.Should().Throw<InvalidOperationException>(Strings.NotificationReceivedEventSubscribeException);
 
-            Action unsubscribe = () => notifoMobilePush.OnNotificationReceived -= (s, e) => { };
+            Action unsubscribe = () => notifoMobilePush.OnNotificationReceived -= EventHandler;
             unsubscribe.Should().Throw<InvalidOperationException>(Strings.NotificationReceivedEventUnsubscribeException);
         }
 
@@ -152,10 +156,14 @@ namespace NotifoIO.SDK.UnitTests
             var mocker = new AutoMocker();
             var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
 
-            Action subscribe = () => notifoMobilePush.OnNotificationOpened += (s, e) => { };
+            void EventHandler(object s, NotificationResponseEventArgs e)
+            {
+            }
+
+            Action subscribe = () => notifoMobilePush.OnNotificationOpened += EventHandler;
             subscribe.Should().Throw<InvalidOperationException>(Strings.NotificationOpenedEventSubscribeException);
 
-            Action unsubscribe = () => notifoMobilePush.OnNotificationOpened -= (s, e) => { };
+            Action unsubscribe = () => notifoMobilePush.OnNotificationOpened -= EventHandler;
             unsubscribe.Should().Throw<InvalidOperationException>(Strings.NotificationOpenedEventUnsubscribeException);
         }
 
