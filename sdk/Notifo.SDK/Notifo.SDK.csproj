@@ -2,16 +2,24 @@
 	<PropertyGroup>
     	<TargetFrameworks>netstandard2.0;xamarinios10;monoandroid10.0;</TargetFrameworks>
     	<RootNamespace>NotifoIO.SDK</RootNamespace>
-      <LangVersion>8.0</LangVersion>
-      <Nullable>enable</Nullable>
-      <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-      <PackageId>Notifo.Xamarin.SDK</PackageId>
-      <Version>0.0.1</Version>
-      <Authors>Notifo</Authors>
-      <Product>Notifo</Product>
-      <Description>Notifo for Xamarin</Description>
-      <PackageTags>notifo, xamarin, push</PackageTags>
+		<LangVersion>8.0</LangVersion>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Authors>sebastianstehle</Authors>
+		<Company>Squidex UG (haftungsbeschränkt)</Company>
+		<Copyright>MIT</Copyright>
+		<Description>Xamarin SDK for Notifo</Description>
+		<PackageId>Notifo.Xamarin.Core</PackageId>
+		<PackageIcon>logo-squared.png</PackageIcon>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://notifo.io</PackageProjectUrl>
+		<PackageTags>notifo xamarin</PackageTags>
+		<Version>0.0.1-alpha1</Version>
   	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="logo-squared.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
 	
 	<PropertyGroup>
 		<CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
