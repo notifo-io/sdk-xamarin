@@ -30,7 +30,7 @@ namespace NotifoIO.SDK
 #if DEBUG
                 .MinimumLevel.Debug()
 #else
-				.MinimumLevel.Information()
+                .MinimumLevel.Information()
 #endif
                 .WriteTo.PlatformSink()
                 .CreateLogger();
