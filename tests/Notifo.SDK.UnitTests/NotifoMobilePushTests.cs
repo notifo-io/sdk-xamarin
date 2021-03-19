@@ -263,5 +263,20 @@ namespace NotifoIO.SDK.UnitTests
 
             invokeReceivedCount.Should().Be(1);
         }
+
+        [Fact]
+        public void Notifo_ShouldPersistNewToken_WhenTokenRefreshEventRaised()
+        {
+            var eventsProvider = new EventsProviderMock();
+            var mocker = new AutoMocker();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            notifoMobilePush
+                .SetPushEventsProvider(eventsProvider);
+
+            eventsProvider.RaiseOnTokenRefreshEvent();
+
+            var settingsMock = mocker.GetMock<ISettings>();
+            settingsMock.VerifySet(x => x.Token = "test token");
+        }
     }
 }

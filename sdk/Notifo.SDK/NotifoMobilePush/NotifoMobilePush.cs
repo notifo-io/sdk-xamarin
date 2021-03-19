@@ -18,6 +18,7 @@ namespace NotifoIO.SDK
     internal class NotifoMobilePush : INotifoMobilePush
     {
         private readonly IHttpService httpService;
+        private readonly ISettings settings;
 
         private string? apiKey;
         private string baseUrl = "https://app.notifo.io";
@@ -76,9 +77,10 @@ namespace NotifoIO.SDK
             }
         }
 
-        public NotifoMobilePush(IHttpService httpService)
+        public NotifoMobilePush(IHttpService httpService, ISettings settings)
         {
             this.httpService = httpService;
+            this.settings = settings;
 
             openedNotificationEvents = new List<EventHandler<NotificationResponseEventArgs>>();
             receivedNotificationEvents = new List<EventHandler<NotificationDataEventArgs>>();
@@ -116,6 +118,8 @@ namespace NotifoIO.SDK
 
         private async void PushEventsProvider_OnTokenRefresh(object sender, TokenRefreshEventArgs e)
         {
+            settings.Token = e.Token;
+
             if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(baseUrl))
             {
                 return;

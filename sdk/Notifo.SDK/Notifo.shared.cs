@@ -11,7 +11,7 @@ using Serilog;
 
 namespace NotifoIO.SDK
 {
-    public class Notifo
+    public static class Notifo
     {
         private static readonly Lazy<INotifoMobilePush> Instance = new Lazy<INotifoMobilePush>(() => SetupNotifoMobilePush(), LazyThreadSafetyMode.PublicationOnly);
         public static INotifoMobilePush Current => Instance.Value;
@@ -21,7 +21,9 @@ namespace NotifoIO.SDK
             ConfigureLogger();
 
             var httpService = new HttpService();
-            return new NotifoMobilePush(httpService);
+            var settings = new Settings();
+
+            return new NotifoMobilePush(httpService, settings);
         }
 
         private static void ConfigureLogger()
