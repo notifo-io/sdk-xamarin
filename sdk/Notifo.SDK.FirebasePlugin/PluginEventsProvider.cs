@@ -29,11 +29,8 @@ namespace NotifoIO.SDK.FirebasePlugin
             OnRefreshTokenEvent(args);
         }
 
-        protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args)
-        {
-            var handler = OnTokenRefresh;
-            handler?.Invoke(this, args);
-        }
+        protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args) =>
+            OnTokenRefresh?.Invoke(this, args);
 
         private void FirebasePushNotification_OnNotificationReceived(object source, FirebasePushNotificationDataEventArgs e)
         {
@@ -41,11 +38,8 @@ namespace NotifoIO.SDK.FirebasePlugin
             OnNotificationReceivedEvent(args);
         }
 
-        protected virtual void OnNotificationReceivedEvent(NotificationDataEventArgs args)
-        {
-            var handler = OnNotificationReceived;
-            handler?.Invoke(this, args);
-        }
+        protected virtual void OnNotificationReceivedEvent(NotificationDataEventArgs args) =>
+            OnNotificationReceived?.Invoke(this, args);
 
         private void FirebasePushNotification_OnNotificationOpened(object source, FirebasePushNotificationResponseEventArgs e)
         {
@@ -53,10 +47,7 @@ namespace NotifoIO.SDK.FirebasePlugin
             OnNotificationOpenedEvent(args);
         }
 
-        protected virtual void OnNotificationOpenedEvent(NotificationResponseEventArgs args)
-        {
-            var handler = OnNotificationOpened;
-            handler?.Invoke(this, args);
-        }
+        protected virtual void OnNotificationOpenedEvent(NotificationResponseEventArgs args) =>
+            OnNotificationOpened?.Invoke(this, args);
     }
 }

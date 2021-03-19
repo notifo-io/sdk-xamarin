@@ -16,11 +16,8 @@ namespace NotifoIO.SDK.UnitTests
         public event EventHandler<NotificationDataEventArgs> OnNotificationReceived;
         public event EventHandler<NotificationResponseEventArgs> OnNotificationOpened;
 
-        protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args)
-        {
-            var handler = OnTokenRefresh;
-            handler?.Invoke(this, args);
-        }
+        protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args) =>
+            OnTokenRefresh?.Invoke(this, args);
 
         public void RaiseOnTokenRefreshEvent()
         {
@@ -28,11 +25,8 @@ namespace NotifoIO.SDK.UnitTests
             OnRefreshTokenEvent(args);
         }
 
-        protected virtual void OnNotificationReceivedEvent(NotificationDataEventArgs args)
-        {
-            var handler = OnNotificationReceived;
-            handler?.Invoke(this, args);
-        }
+        protected virtual void OnNotificationReceivedEvent(NotificationDataEventArgs args) =>
+            OnNotificationReceived?.Invoke(this, args);
 
         public void RaiseOnNotificationReceivedEvent()
         {
@@ -40,11 +34,8 @@ namespace NotifoIO.SDK.UnitTests
             OnNotificationReceivedEvent(args);
         }
 
-        protected virtual void OnNotificationOpenedEvent(NotificationResponseEventArgs args)
-        {
-            var handler = OnNotificationOpened;
-            handler?.Invoke(this, args);
-        }
+        protected virtual void OnNotificationOpenedEvent(NotificationResponseEventArgs args) =>
+            OnNotificationOpened?.Invoke(this, args);
 
         public void RaiseOnNotificationOpenedEvent()
         {
