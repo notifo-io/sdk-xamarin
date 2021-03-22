@@ -19,12 +19,12 @@ jobs:
           VERSION="${VERSION//v}"
           nuget restore
           cd sdk/Notifo.SDK/
-          msbuild Notifo.SDK.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION /p:OutputPath=../..
+          msbuild Notifo.SDK.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION /p:OutputPath=../../Core
           cd ../Notifo.SDK.FirebasePlugin/
-          msbuild Notifo.SDK.FirebasePlugin.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION /p:OutputPath=../..
+          msbuild Notifo.SDK.FirebasePlugin.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION /p:OutputPath=../../FirebasePlugin
       - name: Publish NuGet
         run: |
-          dotnet nuget push Notifo.Xamarin.Core.*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
-          dotnet nuget push Notifo.Xamarin.Firebase.*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
+          dotnet nuget push Core/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
+          dotnet nuget push FirebasePlugin/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
           
 
