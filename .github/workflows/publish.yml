@@ -2,7 +2,7 @@ name: Publish Nuget
 on:
   push:
    tags:        
-      - v*
+      - '**'
 
   workflow_dispatch:
 
@@ -14,11 +14,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build
         run: |
+          tagParts=(${GITHUB_REF//\// })
+          VERSION="${tagParts[2]}"
+          VERSION="${VERSION//v}"
           nuget restore
           cd sdk/Notifo.SDK/
-          msbuild Notifo.SDK.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:OutputPath=../..
+          msbuild Notifo.SDK.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION /p:OutputPath=../..
           cd ../Notifo.SDK.FirebasePlugin/
-          msbuild Notifo.SDK.FirebasePlugin.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:OutputPath=../..
+          msbuild Notifo.SDK.FirebasePlugin.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION /p:OutputPath=../..
       - name: Publish NuGet
         run: |
           dotnet nuget push *.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
