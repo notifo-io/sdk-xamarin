@@ -11,7 +11,7 @@ We use [Github Actions](https://docs.github.com/en/actions) to release NuGet pac
 * Type a version number for your release. Versions are based on [Git tags](https://git-scm.com/book/en/Git-Basics-Tagging).  Examples: 
     * v1.0.0
     * v0.0.1-alpha1
-    *(Note: suffix **-alpha**, **-beta**) will publish [pre-release](https://help.github.com/assets/images/help/releases/release-link.png) version of NuGet package.)*
+    *(Note: suffix **-alpha**, **-beta**) will publish [pre-release](https://docs.microsoft.com/en-us/nuget/concepts/package-versioning#pre-release-versions) version of NuGet package.)*
 ![Releases tagged version](https://help.github.com/assets/images/help/releases/releases-tag-version.png)
 * Type a title and description for your release.
 ![Releases description](https://help.github.com/assets/images/help/releases/releases_description.png)
