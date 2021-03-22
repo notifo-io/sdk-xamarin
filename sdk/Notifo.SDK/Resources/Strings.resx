@@ -129,11 +129,17 @@
   <data name="NotificationReceivedEventUnsubscribeException" xml:space="preserve">
     <value>You were trying to unsubscribe from the NotificationReceived event, but not supply the push notification events provider. Use the SetPushEventsProvider method to inject push events provider implementation.</value>
   </data>
+  <data name="TokenRefreshEndExecutingCount" xml:space="preserve">
+    <value>Token refresh end. Executing count: {0}</value>
+  </data>
   <data name="TokenRefreshFailException" xml:space="preserve">
     <value>Fail to refresh push token on the server.</value>
   </data>
   <data name="TokenRefreshFailStatusCode" xml:space="preserve">
     <value>Fail to refresh push token on the server. Server response code: {0}</value>
+  </data>
+  <data name="TokenRefreshStartExecutingCount" xml:space="preserve">
+    <value>Token refresh start. Executing count: {0}</value>
   </data>
   <data name="TokenRefreshSuccess" xml:space="preserve">
     <value>Token was successfully refreshed. Token: {0}</value>

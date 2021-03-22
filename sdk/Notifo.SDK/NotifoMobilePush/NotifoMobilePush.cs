@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using NotifoIO.SDK.Resources;
 using Serilog;
 
@@ -26,6 +28,8 @@ namespace NotifoIO.SDK
 
         private List<EventHandler<NotificationResponseEventArgs>> openedNotificationEvents;
         private List<EventHandler<NotificationDataEventArgs>> receivedNotificationEvents;
+
+        private int refreshExecutingCount;
 
         public event EventHandler<NotificationDataEventArgs> OnNotificationReceived
         {
@@ -84,6 +88,8 @@ namespace NotifoIO.SDK
 
             openedNotificationEvents = new List<EventHandler<NotificationResponseEventArgs>>();
             receivedNotificationEvents = new List<EventHandler<NotificationDataEventArgs>>();
+
+            refreshExecutingCount = 0;
         }
 
         public INotifoMobilePush SetApiKey(string apiKey)
@@ -116,29 +122,55 @@ namespace NotifoIO.SDK
             return this;
         }
 
-        private async void PushEventsProvider_OnTokenRefresh(object sender, TokenRefreshEventArgs e)
+        public void Register()
         {
-            settings.Token = e.Token;
-
-            if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(baseUrl))
+            bool notRefreshing = refreshExecutingCount == 0;
+            if (notRefreshing)
             {
-                return;
+                _ = EnsureTokenRefreshedAsync(settings.Token);
             }
+        }
 
-            string url = $"{baseUrl}/api/mobilepush";
+        private void PushEventsProvider_OnTokenRefresh(object sender, TokenRefreshEventArgs e)
+        {
+            _ = EnsureTokenRefreshedAsync(e.Token);
+        }
 
-            var payload = new
-            {
-                Token = e.Token,
-            };
-
-            var content = new StringContent(JsonSerializer.Serialize(payload, JsonSerializerOptions()), Encoding.UTF8, "application/json");
+        private async Task EnsureTokenRefreshedAsync(string token)
+        {
             try
             {
+                Log.Debug(Strings.TokenRefreshStartExecutingCount, refreshExecutingCount);
+
+                Interlocked.Increment(ref refreshExecutingCount);
+
+                bool alreadyRefreshed = settings.Token == token && settings.IsTokenRefreshed;
+                if (alreadyRefreshed || string.IsNullOrWhiteSpace(token))
+                {
+                    return;
+                }
+
+                settings.Token = token;
+                settings.IsTokenRefreshed = false;
+
+                if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(baseUrl))
+                {
+                    return;
+                }
+
+                string url = $"{baseUrl}/api/mobilepush";
+
+                var payload = new
+                {
+                    Token = token,
+                };
+                var content = new StringContent(JsonSerializer.Serialize(payload, JsonSerializerOptions()), Encoding.UTF8, "application/json");
+
                 var response = await httpService.PostAsync(url, content, apiKey!);
                 if (response.IsSuccessStatusCode)
                 {
-                    Log.Debug(Strings.TokenRefreshSuccess, e.Token);
+                    settings.IsTokenRefreshed = true;
+                    Log.Debug(Strings.TokenRefreshSuccess, token);
                 }
                 else
                 {
@@ -148,6 +180,12 @@ namespace NotifoIO.SDK
             catch (Exception ex)
             {
                 Log.Error(ex, Strings.TokenRefreshFailException);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref refreshExecutingCount);
+
+                Log.Debug(Strings.TokenRefreshEndExecutingCount, refreshExecutingCount);
             }
         }
 

@@ -6,7 +6,9 @@
 // ==========================================================================
 
 using System;
+using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Moq.AutoMock;
@@ -22,6 +24,18 @@ namespace NotifoIO.SDK.UnitTests
         {
             var eventsProvider = new EventsProviderMock();
             var mocker = new AutoMocker();
+            mocker.Setup<IHttpService, Task<HttpResponseMessage>>(
+                    x => x.PostAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<HttpContent>(),
+                        It.IsAny<string>())
+                    )
+                .Returns(
+                    Task.FromResult(
+                        new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent }
+                    )
+                );
+
             var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
             notifoMobilePush
                 .SetPushEventsProvider(eventsProvider)
@@ -39,6 +53,9 @@ namespace NotifoIO.SDK.UnitTests
                         ),
                     Times.Once()
                 );
+
+            var settingsMock = mocker.GetMock<ISettings>();
+            settingsMock.VerifySet(x => x.IsTokenRefreshed = true);
         }
 
         [Fact]
@@ -84,6 +101,9 @@ namespace NotifoIO.SDK.UnitTests
                         ),
                     Times.Never()
                 );
+
+            var settingsMock = mocker.GetMock<ISettings>();
+            settingsMock.VerifySet(x => x.IsTokenRefreshed = false);
         }
 
         [Fact]
@@ -277,6 +297,157 @@ namespace NotifoIO.SDK.UnitTests
 
             var settingsMock = mocker.GetMock<ISettings>();
             settingsMock.VerifySet(x => x.Token = "test token");
+        }
+
+        [Fact]
+        public void Register_ShouldSetTokenRefreshedTrue_IfRefreshWasSuccessful()
+        {
+            var eventsProvider = new EventsProviderMock();
+            var mocker = new AutoMocker();
+
+            mocker.Setup<ISettings, string>(x => x.Token).Returns("test token");
+            mocker.Setup<IHttpService, Task<HttpResponseMessage>>(
+                    x => x.PostAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<HttpContent>(),
+                        It.IsAny<string>())
+                    )
+                .Returns(
+                    Task.FromResult(
+                        new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent }
+                    )
+                );
+
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            notifoMobilePush
+                .SetPushEventsProvider(eventsProvider)
+                .SetApiKey("test api key")
+                .Register();
+
+            var settingsMock = mocker.GetMock<ISettings>();
+            settingsMock.VerifySet(x => x.IsTokenRefreshed = true);
+        }
+
+        [Fact]
+        public void Register_ShouldSetTokenRefreshedFalse_IfBackendReturnedFailStatusCode()
+        {
+            var eventsProvider = new EventsProviderMock();
+            var mocker = new AutoMocker();
+
+            mocker.Setup<ISettings, string>(x => x.Token).Returns("test token");
+            mocker.Setup<IHttpService, Task<HttpResponseMessage>>(
+                    x => x.PostAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<HttpContent>(),
+                        It.IsAny<string>()
+                    )
+                )
+                .Returns(
+                    Task.FromResult(
+                        new HttpResponseMessage { StatusCode = HttpStatusCode.Unauthorized }
+                    )
+                );
+
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            notifoMobilePush
+                .SetPushEventsProvider(eventsProvider)
+                .SetApiKey("test api key")
+                .Register();
+
+            var settingsMock = mocker.GetMock<ISettings>();
+            settingsMock.VerifySet(x => x.IsTokenRefreshed = false);
+        }
+
+        [Fact]
+        public void Register_ShouldSetTokenRefreshedFalse_IfHttpServiceThrewException()
+        {
+            var eventsProvider = new EventsProviderMock();
+            var mocker = new AutoMocker();
+
+            mocker.Setup<IHttpService, Task<HttpResponseMessage>>(
+                    x => x.PostAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<HttpContent>(),
+                        It.IsAny<string>()
+                    )
+                )
+                .Throws(new Exception());
+            mocker.Setup<ISettings, string>(x => x.Token).Returns("test token");
+
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            notifoMobilePush
+                .SetPushEventsProvider(eventsProvider)
+                .SetApiKey("test api key")
+                .Register();
+
+            var settingsMock = mocker.GetMock<ISettings>();
+            settingsMock.VerifySet(x => x.IsTokenRefreshed = false);
+        }
+
+        [Fact]
+        public void Register_ShouldNotRefreshToken_IfTokenIsEmpty()
+        {
+            var eventsProvider = new EventsProviderMock();
+            var mocker = new AutoMocker();
+            mocker.Setup<ISettings, string>(x => x.Token).Returns(string.Empty);
+
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            notifoMobilePush
+                .SetPushEventsProvider(eventsProvider)
+                .SetApiKey("test api key")
+                .Register();
+
+            var httpServiceMock = mocker.GetMock<IHttpService>();
+            httpServiceMock
+                .Verify(
+                    x => x.PostAsync(
+                            It.IsAny<string>(),
+                            It.IsAny<HttpContent>(),
+                            It.IsAny<string>()
+                        ),
+                    Times.Never()
+                );
+        }
+
+        [Fact]
+        public void Register_ShouldNotRefreshToken_IfRefreshIsAlreadyRunning()
+        {
+            var eventsProvider = new EventsProviderMock();
+            var mocker = new AutoMocker();
+            mocker.Setup<ISettings, string>(x => x.Token).Returns("test token");
+
+            mocker.Setup<IHttpService, Task<HttpResponseMessage>>(
+                    x => x.PostAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<HttpContent>(),
+                        It.IsAny<string>()
+                    )
+                ).Returns(
+                    async () =>
+                    {
+                        await Task.Delay(100);
+                        return new HttpResponseMessage { StatusCode = HttpStatusCode.Unauthorized };
+                    }
+                );
+
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            notifoMobilePush
+                .SetPushEventsProvider(eventsProvider)
+                .SetApiKey("test api key");
+
+            eventsProvider.RaiseOnTokenRefreshEvent();
+            notifoMobilePush.Register();
+
+            var httpServiceMock = mocker.GetMock<IHttpService>();
+            httpServiceMock
+                .Verify(
+                    x => x.PostAsync(
+                            It.IsAny<string>(),
+                            It.IsAny<HttpContent>(),
+                            It.IsAny<string>()
+                        ),
+                    Times.Once()
+                );
         }
     }
 }

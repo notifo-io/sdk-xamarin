@@ -16,5 +16,6 @@ namespace NotifoIO.SDK
         INotifoMobilePush SetApiKey(string appId);
         INotifoMobilePush SetBaseUrl(string baseUrl);
         INotifoMobilePush SetPushEventsProvider(IPushEventsProvider pushEventsProvider);
+        void Register();
     }
 }

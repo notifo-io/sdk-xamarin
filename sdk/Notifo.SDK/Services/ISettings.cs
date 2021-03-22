@@ -10,5 +10,7 @@ namespace NotifoIO.SDK
     internal interface ISettings
     {
         string Token { get; set; }
+
+        bool IsTokenRefreshed { get; set; }
     }
 }

@@ -20,7 +20,8 @@ namespace Sample
             Notifo.Current
                 .SetBaseUrl(Constants.ApiUrl)
                 .SetApiKey(Constants.UserApiKey)
-                .UseFirebasePluginEventsProvider();
+                .UseFirebasePluginEventsProvider()
+                .Register();
 
             MainPage = new MainPage();
         }

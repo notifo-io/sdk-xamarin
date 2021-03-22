@@ -18,5 +18,11 @@ namespace NotifoIO.SDK
             get => Preferences.Get(nameof(Token), string.Empty, SharedName);
             set => Preferences.Set(nameof(Token), value, SharedName);
         }
+
+        public bool IsTokenRefreshed
+        {
+            get => Preferences.Get(nameof(IsTokenRefreshed), false, SharedName);
+            set => Preferences.Set(nameof(IsTokenRefreshed), value, SharedName);
+        }
     }
 }

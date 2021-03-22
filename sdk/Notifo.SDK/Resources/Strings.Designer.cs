@@ -97,6 +97,15 @@ namespace NotifoIO.SDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Token refresh end. Executing count: {0}.
+        /// </summary>
+        internal static string TokenRefreshEndExecutingCount {
+            get {
+                return ResourceManager.GetString("TokenRefreshEndExecutingCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fail to refresh push token on the server..
         /// </summary>
         internal static string TokenRefreshFailException {
@@ -111,6 +120,15 @@ namespace NotifoIO.SDK.Resources {
         internal static string TokenRefreshFailStatusCode {
             get {
                 return ResourceManager.GetString("TokenRefreshFailStatusCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Token refresh start. Executing count: {0}.
+        /// </summary>
+        internal static string TokenRefreshStartExecutingCount {
+            get {
+                return ResourceManager.GetString("TokenRefreshStartExecutingCount", resourceCulture);
             }
         }
         
