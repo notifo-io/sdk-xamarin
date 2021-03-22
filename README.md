@@ -4,8 +4,8 @@ This SDK helps to integrate a Xamarin application with [Notifo.io](https://www.n
 ### NuGet Packages
 | Package | NuGet | 
 |--------|--------|
-| [Notifo.Xamarin.Core](HttpCoreNuget) | [![HttpCoreNugetShield]][HttpCoreNuget] | 
-| [Notifo.Xamarin.Firebase](HttpFirebaseNuget) | [![HttpFirebaseNugetShield]][HttpFirebaseNuget] | 
+| [Notifo.Xamarin.Core](https://www.nuget.org/packages/Notifo.Xamarin.Core) | [![HttpCoreNugetShield]][HttpCoreNuget] | 
+| [Notifo.Xamarin.Firebase](https://www.nuget.org/packages/Notifo.Xamarin.Firebase) | [![HttpFirebaseNugetShield]][HttpFirebaseNuget] | 
 
 
 ### Documentation
