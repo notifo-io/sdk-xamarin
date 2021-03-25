@@ -18,7 +18,7 @@ namespace Notifo.SDK.FirebasePlugin
         {
             ConfigureDefaultChannel();
 
-            FirebasePushNotificationManager.Initialize(context, resetToken, createDefaultNotificationChannel, autoRegistration);
+            FirebasePushNotificationManager.Initialize(context, new NotifoPushNotificationHandler(), resetToken, createDefaultNotificationChannel, autoRegistration);
             NotifoIO.Current.UseFirebasePluginEventsProvider();
         }
 
