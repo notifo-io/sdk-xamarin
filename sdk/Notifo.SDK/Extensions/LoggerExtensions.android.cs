@@ -9,7 +9,7 @@ using Serilog;
 using Serilog.Configuration;
 using Serilog.Core;
 
-namespace NotifoIO.SDK
+namespace Notifo.SDK
 {
     internal static class LoggerExtensions
     {

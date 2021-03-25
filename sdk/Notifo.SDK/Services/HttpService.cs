@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Polly;
 using Polly.Retry;
 
-namespace NotifoIO.SDK
+namespace Notifo.SDK
 {
     internal class HttpService : IHttpService
     {

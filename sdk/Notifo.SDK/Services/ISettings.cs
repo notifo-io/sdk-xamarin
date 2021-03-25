@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace NotifoIO.SDK
+namespace Notifo.SDK
 {
     internal interface ISettings
     {

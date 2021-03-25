@@ -5,7 +5,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <RootNamespace>NotifoIO.SDK.UnitTests</RootNamespace>
+    <RootNamespace>Notifo.SDK.UnitTests</RootNamespace>
   </PropertyGroup>
   
   	<PropertyGroup>

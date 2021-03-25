@@ -8,7 +8,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace NotifoIO.SDK
+namespace Notifo.SDK
 {
     internal interface IHttpService
     {

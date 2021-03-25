@@ -8,7 +8,7 @@
 using System;
 using Plugin.FirebasePushNotification;
 
-namespace NotifoIO.SDK.FirebasePlugin
+namespace Notifo.SDK.FirebasePlugin
 {
     internal class PluginEventsProvider : IPushEventsProvider
     {

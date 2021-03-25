@@ -7,7 +7,7 @@
 
 using Xamarin.Essentials;
 
-namespace NotifoIO.SDK
+namespace Notifo.SDK
 {
     internal class Settings : ISettings
     {

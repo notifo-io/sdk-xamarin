@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NotifoIO.SDK.UnitTests
+namespace Notifo.SDK.UnitTests
 {
     public class EventsProviderMock : IPushEventsProvider
     {

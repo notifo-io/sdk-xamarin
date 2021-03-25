@@ -8,7 +8,7 @@
 using System;
 using Android.App;
 using Android.Runtime;
-using NotifoIO.SDK.FirebasePlugin;
+using Notifo.SDK.FirebasePlugin;
 
 namespace Sample.Droid
 {

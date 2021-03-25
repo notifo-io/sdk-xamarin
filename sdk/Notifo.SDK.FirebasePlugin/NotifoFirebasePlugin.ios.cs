@@ -8,26 +8,26 @@
 using Foundation;
 using Plugin.FirebasePushNotification;
 
-namespace NotifoIO.SDK.FirebasePlugin
+namespace Notifo.SDK.FirebasePlugin
 {
     public class NotifoFirebasePlugin
     {
         public static void Initialize(NSDictionary options, NotificationUserCategory[] notificationUserCategories, bool autoRegistration = true)
         {
             FirebasePushNotificationManager.Initialize(options, notificationUserCategories, autoRegistration);
-            Notifo.Current.UseFirebasePluginEventsProvider();
+            NotifoIO.Current.UseFirebasePluginEventsProvider();
         }
 
         public static void Initialize(NSDictionary options, IPushNotificationHandler pushNotificationHandler, bool autoRegistration = true)
         {
             FirebasePushNotificationManager.Initialize(options, pushNotificationHandler, autoRegistration);
-            Notifo.Current.UseFirebasePluginEventsProvider();
+            NotifoIO.Current.UseFirebasePluginEventsProvider();
         }
 
         public static void Initialize(NSDictionary options, bool autoRegistration = true)
         {
             FirebasePushNotificationManager.Initialize(options, autoRegistration);
-            Notifo.Current.UseFirebasePluginEventsProvider();
+            NotifoIO.Current.UseFirebasePluginEventsProvider();
         }
 
         public static void DidReceiveMessage(NSDictionary data) =>

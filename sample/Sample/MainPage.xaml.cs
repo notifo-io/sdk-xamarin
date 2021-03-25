@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Text.Json;
 using MvvmHelpers;
-using NotifoIO.SDK;
+using Notifo.SDK;
 using Xamarin.Forms;
 
 namespace Sample
@@ -29,8 +29,8 @@ namespace Sample
             httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("ApiKey", Constants.AdminApiKey);
 
-            Notifo.Current.OnNotificationReceived += Current_OnNotificationReceived;
-            Notifo.Current.OnNotificationOpened += Current_OnNotificationOpened;
+            NotifoIO.Current.OnNotificationReceived += Current_OnNotificationReceived;
+            NotifoIO.Current.OnNotificationOpened += Current_OnNotificationOpened;
         }
 
         protected override void OnAppearing()

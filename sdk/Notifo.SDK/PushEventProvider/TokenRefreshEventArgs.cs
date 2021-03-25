@@ -7,7 +7,7 @@
 
 using System;
 
-namespace NotifoIO.SDK
+namespace Notifo.SDK
 {
     public class TokenRefreshEventArgs : EventArgs
     {

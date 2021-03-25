@@ -12,10 +12,10 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using NotifoIO.SDK.Resources;
+using Notifo.SDK.Resources;
 using Serilog;
 
-namespace NotifoIO.SDK
+namespace Notifo.SDK
 {
     internal class NotifoMobilePush : INotifoMobilePush
     {

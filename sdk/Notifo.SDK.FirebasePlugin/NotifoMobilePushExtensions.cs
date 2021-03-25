@@ -8,7 +8,7 @@
 using System;
 using System.Threading;
 
-namespace NotifoIO.SDK.FirebasePlugin
+namespace Notifo.SDK.FirebasePlugin
 {
     public static class NotifoMobilePushExtensions
     {

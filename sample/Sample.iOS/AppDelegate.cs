@@ -7,7 +7,7 @@
 
 using System;
 using Foundation;
-using NotifoIO.SDK.FirebasePlugin;
+using Notifo.SDK.FirebasePlugin;
 using UIKit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter

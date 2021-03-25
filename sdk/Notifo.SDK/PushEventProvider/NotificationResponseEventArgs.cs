@@ -7,7 +7,7 @@
 
 using System.Collections.Generic;
 
-namespace NotifoIO.SDK
+namespace Notifo.SDK
 {
     public class NotificationResponseEventArgs
     {

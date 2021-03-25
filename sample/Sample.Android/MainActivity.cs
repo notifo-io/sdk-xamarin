@@ -10,7 +10,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
-using NotifoIO.SDK.FirebasePlugin;
+using Notifo.SDK.FirebasePlugin;
 
 namespace Sample.Droid
 {

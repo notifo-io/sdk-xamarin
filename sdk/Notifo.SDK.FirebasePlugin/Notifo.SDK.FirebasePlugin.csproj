@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.1;xamarinios10;monoandroid10.0;</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
-    <RootNamespace>NotifoIO.SDK.FirebasePlugin</RootNamespace>
+    <RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	<Authors>sebastianstehle</Authors>
 	<Company>Squidex UG (haftungsbeschränkt)</Company>
@@ -24,6 +24,7 @@
 
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
+    <AssemblyName>Notifo.Xamarin.FirebasePlugin</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

@@ -12,10 +12,10 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Moq.AutoMock;
-using NotifoIO.SDK.Resources;
+using Notifo.SDK.Resources;
 using Xunit;
 
-namespace NotifoIO.SDK.UnitTests
+namespace Notifo.SDK.UnitTests
 {
     public class NotifoMobilePushTests
     {

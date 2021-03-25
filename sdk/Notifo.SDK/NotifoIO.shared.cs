@@ -9,9 +9,9 @@ using System;
 using System.Threading;
 using Serilog;
 
-namespace NotifoIO.SDK
+namespace Notifo.SDK
 {
-    public static class Notifo
+    public static class NotifoIO
     {
         private static readonly Lazy<INotifoMobilePush> Instance = new Lazy<INotifoMobilePush>(() => SetupNotifoMobilePush(), LazyThreadSafetyMode.PublicationOnly);
         public static INotifoMobilePush Current => Instance.Value;
