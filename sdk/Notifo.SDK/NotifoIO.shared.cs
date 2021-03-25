@@ -6,7 +6,11 @@
 // ==========================================================================
 
 using System;
+using System.Net.Http;
 using System.Threading;
+using Microsoft.Extensions.Http;
+using Polly;
+using Polly.Extensions.Http;
 using Serilog;
 
 namespace Notifo.SDK
@@ -18,17 +22,17 @@ namespace Notifo.SDK
 
         private static INotifoMobilePush SetupNotifoMobilePush()
         {
-            ConfigureLogger();
+            Log.Logger = ConfigureLogger();
 
-            var httpService = new HttpService();
+            var httpClient = ConfigureHttpClient();
             var settings = new Settings();
 
-            return new NotifoMobilePush(httpService, settings);
+            return new NotifoMobilePush(httpClient, settings);
         }
 
-        private static void ConfigureLogger()
+        private static ILogger ConfigureLogger()
         {
-            Log.Logger = new LoggerConfiguration()
+            return new LoggerConfiguration()
 #if DEBUG
                 .MinimumLevel.Debug()
 #else
@@ -36,6 +40,20 @@ namespace Notifo.SDK
 #endif
                 .WriteTo.PlatformSink()
                 .CreateLogger();
+        }
+
+        private static HttpClient ConfigureHttpClient()
+        {
+            var retryPolicy = HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .WaitAndRetryAsync(retryCount: 3, sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(300));
+
+            var handler = new PolicyHttpMessageHandler(retryPolicy)
+            {
+                InnerHandler = new HttpClientHandler()
+            };
+
+            return new HttpClient(handler);
         }
     }
 }

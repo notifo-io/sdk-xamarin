@@ -8,22 +8,19 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.SDK.Resources;
 using Serilog;
+using Xamarin.Essentials;
 
 namespace Notifo.SDK
 {
     internal class NotifoMobilePush : INotifoMobilePush
     {
-        private readonly IHttpService httpService;
         private readonly ISettings settings;
+        private readonly NotifoClientProvider clientProvider;
 
-        private string? apiKey;
-        private string baseUrl = "https://app.notifo.io";
         private IPushEventsProvider? pushEventsProvider;
 
         private List<EventHandler<NotificationResponseEventArgs>> openedNotificationEvents;
@@ -81,10 +78,11 @@ namespace Notifo.SDK
             }
         }
 
-        public NotifoMobilePush(IHttpService httpService, ISettings settings)
+        public NotifoMobilePush(HttpClient httpClient, ISettings settings)
         {
-            this.httpService = httpService;
             this.settings = settings;
+
+            clientProvider = new NotifoClientProvider(httpClient);
 
             openedNotificationEvents = new List<EventHandler<NotificationResponseEventArgs>>();
             receivedNotificationEvents = new List<EventHandler<NotificationDataEventArgs>>();
@@ -94,13 +92,15 @@ namespace Notifo.SDK
 
         public INotifoMobilePush SetApiKey(string apiKey)
         {
-            this.apiKey = apiKey;
+            clientProvider.ApiKey = apiKey;
+
             return this;
         }
 
         public INotifoMobilePush SetBaseUrl(string baseUrl)
         {
-            this.baseUrl = baseUrl.TrimEnd('/');
+            clientProvider.ApiUrl = baseUrl;
+
             return this;
         }
 
@@ -153,29 +153,16 @@ namespace Notifo.SDK
                 settings.Token = token;
                 settings.IsTokenRefreshed = false;
 
-                if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(baseUrl))
-                {
-                    return;
-                }
-
-                string url = $"{baseUrl}/api/mobilepush";
-
-                var payload = new
+                var registerMobileTokenDto = new RegisterMobileTokenDto
                 {
                     Token = token,
+                    DeviceType = DeviceInfo.Platform.ToMobileDeviceType()
                 };
-                var content = new StringContent(JsonSerializer.Serialize(payload, JsonSerializerOptions()), Encoding.UTF8, "application/json");
 
-                var response = await httpService.PostAsync(url, content, apiKey!);
-                if (response.IsSuccessStatusCode)
-                {
-                    settings.IsTokenRefreshed = true;
-                    Log.Debug(Strings.TokenRefreshSuccess, token);
-                }
-                else
-                {
-                    Log.Error(Strings.TokenRefreshFailStatusCode, response.StatusCode);
-                }
+                await clientProvider.MobilePush.PostTokenAsync(registerMobileTokenDto);
+
+                settings.IsTokenRefreshed = true;
+                Log.Debug(Strings.TokenRefreshSuccess, token);
             }
             catch (Exception ex)
             {
@@ -212,11 +199,5 @@ namespace Notifo.SDK
 
             receivedNotificationEvents.Clear();
         }
-
-        private JsonSerializerOptions JsonSerializerOptions() =>
-            new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            };
     }
 }

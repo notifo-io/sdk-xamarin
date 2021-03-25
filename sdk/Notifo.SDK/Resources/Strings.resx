@@ -135,9 +135,6 @@
   <data name="TokenRefreshFailException" xml:space="preserve">
     <value>Fail to refresh push token on the server.</value>
   </data>
-  <data name="TokenRefreshFailStatusCode" xml:space="preserve">
-    <value>Fail to refresh push token on the server. Server response code: {0}</value>
-  </data>
   <data name="TokenRefreshStartExecutingCount" xml:space="preserve">
     <value>Token refresh start. Executing count: {0}</value>
   </data>

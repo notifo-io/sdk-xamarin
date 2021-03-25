@@ -115,15 +115,6 @@ namespace Notifo.SDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Fail to refresh push token on the server. Server response code: {0}.
-        /// </summary>
-        internal static string TokenRefreshFailStatusCode {
-            get {
-                return ResourceManager.GetString("TokenRefreshFailStatusCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Token refresh start. Executing count: {0}.
         /// </summary>
         internal static string TokenRefreshStartExecutingCount {
