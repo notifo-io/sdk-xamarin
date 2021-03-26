@@ -97,6 +97,15 @@ namespace Notifo.SDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Received notification: {0}.
+        /// </summary>
+        internal static string ReceivedNotification {
+            get {
+                return ResourceManager.GetString("ReceivedNotification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Token refresh end. Executing count: {0}.
         /// </summary>
         internal static string TokenRefreshEndExecutingCount {
