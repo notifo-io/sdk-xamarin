@@ -5,8 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using System.Collections.Generic;
+using System.Threading;
 using Android.Support.V4.App;
 using Plugin.FirebasePushNotification;
 
@@ -15,13 +15,14 @@ namespace Notifo.SDK.FirebasePlugin
     internal class NotifoPushNotificationHandler : DefaultPushNotificationHandler
     {
         private const string SubjectKey = "subject";
-        private static readonly Random Random = new Random();
+        private static int notificationId;
 
         public override void OnReceived(IDictionary<string, object> parameters)
         {
             if (!parameters.ContainsKey(IdKey))
             {
-                parameters[IdKey] = Random.Next(1, int.MaxValue);
+                Interlocked.Increment(ref notificationId);
+                parameters[IdKey] = notificationId;
             }
 
             base.OnReceived(parameters);
