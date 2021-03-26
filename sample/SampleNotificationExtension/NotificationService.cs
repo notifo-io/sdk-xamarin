@@ -21,6 +21,8 @@ namespace SampleNotificationExtension
 			ContentHandler = contentHandler;
 			BestAttemptContent = (UNMutableNotificationContent)request.Content.MutableCopy();
 
+			NotifoIO.DidReceiveNotificationRequest(request, BestAttemptContent);
+
 			ContentHandler(BestAttemptContent);
 		}
 

@@ -15,7 +15,9 @@ using Serilog;
 
 namespace Notifo.SDK
 {
-    public static class NotifoIO
+#pragma warning disable RECS0001 // Class is declared partial but has only one part
+    public static partial class NotifoIO
+#pragma warning restore RECS0001 // Class is declared partial but has only one part
     {
         private static readonly Lazy<INotifoMobilePush> Instance = new Lazy<INotifoMobilePush>(() => SetupNotifoMobilePush(), LazyThreadSafetyMode.PublicationOnly);
         public static INotifoMobilePush Current => Instance.Value;
