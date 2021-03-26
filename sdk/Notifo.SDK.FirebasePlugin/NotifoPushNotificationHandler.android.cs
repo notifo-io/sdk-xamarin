@@ -12,6 +12,7 @@ using Android.Content;
 using Android.Graphics;
 using Android.Support.V4.App;
 using Java.Net;
+using Microsoft.Extensions.Caching.Memory;
 using Notifo.SDK.Resources;
 using Plugin.FirebasePushNotification;
 using Serilog;
@@ -26,11 +27,11 @@ namespace Notifo.SDK.FirebasePlugin
         private const string BigPictureKey = "imageLarge";
         private new const string LargeIconKey = "imageSmall";
 
-        private Dictionary<string, Bitmap> bitmapCache;
+        private IMemoryCache bitmapCache;
 
         public NotifoPushNotificationHandler()
         {
-            bitmapCache = new Dictionary<string, Bitmap>();
+            bitmapCache = new MemoryCache(new MemoryCacheOptions());
         }
 
         public override void OnReceived(IDictionary<string, object> parameters)
@@ -105,9 +106,9 @@ namespace Notifo.SDK.FirebasePlugin
         {
             try
             {
-                if (bitmapCache.ContainsKey(bitmapUrl))
+                if (bitmapCache.TryGetValue(bitmapUrl, out Bitmap cachedBitmap))
                 {
-                    return bitmapCache[bitmapUrl];
+                    return cachedBitmap;
                 }
 
                 var inputStream = new URL(bitmapUrl)?.OpenConnection()?.InputStream;
@@ -115,7 +116,7 @@ namespace Notifo.SDK.FirebasePlugin
                 var bitmap = BitmapFactory.DecodeStream(inputStream);
                 if (bitmap != null)
                 {
-                    bitmapCache[bitmapUrl] = bitmap;
+                    bitmapCache.Set(bitmapUrl, bitmap);
                 }
 
                 return bitmap;
