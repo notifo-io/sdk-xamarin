@@ -7,7 +7,11 @@
 
 using System;
 using System.Collections.Generic;
+using Android.App;
+using Android.Content;
+using Android.Graphics;
 using Android.Support.V4.App;
+using Java.Net;
 using Notifo.SDK.Resources;
 using Plugin.FirebasePushNotification;
 using Serilog;
@@ -17,6 +21,17 @@ namespace Notifo.SDK.FirebasePlugin
     internal class NotifoPushNotificationHandler : DefaultPushNotificationHandler
     {
         private const string SubjectKey = "subject";
+        private const string ConfirmUrlKey = "confirmUrl";
+        private const string ConfirmTextKey = "confirmText";
+        private const string BigPictureKey = "imageLarge";
+        private new const string LargeIconKey = "imageSmall";
+
+        private Dictionary<string, Bitmap> bitmapCache;
+
+        public NotifoPushNotificationHandler()
+        {
+            bitmapCache = new Dictionary<string, Bitmap>();
+        }
 
         public override void OnReceived(IDictionary<string, object> parameters)
         {
@@ -37,6 +52,116 @@ namespace Notifo.SDK.FirebasePlugin
             {
                 notificationBuilder.SetContentTitle(subject?.ToString());
             }
+
+            if (parameters.TryGetValue(LargeIconKey, out var largeIconUrl))
+            {
+                var largeIcon = GetLargeIcon(largeIconUrl.ToString());
+                if (largeIcon != null)
+                {
+                    notificationBuilder.SetLargeIcon(largeIcon);
+                }
+            }
+
+            if (parameters.TryGetValue(BigPictureKey, out var bigPictureUrl))
+            {
+                var bigPicture = GetBitmap(bigPictureUrl.ToString());
+                if (bigPicture != null)
+                {
+                    parameters.TryGetValue(BodyKey, out var summaryText);
+
+                    notificationBuilder.SetStyle(
+                        new NotificationCompat
+                            .BigPictureStyle()
+                            .BigPicture(bigPicture)
+                            .SetSummaryText(summaryText?.ToString())
+                    );
+                }
+            }
+
+            if (parameters.TryGetValue(ConfirmUrlKey, out var confirmUrl))
+            {
+                parameters.TryGetValue(ConfirmTextKey, out var confirmText);
+
+                var notificationIntent = new Intent(Intent.ActionView);
+                notificationIntent.SetData(Android.Net.Uri.Parse(confirmUrl.ToString()));
+                var buttonIntent = PendingIntent.GetActivity(Application.Context, 0, notificationIntent, 0);
+
+                notificationBuilder.AddAction(0, confirmText?.ToString(), buttonIntent);
+            }
+        }
+
+        private Bitmap? GetLargeIcon(string iconUrl)
+        {
+            var bitmap = GetBitmap(iconUrl);
+            if (bitmap == null)
+            {
+                return null;
+            }
+
+            return ResizeBitmap(bitmap, Resource.Dimension.notification_large_icon_width, Resource.Dimension.notification_large_icon_height);
+        }
+
+        private Bitmap? GetBitmap(string bitmapUrl)
+        {
+            try
+            {
+                if (bitmapCache.ContainsKey(bitmapUrl))
+                {
+                    return bitmapCache[bitmapUrl];
+                }
+
+                var inputStream = new URL(bitmapUrl)?.OpenConnection()?.InputStream;
+
+                var bitmap = BitmapFactory.DecodeStream(inputStream);
+                if (bitmap != null)
+                {
+                    bitmapCache[bitmapUrl] = bitmap;
+                }
+
+                return bitmap;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(Strings.DownloadImageError, ex);
+            }
+
+            return null;
+        }
+
+        private Bitmap? ResizeBitmap(Bitmap bitmap, int requestWidth, int requestHeight)
+        {
+            if (bitmap == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                if (bitmap.Width > requestWidth || bitmap.Height > requestHeight)
+                {
+                    int newWidth = requestWidth;
+                    int newHeight = requestHeight;
+
+                    if (bitmap.Height > bitmap.Width)
+                    {
+                        float ratio = (float)bitmap.Width / bitmap.Height;
+                        newWidth = (int)(newHeight * ratio);
+                    }
+                    else if (bitmap.Width > bitmap.Height)
+                    {
+                        float ratio = (float)bitmap.Height / bitmap.Width;
+                        newHeight = (int)(newWidth * ratio);
+                    }
+
+                    return Bitmap.CreateScaledBitmap(bitmap, newWidth, newHeight, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(Strings.ResizeImageError, ex);
+            }
+
+            return bitmap;
         }
     }
 }

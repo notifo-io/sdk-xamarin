@@ -61,6 +61,15 @@ namespace Notifo.SDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not download image..
+        /// </summary>
+        internal static string DownloadImageError {
+            get {
+                return ResourceManager.GetString("DownloadImageError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You were trying to subscribe to the NotificationOpened event, but not supply the push notification events provider. Use the SetPushEventsProvider method to inject push events provider implementation..
         /// </summary>
         internal static string NotificationOpenedEventSubscribeException {
@@ -102,6 +111,15 @@ namespace Notifo.SDK.Resources {
         internal static string ReceivedNotification {
             get {
                 return ResourceManager.GetString("ReceivedNotification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not resize image..
+        /// </summary>
+        internal static string ResizeImageError {
+            get {
+                return ResourceManager.GetString("ResizeImageError", resourceCulture);
             }
         }
         
