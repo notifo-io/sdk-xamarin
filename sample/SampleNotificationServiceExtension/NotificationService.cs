@@ -3,7 +3,7 @@ using Foundation;
 using Notifo.SDK;
 using UserNotifications;
 
-namespace SampleNotificationExtension
+namespace SampleNotificationServiceExtension
 {
 	[Register("NotificationService")]
 	public class NotificationService : UNNotificationServiceExtension

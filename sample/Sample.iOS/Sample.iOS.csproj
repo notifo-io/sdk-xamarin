@@ -156,8 +156,13 @@
       <Name>Notifo.SDK.FirebasePlugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sample\Sample.csproj">
-      <Project>{D59C868F-F97E-4931-B667-094C1FBC822E}</Project>
+      <Project>{DD43F8B0-1925-477A-9FF5-BE3E01350E30}</Project>
       <Name>Sample</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SampleNotificationServiceExtension\SampleNotificationServiceExtension.csproj">
+      <IsAppExtension>true</IsAppExtension>
+      <Project>{1B35BAEA-5666-408C-BED4-DB6114F3070E}</Project>
+      <Name>SampleNotificationServiceExtension</Name>
     </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>
