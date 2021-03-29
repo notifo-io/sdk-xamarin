@@ -112,6 +112,9 @@ namespace Notifo.SDK
                 var categories = new[] { category };
                 UNUserNotificationCenter.Current.SetNotificationCategories(new NSSet<UNNotificationCategory>(categories));
 
+                // without this call action buttons won't be added or updated
+                var registeredCategories = await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
+
                 content.CategoryIdentifier = Constants.ConfirmCategory;
             }
 
