@@ -26,7 +26,7 @@ namespace Notifo.SDK.FirebasePlugin
 
         public static void Initialize(NSDictionary options, bool autoRegistration = true)
         {
-            FirebasePushNotificationManager.Initialize(options, autoRegistration);
+            FirebasePushNotificationManager.Initialize(options, new NotifoPushNotificationHandler(), autoRegistration);
             NotifoIO.Current.UseFirebasePluginEventsProvider();
         }
 
