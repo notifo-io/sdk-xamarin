@@ -16,12 +16,12 @@ namespace SampleNotificationServiceExtension
 			// Note: this .ctor should not contain any initialization logic.
 		}
 
-		public override void DidReceiveNotificationRequest(UNNotificationRequest request, Action<UNNotificationContent> contentHandler)
+		public override async void DidReceiveNotificationRequest(UNNotificationRequest request, Action<UNNotificationContent> contentHandler)
 		{
 			ContentHandler = contentHandler;
 			BestAttemptContent = (UNMutableNotificationContent)request.Content.MutableCopy();
 
-			NotifoIO.DidReceiveNotificationRequest(request, BestAttemptContent);
+			await NotifoIO.DidReceiveNotificationRequestAsync(request, BestAttemptContent);
 
 			ContentHandler(BestAttemptContent);
 		}

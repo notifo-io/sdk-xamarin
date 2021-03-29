@@ -7,7 +7,6 @@
 
 using Serilog;
 using Serilog.Configuration;
-using Serilog.Core;
 
 namespace Notifo.SDK
 {
@@ -15,6 +14,6 @@ namespace Notifo.SDK
     {
         public static LoggerConfiguration PlatformSink(this LoggerSinkConfiguration configuration) =>
             configuration.AndroidLog()
-                .Enrich.WithProperty(Constants.SourceContextPropertyName, "Notifo");
+                .Enrich.WithProperty(Serilog.Core.Constants.SourceContextPropertyName, "Notifo");
     }
 }

@@ -15,9 +15,7 @@ namespace Sample.iOS
 #pragma warning restore SA1300 // Element should begin with upper-case letter
 {
     [Register("AppDelegate")]
-#pragma warning disable RECS0001 // Class is declared partial but has only one part
     public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate
-#pragma warning restore RECS0001 // Class is declared partial but has only one part
     {
         public override bool FinishedLaunching(UIApplication uiApplication, NSDictionary launchOptions)
         {

@@ -1,0 +1,22 @@
+﻿// ==========================================================================
+//  Notifo.io
+// ==========================================================================
+//  Copyright (c) Sebastian Stehle
+//  All rights reserved. Licensed under the MIT license.
+// ==========================================================================
+
+namespace Notifo.SDK
+{
+    internal static class Constants
+    {
+        public const string SubjectKey = "subject";
+        public const string BodyKey = "body";
+        public const string ConfirmUrlKey = "confirmUrl";
+        public const string ConfirmTextKey = "confirmText";
+        public const string ImageLargeKey = "imageLarge";
+        public const string ImageSmallKey = "imageSmall";
+
+        public const string ConfirmAction = "notifo-confirm-action";
+        public const string ConfirmCategory = "notifo-confirm-category";
+    }
+}

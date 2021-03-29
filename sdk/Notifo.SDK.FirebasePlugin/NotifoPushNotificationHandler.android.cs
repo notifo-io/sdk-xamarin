@@ -21,12 +21,6 @@ namespace Notifo.SDK.FirebasePlugin
 {
     internal class NotifoPushNotificationHandler : DefaultPushNotificationHandler
     {
-        private const string SubjectKey = "subject";
-        private const string ConfirmUrlKey = "confirmUrl";
-        private const string ConfirmTextKey = "confirmText";
-        private const string BigPictureKey = "imageLarge";
-        private new const string LargeIconKey = "imageSmall";
-
         private IMemoryCache bitmapCache;
 
         public NotifoPushNotificationHandler()
@@ -49,12 +43,12 @@ namespace Notifo.SDK.FirebasePlugin
 
         public override void OnBuildNotification(NotificationCompat.Builder notificationBuilder, IDictionary<string, object> parameters)
         {
-            if (parameters.TryGetValue(SubjectKey, out var subject))
+            if (parameters.TryGetValue(Constants.SubjectKey, out var subject))
             {
                 notificationBuilder.SetContentTitle(subject?.ToString());
             }
 
-            if (parameters.TryGetValue(LargeIconKey, out var largeIconUrl))
+            if (parameters.TryGetValue(Constants.ImageSmallKey, out var largeIconUrl))
             {
                 var largeIcon = GetLargeIcon(largeIconUrl.ToString());
                 if (largeIcon != null)
@@ -63,7 +57,7 @@ namespace Notifo.SDK.FirebasePlugin
                 }
             }
 
-            if (parameters.TryGetValue(BigPictureKey, out var bigPictureUrl))
+            if (parameters.TryGetValue(Constants.ImageLargeKey, out var bigPictureUrl))
             {
                 var bigPicture = GetBitmap(bigPictureUrl.ToString());
                 if (bigPicture != null)
@@ -79,9 +73,9 @@ namespace Notifo.SDK.FirebasePlugin
                 }
             }
 
-            if (parameters.TryGetValue(ConfirmUrlKey, out var confirmUrl))
+            if (parameters.TryGetValue(Constants.ConfirmUrlKey, out var confirmUrl))
             {
-                parameters.TryGetValue(ConfirmTextKey, out var confirmText);
+                parameters.TryGetValue(Constants.ConfirmTextKey, out var confirmText);
 
                 var notificationIntent = new Intent(Intent.ActionView);
                 notificationIntent.SetData(Android.Net.Uri.Parse(confirmUrl.ToString()));

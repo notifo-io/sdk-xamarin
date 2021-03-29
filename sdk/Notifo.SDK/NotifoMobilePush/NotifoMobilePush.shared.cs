@@ -16,8 +16,9 @@ using Xamarin.Essentials;
 
 namespace Notifo.SDK
 {
-    internal class NotifoMobilePush : INotifoMobilePush
+    internal partial class NotifoMobilePush : INotifoMobilePush
     {
+        private readonly HttpClient httpClient;
         private readonly ISettings settings;
         private readonly NotifoClientProvider clientProvider;
 
@@ -80,6 +81,7 @@ namespace Notifo.SDK
 
         public NotifoMobilePush(HttpClient httpClient, ISettings settings)
         {
+            this.httpClient = httpClient;
             this.settings = settings;
 
             clientProvider = new NotifoClientProvider(httpClient);

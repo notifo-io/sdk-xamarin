@@ -163,6 +163,7 @@
       <IsAppExtension>true</IsAppExtension>
       <Project>{1B35BAEA-5666-408C-BED4-DB6114F3070E}</Project>
       <Name>SampleNotificationServiceExtension</Name>
+      <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>

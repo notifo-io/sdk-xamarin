@@ -13,8 +13,8 @@ namespace Notifo.SDK
     {
         private bool rebuild;
 
-        private string apiKey;
-        public string ApiKey
+        private string? apiKey;
+        public string? ApiKey
         {
             get => apiKey;
             set
@@ -39,7 +39,7 @@ namespace Notifo.SDK
             }
         }
 
-        private INotifoClient client;
+        private INotifoClient? client;
         private INotifoClient Client
         {
             get
@@ -57,6 +57,7 @@ namespace Notifo.SDK
         }
 
         public IMobilePushClient MobilePush => Client.MobilePush;
+        public INotificationsClient Notifications => Client.Notifications;
 
         private readonly HttpClient httpClient;
         private readonly NotifoClientBuilder clientBuilder;
