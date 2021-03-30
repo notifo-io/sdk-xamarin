@@ -135,9 +135,6 @@
   <data name="ReceivedNotification" xml:space="preserve">
     <value>Received notification: {0}</value>
   </data>
-  <data name="ResizeImageError" xml:space="preserve">
-    <value>Could not resize image.</value>
-  </data>
   <data name="TokenRefreshEndExecutingCount" xml:space="preserve">
     <value>Token refresh end. Executing count: {0}</value>
   </data>

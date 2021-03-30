@@ -50,7 +50,10 @@ namespace Notifo.SDK.FirebasePlugin
 
             if (parameters.TryGetValue(Constants.ImageSmallKey, out var largeIconUrl))
             {
-                var largeIcon = GetLargeIcon(largeIconUrl.ToString());
+                int width = GetDimention(Resource.Dimension.notification_large_icon_width);
+                int height = GetDimention(Resource.Dimension.notification_large_icon_height);
+
+                var largeIcon = GetBitmap(largeIconUrl.ToString(), width, height);
                 if (largeIcon != null)
                 {
                     notificationBuilder.SetLargeIcon(largeIcon);
@@ -85,21 +88,18 @@ namespace Notifo.SDK.FirebasePlugin
             }
         }
 
-        private Bitmap? GetLargeIcon(string iconUrl)
-        {
-            var bitmap = GetBitmap(iconUrl);
-            if (bitmap == null)
-            {
-                return null;
-            }
+        private int GetDimention(int resourceId) =>
+            Application.Context?.Resources?.GetDimensionPixelSize(resourceId) ?? -1;
 
-            return ResizeBitmap(bitmap, Resource.Dimension.notification_large_icon_width, Resource.Dimension.notification_large_icon_height);
-        }
-
-        private Bitmap? GetBitmap(string bitmapUrl)
+        private Bitmap? GetBitmap(string bitmapUrl, int requestWidth = -1, int requestHeight = -1)
         {
             try
             {
+                if (requestWidth > 0 && requestHeight > 0)
+                {
+                    bitmapUrl = $"{bitmapUrl}?width={requestWidth}&height={requestHeight}";
+                }
+
                 if (bitmapCache.TryGetValue(bitmapUrl, out Bitmap cachedBitmap))
                 {
                     return cachedBitmap;
@@ -121,42 +121,6 @@ namespace Notifo.SDK.FirebasePlugin
             }
 
             return null;
-        }
-
-        private Bitmap? ResizeBitmap(Bitmap bitmap, int requestWidth, int requestHeight)
-        {
-            if (bitmap == null)
-            {
-                return null;
-            }
-
-            try
-            {
-                if (bitmap.Width > requestWidth || bitmap.Height > requestHeight)
-                {
-                    int newWidth = requestWidth;
-                    int newHeight = requestHeight;
-
-                    if (bitmap.Height > bitmap.Width)
-                    {
-                        float ratio = (float)bitmap.Width / bitmap.Height;
-                        newWidth = (int)(newHeight * ratio);
-                    }
-                    else if (bitmap.Width > bitmap.Height)
-                    {
-                        float ratio = (float)bitmap.Height / bitmap.Width;
-                        newHeight = (int)(newWidth * ratio);
-                    }
-
-                    return Bitmap.CreateScaledBitmap(bitmap, newWidth, newHeight, true);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(Strings.ResizeImageError, ex);
-            }
-
-            return bitmap;
         }
     }
 }
