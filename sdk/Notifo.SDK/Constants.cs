@@ -15,6 +15,7 @@ namespace Notifo.SDK
         public const string ConfirmTextKey = "confirmText";
         public const string ImageLargeKey = "imageLarge";
         public const string ImageSmallKey = "imageSmall";
+        public const string ApsContentAvailableKey = "aps.content-available";
 
         public const string ConfirmAction = "notifo-confirm-action";
         public const string ConfirmCategory = "notifo-confirm-category";
