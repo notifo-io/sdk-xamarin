@@ -201,5 +201,20 @@ namespace Notifo.SDK
 
             receivedNotificationEvents.Clear();
         }
+
+        private async Task TrackNotificationAsync(string trackingUrl)
+        {
+            Log.Debug("Tracking URL: {0}", trackingUrl);
+
+            try
+            {
+                var response = await httpClient.GetAsync(trackingUrl);
+                Log.Debug("Tracking response: {0}", response.StatusCode);
+            }
+            catch (Exception ex)
+            {
+                Log.Debug("Tracking exception: {0}", ex.Message);
+            }
+        }
     }
 }

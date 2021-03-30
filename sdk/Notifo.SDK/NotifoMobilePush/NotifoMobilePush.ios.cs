@@ -27,6 +27,11 @@ namespace Notifo.SDK
         {
             var userInfo = request.Content.UserInfo.ToDictionary();
 
+            if (userInfo.TryGetValue(Constants.TrackingUrlKey, out var trackingUrl))
+            {
+                await TrackNotificationAsync(trackingUrl);
+            }
+
             await EnrichNotificationContentAsync(bestAttemptContent, userInfo);
         }
 
