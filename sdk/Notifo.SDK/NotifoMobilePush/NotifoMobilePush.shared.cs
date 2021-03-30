@@ -204,16 +204,16 @@ namespace Notifo.SDK
 
         private async Task TrackNotificationAsync(string trackingUrl)
         {
-            Log.Debug("Tracking URL: {0}", trackingUrl);
+            Log.Debug(Strings.TrackingUrl, trackingUrl);
 
             try
             {
                 var response = await httpClient.GetAsync(trackingUrl);
-                Log.Debug("Tracking response: {0}", response.StatusCode);
+                Log.Debug(Strings.TrackingResponseCode, response.StatusCode);
             }
             catch (Exception ex)
             {
-                Log.Debug("Tracking exception: {0}", ex.Message);
+                Log.Error(Strings.TrackingException, ex);
             }
         }
     }

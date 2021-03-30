@@ -149,5 +149,32 @@ namespace Notifo.SDK.Resources {
                 return ResourceManager.GetString("TokenRefreshSuccess", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fail to call tracking url..
+        /// </summary>
+        internal static string TrackingException {
+            get {
+                return ResourceManager.GetString("TrackingException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tracking response code: {0}.
+        /// </summary>
+        internal static string TrackingResponseCode {
+            get {
+                return ResourceManager.GetString("TrackingResponseCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tracking URL: {0}.
+        /// </summary>
+        internal static string TrackingUrl {
+            get {
+                return ResourceManager.GetString("TrackingUrl", resourceCulture);
+            }
+        }
     }
 }

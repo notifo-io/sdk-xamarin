@@ -147,4 +147,13 @@
   <data name="TokenRefreshSuccess" xml:space="preserve">
     <value>Token was successfully refreshed. Token: {0}</value>
   </data>
+  <data name="TrackingException" xml:space="preserve">
+    <value>Fail to call tracking url.</value>
+  </data>
+  <data name="TrackingResponseCode" xml:space="preserve">
+    <value>Tracking response code: {0}</value>
+  </data>
+  <data name="TrackingUrl" xml:space="preserve">
+    <value>Tracking URL: {0}</value>
+  </data>
 </root>
