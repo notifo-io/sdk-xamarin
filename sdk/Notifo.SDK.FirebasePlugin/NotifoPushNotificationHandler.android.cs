@@ -50,8 +50,8 @@ namespace Notifo.SDK.FirebasePlugin
 
             if (parameters.TryGetValue(Constants.ImageSmallKey, out var largeIconUrl))
             {
-                int width = GetDimention(Resource.Dimension.notification_large_icon_width);
-                int height = GetDimention(Resource.Dimension.notification_large_icon_height);
+                int width = GetDimension(Resource.Dimension.notification_large_icon_width);
+                int height = GetDimension(Resource.Dimension.notification_large_icon_height);
 
                 var largeIcon = GetBitmap(largeIconUrl.ToString(), width, height);
                 if (largeIcon != null)
@@ -88,7 +88,7 @@ namespace Notifo.SDK.FirebasePlugin
             }
         }
 
-        private int GetDimention(int resourceId) =>
+        private int GetDimension(int resourceId) =>
             Application.Context?.Resources?.GetDimensionPixelSize(resourceId) ?? -1;
 
         private Bitmap? GetBitmap(string bitmapUrl, int requestWidth = -1, int requestHeight = -1)
