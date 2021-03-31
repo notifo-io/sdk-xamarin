@@ -243,7 +243,8 @@ namespace Notifo.SDK
             {
                 var trackNotificationDto = new TrackNotificationDto
                 {
-                    Seen = notifications.Select(x => x.Id).ToArray()
+                    Seen = notifications.Select(x => x.Id).ToArray(),
+                    DeviceIdentifier = settings.Token
                 };
 
                 await clientProvider.Notifications.ConfirmAsync(trackNotificationDto);
