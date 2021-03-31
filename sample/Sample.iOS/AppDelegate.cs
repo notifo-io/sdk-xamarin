@@ -8,7 +8,6 @@
 using System;
 using Foundation;
 using Notifo.SDK.FirebasePlugin;
-using Serilog;
 using UIKit;
 using UserNotifications;
 
