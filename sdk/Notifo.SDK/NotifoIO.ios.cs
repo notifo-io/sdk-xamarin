@@ -24,11 +24,11 @@ namespace Notifo.SDK
             }
         }
 
-        public static async Task DidReceivePullRefreshNotificationAsync()
+        public static async Task DidReceivePullRefreshRequestAsync()
         {
             if (Current is NotifoMobilePush notifoMobilePush)
             {
-                await notifoMobilePush.DidReceivePullRefreshNotificationAsync();
+                await notifoMobilePush.DidReceivePullRefreshRequestAsync();
             }
         }
     }

@@ -106,6 +106,24 @@ namespace Notifo.SDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fail to retrieve notifications..
+        /// </summary>
+        internal static string NotificationsRetrieveException {
+            get {
+                return ResourceManager.GetString("NotificationsRetrieveException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending notifications count: {0}.
+        /// </summary>
+        internal static string PendingNotificationsCount {
+            get {
+                return ResourceManager.GetString("PendingNotificationsCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Received notification: {0}.
         /// </summary>
         internal static string ReceivedNotification {
@@ -151,7 +169,7 @@ namespace Notifo.SDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Fail to call tracking url..
+        ///   Looks up a localized string similar to Fail to track notification..
         /// </summary>
         internal static string TrackingException {
             get {

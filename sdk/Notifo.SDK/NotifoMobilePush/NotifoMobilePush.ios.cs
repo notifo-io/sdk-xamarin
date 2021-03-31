@@ -35,15 +35,17 @@ namespace Notifo.SDK
             await EnrichNotificationContentAsync(bestAttemptContent, userInfo);
         }
 
-        public async Task DidReceivePullRefreshNotificationAsync()
+        public async Task DidReceivePullRefreshRequestAsync()
         {
             UNUserNotificationCenter.Current.Delegate = this;
 
-            var notificationsList = await clientProvider.Notifications.GetNotificationsAsync();
-            foreach (var notification in notificationsList.Items)
+            var notifications = await GetPendingNotificationsAsync();
+            foreach (var notification in notifications)
             {
                 _ = ShowLocalNotificationAsync(notification);
             }
+
+            await TrackNotificationsAsync(notifications);
         }
 
         private async Task ShowLocalNotificationAsync(NotificationDto notification)

@@ -20,7 +20,7 @@ namespace Notifo.SDK.FirebasePlugin
 
             if (parameters.ContainsKey(Constants.ApsContentAvailableKey))
             {
-                _ = NotifoIO.DidReceivePullRefreshNotificationAsync();
+                _ = NotifoIO.DidReceivePullRefreshRequestAsync();
             }
 
             base.OnReceived(parameters);

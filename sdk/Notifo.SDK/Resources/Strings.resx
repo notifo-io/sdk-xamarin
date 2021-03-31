@@ -132,6 +132,12 @@
   <data name="NotificationReceivedEventUnsubscribeException" xml:space="preserve">
     <value>You were trying to unsubscribe from the NotificationReceived event, but not supply the push notification events provider. Use the SetPushEventsProvider method to inject push events provider implementation.</value>
   </data>
+  <data name="NotificationsRetrieveException" xml:space="preserve">
+    <value>Fail to retrieve notifications.</value>
+  </data>
+  <data name="PendingNotificationsCount" xml:space="preserve">
+    <value>Pending notifications count: {0}</value>
+  </data>
   <data name="ReceivedNotification" xml:space="preserve">
     <value>Received notification: {0}</value>
   </data>
@@ -148,7 +154,7 @@
     <value>Token was successfully refreshed. Token: {0}</value>
   </data>
   <data name="TrackingException" xml:space="preserve">
-    <value>Fail to call tracking url.</value>
+    <value>Fail to track notification.</value>
   </data>
   <data name="TrackingResponseCode" xml:space="preserve">
     <value>Tracking response code: {0}</value>

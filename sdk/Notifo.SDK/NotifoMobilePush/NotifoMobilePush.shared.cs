@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -202,6 +203,25 @@ namespace Notifo.SDK
             receivedNotificationEvents.Clear();
         }
 
+        private async Task<ICollection<NotificationDto>> GetPendingNotificationsAsync()
+        {
+            try
+            {
+                var allNotifications = await clientProvider.Notifications.GetNotificationsAsync();
+                var pendingNotifications = allNotifications.Items.Where(x => !x.IsSeen).ToArray();
+
+                Log.Debug(Strings.PendingNotificationsCount, pendingNotifications.Length);
+
+                return pendingNotifications;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(Strings.NotificationsRetrieveException, ex);
+            }
+
+            return new NotificationDto[] { };
+        }
+
         private async Task TrackNotificationAsync(string trackingUrl)
         {
             Log.Debug(Strings.TrackingUrl, trackingUrl);
@@ -210,6 +230,23 @@ namespace Notifo.SDK
             {
                 var response = await httpClient.GetAsync(trackingUrl);
                 Log.Debug(Strings.TrackingResponseCode, response.StatusCode);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(Strings.TrackingException, ex);
+            }
+        }
+
+        private async Task TrackNotificationsAsync(IEnumerable<NotificationDto> notifications)
+        {
+            try
+            {
+                var trackNotificationDto = new TrackNotificationDto
+                {
+                    Seen = notifications.Select(x => x.Id).ToArray()
+                };
+
+                await clientProvider.Notifications.ConfirmAsync(trackNotificationDto);
             }
             catch (Exception ex)
             {
