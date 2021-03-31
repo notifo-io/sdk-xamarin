@@ -5,9 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Threading.Tasks;
-using Notifo.SDK.Resources;
-using Serilog;
 using UserNotifications;
 
 namespace Notifo.SDK
@@ -16,8 +15,6 @@ namespace Notifo.SDK
     {
         public static async Task DidReceiveNotificationRequestAsync(UNNotificationRequest request, UNMutableNotificationContent bestAttemptContent)
         {
-            Log.Debug(Strings.ReceivedNotification, request.Content.UserInfo);
-
             if (Current is NotifoMobilePush notifoMobilePush)
             {
                 await notifoMobilePush.DidReceiveNotificationRequestAsync(request, bestAttemptContent);
@@ -29,6 +26,14 @@ namespace Notifo.SDK
             if (Current is NotifoMobilePush notifoMobilePush)
             {
                 await notifoMobilePush.DidReceivePullRefreshRequestAsync();
+            }
+        }
+
+        public static void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
+        {
+            if (Current is NotifoMobilePush notifoMobilePush)
+            {
+                notifoMobilePush.DidReceiveNotificationResponse(center, response, completionHandler);
             }
         }
     }

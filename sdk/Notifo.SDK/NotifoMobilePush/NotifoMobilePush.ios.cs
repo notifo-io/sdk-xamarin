@@ -19,12 +19,14 @@ using Xamarin.Essentials;
 
 namespace Notifo.SDK
 {
-    internal partial class NotifoMobilePush : NSObject, IUNUserNotificationCenterDelegate
+    internal partial class NotifoMobilePush : NSObject
     {
         private readonly IMemoryCache imageCache = new MemoryCache(new MemoryCacheOptions());
 
         public async Task DidReceiveNotificationRequestAsync(UNNotificationRequest request, UNMutableNotificationContent bestAttemptContent)
         {
+            Log.Debug(Strings.ReceivedNotification, request.Content.UserInfo);
+
             var userInfo = request.Content.UserInfo.ToDictionary();
 
             if (userInfo.TryGetValue(Constants.TrackingUrlKey, out var trackingUrl))
@@ -37,8 +39,6 @@ namespace Notifo.SDK
 
         public async Task DidReceivePullRefreshRequestAsync()
         {
-            UNUserNotificationCenter.Current.Delegate = this;
-
             var notifications = await GetPendingNotificationsAsync();
             foreach (var notification in notifications)
             {
@@ -128,7 +128,6 @@ namespace Notifo.SDK
             return content;
         }
 
-        [Export("userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:")]
         public void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
         {
             if (response.ActionIdentifier == Constants.ConfirmAction)

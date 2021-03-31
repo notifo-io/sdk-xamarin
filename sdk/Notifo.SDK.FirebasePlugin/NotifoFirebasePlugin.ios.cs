@@ -5,8 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using Foundation;
 using Plugin.FirebasePushNotification;
+using UserNotifications;
 
 namespace Notifo.SDK.FirebasePlugin
 {
@@ -38,5 +40,8 @@ namespace Notifo.SDK.FirebasePlugin
 
         public static void RemoteNotificationRegistrationFailed(NSError error) =>
             FirebasePushNotificationManager.RemoteNotificationRegistrationFailed(error);
+
+        public static void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler) =>
+            NotifoIO.DidReceiveNotificationResponse(center, response, completionHandler);
     }
 }
