@@ -17,6 +17,7 @@ namespace Notifo.SDK
     {
         private const int SeenNotificationsMaxCapacity = 10_000;
         private static readonly string SharedName = $"{AppInfo.PackageName}.notifo";
+        private static readonly object Locker = new object();
 
         public string Token
         {
@@ -61,22 +62,27 @@ namespace Notifo.SDK
 
         public void TrackNotification(Guid id)
         {
-            var notifications = EnsureRespectsMaxCapacity(SeenNotifications, SeenNotificationsMaxCapacity);
+            lock (Locker)
+            {
+                var notifications = EnsureRespectsMaxCapacity(SeenNotifications, SeenNotificationsMaxCapacity);
 
-            notifications[id] = DateTime.Now;
-            SeenNotifications = notifications;
+                notifications[id] = DateTime.Now;
+                SeenNotifications = notifications;
+            }
         }
 
         public void TrackNotifications(IEnumerable<Guid> ids)
         {
-            var notifications = EnsureRespectsMaxCapacity(SeenNotifications, SeenNotificationsMaxCapacity);
-
-            foreach (var id in ids)
+            lock (Locker)
             {
-                notifications[id] = DateTime.Now;
-            }
+                var notifications = EnsureRespectsMaxCapacity(SeenNotifications, SeenNotificationsMaxCapacity);
 
-            SeenNotifications = notifications;
+                foreach (var id in ids) {
+                    notifications[id] = DateTime.Now;
+                }
+
+                SeenNotifications = notifications;
+            }
         }
 
         private Dictionary<Guid, DateTime> EnsureRespectsMaxCapacity(Dictionary<Guid, DateTime> dictionary, int maxCapacity)
