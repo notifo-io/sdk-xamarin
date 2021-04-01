@@ -15,7 +15,7 @@ namespace Notifo.SDK.Services
 {
     internal class Settings : ISettings
     {
-        private const int SeenNotificationsMaxCapacity = 10_000;
+        private const int SeenNotificationsMaxCapacity = 500;
         private static readonly string SharedName = $"{AppInfo.PackageName}.notifo";
         private static readonly object Locker = new object();
 
@@ -64,7 +64,7 @@ namespace Notifo.SDK.Services
         {
             lock (Locker)
             {
-                var notifications = EnsureRespectsMaxCapacity(SeenNotifications, SeenNotificationsMaxCapacity);
+                var notifications = EnsureDictionaryRespectsMaxCapacity(SeenNotifications, SeenNotificationsMaxCapacity);
 
                 notifications[id] = DateTime.Now;
                 SeenNotifications = notifications;
@@ -75,7 +75,7 @@ namespace Notifo.SDK.Services
         {
             lock (Locker)
             {
-                var notifications = EnsureRespectsMaxCapacity(SeenNotifications, SeenNotificationsMaxCapacity);
+                var notifications = EnsureDictionaryRespectsMaxCapacity(SeenNotifications, SeenNotificationsMaxCapacity);
 
                 foreach (var id in ids)
                 {
@@ -86,7 +86,7 @@ namespace Notifo.SDK.Services
             }
         }
 
-        private Dictionary<Guid, DateTime> EnsureRespectsMaxCapacity(Dictionary<Guid, DateTime> dictionary, int maxCapacity)
+        private Dictionary<Guid, DateTime> EnsureDictionaryRespectsMaxCapacity(Dictionary<Guid, DateTime> dictionary, int maxCapacity)
         {
             if (dictionary.Count < maxCapacity)
             {
