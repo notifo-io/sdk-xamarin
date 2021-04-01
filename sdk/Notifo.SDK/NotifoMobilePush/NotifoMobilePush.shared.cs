@@ -143,7 +143,10 @@ namespace Notifo.SDK
             {
                 if (e.Data.ContainsKey(Constants.IdKey) && e.Data.ContainsKey(Constants.TrackingUrlKey))
                 {
-                    _ = TrackNotificationAsync(Guid.Parse(e.Data[Constants.IdKey].ToString()), e.Data[Constants.TrackingUrlKey].ToString());
+                    var notificationId = Guid.Parse(e.Data[Constants.IdKey].ToString());
+                    var trackingUrl = e.Data[Constants.TrackingUrlKey].ToString();
+
+                    _ = TrackNotificationAsync(notificationId, trackingUrl);
                 }
             }
         }
