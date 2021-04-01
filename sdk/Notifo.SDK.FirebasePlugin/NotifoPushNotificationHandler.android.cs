@@ -76,16 +76,26 @@ namespace Notifo.SDK.FirebasePlugin
                 }
             }
 
-            if (parameters.TryGetValue(Constants.ConfirmUrlKey, out var confirmUrl))
+            if (parameters.TryGetValue(Constants.ConfirmUrlKey, out var confirmUrl) &&
+                parameters.TryGetValue(Constants.ConfirmTextKey, out var confirmText))
             {
-                parameters.TryGetValue(Constants.ConfirmTextKey, out var confirmText);
-
-                var notificationIntent = new Intent(Intent.ActionView);
-                notificationIntent.SetData(Android.Net.Uri.Parse(confirmUrl.ToString()));
-                var buttonIntent = PendingIntent.GetActivity(Application.Context, 0, notificationIntent, 0);
-
-                notificationBuilder.AddAction(0, confirmText?.ToString(), buttonIntent);
+                AddAction(notificationBuilder, confirmText.ToString(), confirmUrl.ToString());
             }
+
+            if (parameters.TryGetValue(Constants.LinkUrlKey, out var linkUrl) &&
+                parameters.TryGetValue(Constants.LinkTextKey, out var linkText))
+            {
+                AddAction(notificationBuilder, linkText.ToString(), linkUrl.ToString());
+            }
+        }
+
+        private void AddAction(NotificationCompat.Builder notificationBuilder, string title, string url)
+        {
+            var notificationIntent = new Intent(Intent.ActionView);
+            notificationIntent.SetData(Android.Net.Uri.Parse(url));
+            var buttonIntent = PendingIntent.GetActivity(Application.Context, 0, notificationIntent, 0);
+
+            notificationBuilder.AddAction(0, title, buttonIntent);
         }
 
         private int GetDimension(int resourceId) =>

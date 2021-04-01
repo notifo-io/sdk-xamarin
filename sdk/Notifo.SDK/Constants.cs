@@ -16,6 +16,8 @@ namespace Notifo.SDK
         public const string ConfirmTextKey = "confirmText";
         public const string ImageLargeKey = "imageLarge";
         public const string ImageSmallKey = "imageSmall";
+        public const string LinkUrlKey = "linkUrl";
+        public const string LinkTextKey = "linkText";
         public const string TrackingUrlKey = "trackingUrl";
         public const string ApsContentAvailableKey = "aps.content-available";
 
