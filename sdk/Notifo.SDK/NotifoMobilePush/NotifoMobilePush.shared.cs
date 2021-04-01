@@ -121,6 +121,7 @@ namespace Notifo.SDK
 
             this.pushEventsProvider = pushEventsProvider;
             this.pushEventsProvider.OnTokenRefresh += PushEventsProvider_OnTokenRefresh;
+            this.pushEventsProvider.OnNotificationReceived += PushEventsProvider_OnNotificationReceived;
 
             return this;
         }
@@ -131,6 +132,19 @@ namespace Notifo.SDK
             if (notRefreshing)
             {
                 _ = EnsureTokenRefreshedAsync(settings.Token);
+            }
+        }
+
+        private void PushEventsProvider_OnNotificationReceived(object sender, NotificationDataEventArgs e)
+        {
+            // we are tracking notifications only for Android here because it is the entry point for all notifications that the Android device receives
+            // this is not the case for iOS where the entry point is in Notification Service Extension
+            if (DevicePlatform.Android == DeviceInfo.Platform)
+            {
+                if (e.Data.ContainsKey(Constants.IdKey) && e.Data.ContainsKey(Constants.TrackingUrlKey))
+                {
+                    _ = TrackNotificationAsync(Guid.Parse(e.Data[Constants.IdKey].ToString()), e.Data[Constants.TrackingUrlKey].ToString());
+                }
             }
         }
 
@@ -187,6 +201,7 @@ namespace Notifo.SDK
             }
 
             pushEventsProvider.OnTokenRefresh -= PushEventsProvider_OnTokenRefresh;
+            pushEventsProvider.OnNotificationReceived -= PushEventsProvider_OnNotificationReceived;
 
             foreach (var oe in openedNotificationEvents)
             {
