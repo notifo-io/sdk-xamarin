@@ -77,7 +77,8 @@ namespace Notifo.SDK
             {
                 var notifications = EnsureRespectsMaxCapacity(SeenNotifications, SeenNotificationsMaxCapacity);
 
-                foreach (var id in ids) {
+                foreach (var id in ids)
+                {
                     notifications[id] = DateTime.Now;
                 }
 
