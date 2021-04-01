@@ -210,7 +210,7 @@ namespace Notifo.SDK
                 var allNotifications = await clientProvider.Notifications.GetNotificationsAsync();
                 var pendingNotifications = allNotifications
                     .Items
-                    .Where(x => !settings.IsNotificationSeen(x.Id))
+                    .Where(x => !settings.IsNotificationSeen(x.Id) && !x.IsSeen)
                     .OrderBy(x => x.Created)
                     .ToArray();
 
