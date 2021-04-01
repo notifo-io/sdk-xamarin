@@ -31,7 +31,13 @@ namespace Notifo.SDK
 
             if (userInfo.TryGetValue(Constants.TrackingUrlKey, out var trackingUrl))
             {
-                await TrackNotificationAsync(trackingUrl);
+                var notificationId = Guid.Empty;
+                if (userInfo.TryGetValue(Constants.IdKey, out var id))
+                {
+                    notificationId = Guid.Parse(id);
+                }
+
+                await TrackNotificationAsync(notificationId, trackingUrl);
             }
 
             await EnrichNotificationContentAsync(bestAttemptContent, userInfo);

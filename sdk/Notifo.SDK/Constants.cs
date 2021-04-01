@@ -9,6 +9,7 @@ namespace Notifo.SDK
 {
     internal static class Constants
     {
+        public const string IdKey = "id";
         public const string SubjectKey = "subject";
         public const string BodyKey = "body";
         public const string ConfirmUrlKey = "confirmUrl";

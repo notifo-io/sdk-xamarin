@@ -210,7 +210,7 @@ namespace Notifo.SDK
                 var allNotifications = await clientProvider.Notifications.GetNotificationsAsync();
                 var pendingNotifications = allNotifications
                     .Items
-                    .Where(x => !x.IsSeen)
+                    .Where(x => !settings.IsNotificationSeen(x.Id))
                     .OrderBy(x => x.Created)
                     .ToArray();
 
@@ -226,12 +226,14 @@ namespace Notifo.SDK
             return new NotificationDto[] { };
         }
 
-        private async Task TrackNotificationAsync(string trackingUrl)
+        private async Task TrackNotificationAsync(Guid notificationId, string trackingUrl)
         {
             Log.Debug(Strings.TrackingUrl, trackingUrl);
 
             try
             {
+                settings.TrackNotification(notificationId);
+
                 var response = await httpClient.GetAsync(trackingUrl);
                 Log.Debug(Strings.TrackingResponseCode, response.StatusCode);
             }
@@ -245,9 +247,13 @@ namespace Notifo.SDK
         {
             try
             {
+                var seenIds = notifications.Select(x => x.Id).ToArray();
+
+                settings.TrackNotifications(seenIds);
+
                 var trackNotificationDto = new TrackNotificationDto
                 {
-                    Seen = notifications.Select(x => x.Id).ToArray(),
+                    Seen = seenIds,
                     DeviceIdentifier = settings.Token
                 };
 
