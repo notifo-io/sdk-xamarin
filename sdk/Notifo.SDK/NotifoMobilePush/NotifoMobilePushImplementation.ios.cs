@@ -12,14 +12,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Foundation;
 using Microsoft.Extensions.Caching.Memory;
+using Notifo.SDK.Extensions;
 using Notifo.SDK.Resources;
 using Serilog;
 using UserNotifications;
 using Xamarin.Essentials;
 
-namespace Notifo.SDK
+namespace Notifo.SDK.NotifoMobilePush
 {
-    internal partial class NotifoMobilePush : NSObject
+    internal partial class NotifoMobilePushImplementation : NSObject
     {
         private readonly IMemoryCache imageCache = new MemoryCache(new MemoryCacheOptions());
 

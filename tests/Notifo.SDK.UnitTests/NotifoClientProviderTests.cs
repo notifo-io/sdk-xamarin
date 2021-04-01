@@ -12,6 +12,7 @@ using FluentAssertions;
 using Moq;
 using Moq.AutoMock;
 using Moq.Contrib.HttpClient;
+using Notifo.SDK.NotifoMobilePush;
 using Xunit;
 
 namespace Notifo.SDK

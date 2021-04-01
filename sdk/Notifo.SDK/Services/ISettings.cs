@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Notifo.SDK
+namespace Notifo.SDK.Services
 {
     internal interface ISettings
     {

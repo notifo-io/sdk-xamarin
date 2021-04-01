@@ -11,13 +11,16 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Notifo.SDK.Extensions;
+using Notifo.SDK.PushEventProvider;
 using Notifo.SDK.Resources;
+using Notifo.SDK.Services;
 using Serilog;
 using Xamarin.Essentials;
 
-namespace Notifo.SDK
+namespace Notifo.SDK.NotifoMobilePush
 {
-    internal partial class NotifoMobilePush : INotifoMobilePush
+    internal partial class NotifoMobilePushImplementation : INotifoMobilePush
     {
         private readonly HttpClient httpClient;
         private readonly ISettings settings;
@@ -80,7 +83,7 @@ namespace Notifo.SDK
             }
         }
 
-        public NotifoMobilePush(HttpClient httpClient, ISettings settings)
+        public NotifoMobilePushImplementation(HttpClient httpClient, ISettings settings)
         {
             this.httpClient = httpClient;
             this.settings = settings;

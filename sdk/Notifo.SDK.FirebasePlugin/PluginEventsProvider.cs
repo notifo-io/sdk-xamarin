@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using Notifo.SDK.PushEventProvider;
 using Plugin.FirebasePushNotification;
 
 namespace Notifo.SDK.FirebasePlugin

@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Notifo.SDK
+namespace Notifo.SDK.PushEventProvider
 {
     public class TokenRefreshEventArgs : EventArgs
     {

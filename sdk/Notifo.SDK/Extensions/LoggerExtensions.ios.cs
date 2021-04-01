@@ -8,7 +8,7 @@
 using Serilog;
 using Serilog.Configuration;
 
-namespace Notifo.SDK
+namespace Notifo.SDK.Extensions
 {
     internal static class LoggerExtensions
     {

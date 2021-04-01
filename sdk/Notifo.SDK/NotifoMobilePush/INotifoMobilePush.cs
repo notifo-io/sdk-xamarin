@@ -6,8 +6,9 @@
 // ==========================================================================
 
 using System;
+using Notifo.SDK.PushEventProvider;
 
-namespace Notifo.SDK
+namespace Notifo.SDK.NotifoMobilePush
 {
     public interface INotifoMobilePush
     {

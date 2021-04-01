@@ -7,7 +7,7 @@
 
 using Xamarin.Essentials;
 
-namespace Notifo.SDK
+namespace Notifo.SDK.Extensions
 {
     public static class DeviceInfoExtensions
     {

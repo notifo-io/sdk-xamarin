@@ -7,7 +7,7 @@
 
 using System.Collections.Generic;
 
-namespace Notifo.SDK
+namespace Notifo.SDK.Extensions
 {
     public static class NotificationDtoExtensions
     {

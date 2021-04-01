@@ -13,7 +13,11 @@ using FluentAssertions;
 using Moq;
 using Moq.AutoMock;
 using Moq.Contrib.HttpClient;
+using Notifo.SDK.NotifoMobilePush;
+using Notifo.SDK.PushEventProvider;
 using Notifo.SDK.Resources;
+using Notifo.SDK.Services;
+using Notifo.SDK.UnitTests.Mocks;
 using Xunit;
 
 namespace Notifo.SDK.UnitTests
@@ -34,7 +38,7 @@ namespace Notifo.SDK.UnitTests
             var mocker = new AutoMocker();
             mocker.Use(client);
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush
                 .SetBaseUrl("https://test.com/")
                 .SetPushEventsProvider(eventsProvider)
@@ -62,7 +66,7 @@ namespace Notifo.SDK.UnitTests
             var mocker = new AutoMocker();
             mocker.Use(client);
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush
                 .SetPushEventsProvider(eventsProvider)
                 .SetApiKey("test api key");
@@ -84,7 +88,7 @@ namespace Notifo.SDK.UnitTests
             var mocker = new AutoMocker();
             mocker.Use(client);
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush
                 .SetPushEventsProvider(eventsProvider);
 
@@ -110,7 +114,7 @@ namespace Notifo.SDK.UnitTests
             var mocker = new AutoMocker();
             mocker.Use(client);
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush
                 .SetPushEventsProvider(eventsProvider)
                 .SetBaseUrl("https://test.com/")
@@ -130,7 +134,7 @@ namespace Notifo.SDK.UnitTests
             var mocker = new AutoMocker();
             mocker.Use(client);
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
 
             void EventHandler(object s, NotificationDataEventArgs e)
             {
@@ -154,7 +158,7 @@ namespace Notifo.SDK.UnitTests
             var mocker = new AutoMocker();
             mocker.Use(client);
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush.SetPushEventsProvider(eventsProvider);
 
             int invokeCount = 0;
@@ -180,7 +184,7 @@ namespace Notifo.SDK.UnitTests
             var mocker = new AutoMocker();
             mocker.Use(client);
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
 
             void EventHandler(object s, NotificationResponseEventArgs e)
             {
@@ -204,7 +208,7 @@ namespace Notifo.SDK.UnitTests
             var mocker = new AutoMocker();
             mocker.Use(client);
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush.SetPushEventsProvider(eventsProvider);
 
             int invokeCount = 0;
@@ -235,7 +239,7 @@ namespace Notifo.SDK.UnitTests
             var mocker = new AutoMocker();
             mocker.Use(client);
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush
                 .SetApiKey("test api key")
                 .SetPushEventsProvider(eventsProvider)
@@ -261,7 +265,7 @@ namespace Notifo.SDK.UnitTests
             var mocker = new AutoMocker();
             mocker.Use(client);
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush
                 .SetApiKey("test api key")
                 .SetPushEventsProvider(eventsProviderA);
@@ -306,7 +310,7 @@ namespace Notifo.SDK.UnitTests
             var mocker = new AutoMocker();
             mocker.Use(client);
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush
                 .SetPushEventsProvider(eventsProvider);
 
@@ -331,7 +335,7 @@ namespace Notifo.SDK.UnitTests
             mocker.Use(client);
             mocker.Setup<ISettings, string>(x => x.Token).Returns("test token");
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush
                 .SetPushEventsProvider(eventsProvider)
                 .SetApiKey("test api key")
@@ -356,7 +360,7 @@ namespace Notifo.SDK.UnitTests
             mocker.Use(client);
             mocker.Setup<ISettings, string>(x => x.Token).Returns("test token");
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush
                 .SetPushEventsProvider(eventsProvider)
                 .SetApiKey("test api key")
@@ -381,7 +385,7 @@ namespace Notifo.SDK.UnitTests
             mocker.Use(client);
             mocker.Setup<ISettings, string>(x => x.Token).Returns("test token");
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush
                 .SetPushEventsProvider(eventsProvider)
                 .SetApiKey("test api key")
@@ -406,7 +410,7 @@ namespace Notifo.SDK.UnitTests
             mocker.Use(client);
             mocker.Setup<ISettings, string>(x => x.Token).Returns(string.Empty);
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush
                 .SetPushEventsProvider(eventsProvider)
                 .SetApiKey("test api key")
@@ -434,7 +438,7 @@ namespace Notifo.SDK.UnitTests
             mocker.Use(client);
             mocker.Setup<ISettings, string>(x => x.Token).Returns("test token");
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePush>();
+            var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush
                 .SetPushEventsProvider(eventsProvider)
                 .SetApiKey("test api key");

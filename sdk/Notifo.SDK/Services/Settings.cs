@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text.Json;
 using Xamarin.Essentials;
 
-namespace Notifo.SDK
+namespace Notifo.SDK.Services
 {
     internal class Settings : ISettings
     {

@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Text.Json;
 using MvvmHelpers;
 using Notifo.SDK;
+using Notifo.SDK.PushEventProvider;
 using Xamarin.Forms;
 
 namespace Sample

@@ -9,6 +9,9 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using Microsoft.Extensions.Http;
+using Notifo.SDK.Extensions;
+using Notifo.SDK.NotifoMobilePush;
+using Notifo.SDK.Services;
 using Polly;
 using Polly.Extensions.Http;
 using Serilog;
@@ -27,7 +30,7 @@ namespace Notifo.SDK
             var httpClient = ConfigureHttpClient();
             var settings = new Settings();
 
-            return new NotifoMobilePush(httpClient, settings);
+            return new NotifoMobilePushImplementation(httpClient, settings);
         }
 
         private static ILogger ConfigureLogger()

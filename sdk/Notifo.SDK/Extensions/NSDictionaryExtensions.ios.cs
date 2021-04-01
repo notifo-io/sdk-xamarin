@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Foundation;
 
-namespace Notifo.SDK
+namespace Notifo.SDK.Extensions
 {
     public static class NSDictionaryExtensions
     {

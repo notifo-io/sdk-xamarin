@@ -7,7 +7,7 @@
 
 using System.Net.Http;
 
-namespace Notifo.SDK
+namespace Notifo.SDK.NotifoMobilePush
 {
     internal class NotifoClientProvider
     {
