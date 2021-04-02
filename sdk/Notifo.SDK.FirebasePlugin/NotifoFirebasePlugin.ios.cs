@@ -14,22 +14,22 @@ namespace Notifo.SDK.FirebasePlugin
 {
     public class NotifoFirebasePlugin
     {
-        public static void Initialize(NSDictionary options, NotificationUserCategory[] notificationUserCategories, bool autoRegistration = true)
+        public static void Initialize(NSDictionary options, INotifoStartup notifoStartup, NotificationUserCategory[] notificationUserCategories, bool autoRegistration = true)
         {
             FirebasePushNotificationManager.Initialize(options, notificationUserCategories, autoRegistration);
-            NotifoIO.Current.UseFirebasePluginEventsProvider();
+            notifoStartup.ConfigureService(NotifoIO.Current);
         }
 
-        public static void Initialize(NSDictionary options, IPushNotificationHandler pushNotificationHandler, bool autoRegistration = true)
+        public static void Initialize(NSDictionary options, INotifoStartup notifoStartup, IPushNotificationHandler pushNotificationHandler, bool autoRegistration = true)
         {
             FirebasePushNotificationManager.Initialize(options, pushNotificationHandler, autoRegistration);
-            NotifoIO.Current.UseFirebasePluginEventsProvider();
+            notifoStartup.ConfigureService(NotifoIO.Current);
         }
 
-        public static void Initialize(NSDictionary options, bool autoRegistration = true)
+        public static void Initialize(NSDictionary options, INotifoStartup notifoStartup, bool autoRegistration = true)
         {
             FirebasePushNotificationManager.Initialize(options, new NotifoPushNotificationHandler(), autoRegistration);
-            NotifoIO.Current.UseFirebasePluginEventsProvider();
+            notifoStartup.ConfigureService(NotifoIO.Current);
         }
 
         public static void DidReceiveMessage(NSDictionary data) =>

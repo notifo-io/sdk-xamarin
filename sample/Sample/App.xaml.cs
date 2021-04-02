@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.SDK;
-using Notifo.SDK.FirebasePlugin;
 using Xamarin.Forms;
 
 namespace Sample
@@ -16,12 +14,6 @@ namespace Sample
         public App()
         {
             InitializeComponent();
-
-            NotifoIO.Current
-                .SetBaseUrl(Constants.ApiUrl)
-                .SetApiKey(Constants.UserApiKey)
-                .UseFirebasePluginEventsProvider()
-                .Register();
 
             MainPage = new MainPage();
         }

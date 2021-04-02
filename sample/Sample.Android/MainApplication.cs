@@ -24,9 +24,9 @@ namespace Sample.Droid
         {
             base.OnCreate();
 #if DEBUG
-            NotifoFirebasePlugin.Initialize(this, resetToken: true);
+            NotifoFirebasePlugin.Initialize(this, new NotifoStartup(), resetToken: true);
 #else
-            NotifoFirebasePlugin.Initialize(this,false);
+            NotifoFirebasePlugin.Initialize(this, new NotifoStartup(), resetToken: false);
 #endif
         }
     }

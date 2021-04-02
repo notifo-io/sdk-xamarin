@@ -14,28 +14,28 @@ namespace Notifo.SDK.FirebasePlugin
 {
     public class NotifoFirebasePlugin
     {
-        public static void Initialize(Context context, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
+        public static void Initialize(Context context, INotifoStartup notifoStartup, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
         {
             ConfigureDefaultChannel();
 
             FirebasePushNotificationManager.Initialize(context, new NotifoPushNotificationHandler(), resetToken, createDefaultNotificationChannel, autoRegistration);
-            NotifoIO.Current.UseFirebasePluginEventsProvider();
+            notifoStartup.ConfigureService(NotifoIO.Current);
         }
 
-        public static void Initialize(Context context, NotificationUserCategory[] notificationCategories, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
+        public static void Initialize(Context context, INotifoStartup notifoStartup, NotificationUserCategory[] notificationCategories, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
         {
             ConfigureDefaultChannel();
 
             FirebasePushNotificationManager.Initialize(context, notificationCategories, resetToken, createDefaultNotificationChannel, autoRegistration);
-            NotifoIO.Current.UseFirebasePluginEventsProvider();
+            notifoStartup.ConfigureService(NotifoIO.Current);
         }
 
-        public static void Initialize(Context context, IPushNotificationHandler pushNotificationHandler, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
+        public static void Initialize(Context context, INotifoStartup notifoStartup, IPushNotificationHandler pushNotificationHandler, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
         {
             ConfigureDefaultChannel();
 
             FirebasePushNotificationManager.Initialize(context, pushNotificationHandler, resetToken, createDefaultNotificationChannel, autoRegistration);
-            NotifoIO.Current.UseFirebasePluginEventsProvider();
+            notifoStartup.ConfigureService(NotifoIO.Current);
         }
 
         public static void ProcessIntent(Activity activity, Intent intent, bool enableDelayedResponse = true)
