@@ -29,16 +29,24 @@ namespace Sample
 
             httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("ApiKey", Constants.AdminApiKey);
-
-            NotifoIO.Current.OnNotificationReceived += Current_OnNotificationReceived;
-            NotifoIO.Current.OnNotificationOpened += Current_OnNotificationOpened;
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
 
+            NotifoIO.Current.OnNotificationReceived += Current_OnNotificationReceived;
+            NotifoIO.Current.OnNotificationOpened += Current_OnNotificationOpened;
+
             RefreshEventsAsync();
+        }
+
+        protected override void OnDisappearing()
+        {
+            NotifoIO.Current.OnNotificationReceived -= Current_OnNotificationReceived;
+            NotifoIO.Current.OnNotificationOpened -= Current_OnNotificationOpened;
+
+            base.OnDisappearing();
         }
 
         private void Current_OnNotificationReceived(object sender, NotificationDataEventArgs e)
