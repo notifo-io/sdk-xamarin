@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Notifo.SDK.Services
 {
@@ -16,8 +17,10 @@ namespace Notifo.SDK.Services
 
         bool IsTokenRefreshed { get; set; }
 
-        void TrackNotification(Guid id);
-        void TrackNotifications(IEnumerable<Guid> ids);
+        Task TrackNotificationAsync(Guid id);
+
+        Task TrackNotificationsAsync(IEnumerable<Guid> ids);
+
         bool IsNotificationSeen(Guid id);
     }
 }

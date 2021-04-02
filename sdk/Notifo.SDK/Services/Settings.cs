@@ -7,17 +7,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Notifo.SDK.Helpers;
 using Xamarin.Essentials;
 
 namespace Notifo.SDK.Services
 {
     internal class Settings : ISettings
     {
-        private const int SeenNotificationsMaxCapacity = 500;
         private static readonly string SharedName = $"{AppInfo.PackageName}.notifo";
-        private static readonly object Locker = new object();
+        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
 
         public string Token
         {
@@ -31,19 +32,19 @@ namespace Notifo.SDK.Services
             set => Preferences.Set(nameof(IsTokenRefreshed), value, SharedName);
         }
 
-        private Dictionary<Guid, DateTime> seenNotifications;
-        private Dictionary<Guid, DateTime> SeenNotifications
+        private SlidingSet<Guid> seenNotifications;
+        private SlidingSet<Guid> SeenNotifications
         {
             get
             {
                 if (seenNotifications == null)
                 {
-                    seenNotifications = new Dictionary<Guid, DateTime>();
+                    seenNotifications = new SlidingSet<Guid>(capacity: 500);
 
                     var serialized = Preferences.Get(nameof(SeenNotifications), string.Empty, SharedName);
                     if (!string.IsNullOrWhiteSpace(serialized))
                     {
-                        seenNotifications = JsonSerializer.Deserialize<Dictionary<Guid, DateTime>>(serialized) ?? seenNotifications;
+                        seenNotifications = JsonConvert.DeserializeObject<SlidingSet<Guid>>(serialized) ?? seenNotifications;
                     }
                 }
 
@@ -53,58 +54,43 @@ namespace Notifo.SDK.Services
             {
                 seenNotifications = value;
 
-                var serialized = JsonSerializer.Serialize(seenNotifications);
+                var serialized = JsonConvert.SerializeObject(seenNotifications);
                 Preferences.Set(nameof(SeenNotifications), serialized, SharedName);
             }
         }
 
-        public bool IsNotificationSeen(Guid id) => SeenNotifications.ContainsKey(id);
+        public bool IsNotificationSeen(Guid id) => SeenNotifications.Contains(id);
 
-        public void TrackNotification(Guid id)
+        public async Task TrackNotificationAsync(Guid id)
         {
-            lock (Locker)
+            await Semaphore.WaitAsync();
+            try
             {
-                var notifications = EnsureDictionaryRespectsMaxCapacity(SeenNotifications, SeenNotificationsMaxCapacity);
-
-                notifications[id] = DateTime.Now;
-                SeenNotifications = notifications;
+                SeenNotifications.Add(id);
+                await Task.Run(() => SeenNotifications = SeenNotifications);
+            }
+            finally
+            {
+                Semaphore.Release();
             }
         }
 
-        public void TrackNotifications(IEnumerable<Guid> ids)
+        public async Task TrackNotificationsAsync(IEnumerable<Guid> ids)
         {
-            lock (Locker)
+            await Semaphore.WaitAsync();
+            try
             {
-                var notifications = EnsureDictionaryRespectsMaxCapacity(SeenNotifications, SeenNotificationsMaxCapacity);
-
                 foreach (var id in ids)
                 {
-                    notifications[id] = DateTime.Now;
+                    SeenNotifications.Add(id);
                 }
 
-                SeenNotifications = notifications;
+                await Task.Run(() => SeenNotifications = SeenNotifications);
             }
-        }
-
-        private Dictionary<Guid, DateTime> EnsureDictionaryRespectsMaxCapacity(Dictionary<Guid, DateTime> dictionary, int maxCapacity)
-        {
-            if (dictionary.Count < maxCapacity)
+            finally
             {
-                return dictionary;
+                Semaphore.Release();
             }
-
-            var keys = dictionary
-                .OrderBy(x => x.Value)
-                .Take(maxCapacity / 2)
-                .Select(x => x.Key)
-                .ToList();
-
-            foreach (var key in keys)
-            {
-                dictionary.Remove(key);
-            }
-
-            return dictionary;
         }
     }
 }

@@ -253,7 +253,7 @@ namespace Notifo.SDK.NotifoMobilePush
 
             try
             {
-                settings.TrackNotification(notificationId);
+                _ = settings.TrackNotificationAsync(notificationId);
 
                 var response = await httpClient.GetAsync(trackingUrl);
                 Log.Debug(Strings.TrackingResponseCode, response.StatusCode);
@@ -270,7 +270,7 @@ namespace Notifo.SDK.NotifoMobilePush
             {
                 var seenIds = notifications.Select(x => x.Id).ToArray();
 
-                settings.TrackNotifications(seenIds);
+                _ = settings.TrackNotificationsAsync(seenIds);
 
                 var trackNotificationDto = new TrackNotificationDto
                 {
