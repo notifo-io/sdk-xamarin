@@ -22,6 +22,6 @@ namespace Notifo.SDK
         public const string ApsContentAvailableKey = "aps.content-available";
 
         public const string ConfirmAction = "notifo-confirm-action";
-        public const string ConfirmCategory = "notifo-confirm-category";
+        public const string LinkAction = "notifo-link-action";
     }
 }

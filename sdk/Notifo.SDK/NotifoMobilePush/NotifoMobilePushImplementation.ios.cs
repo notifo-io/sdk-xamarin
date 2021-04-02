@@ -104,32 +104,72 @@ namespace Notifo.SDK.NotifoMobilePush
                 }
             }
 
-            if (data.TryGetValue(Constants.ConfirmUrlKey, out var confirmUrl))
-            {
-                content.UserInfo = new NSDictionary(
-                    new NSString(Constants.ConfirmUrlKey), new NSString(confirmUrl)
-                );
+            var actions = new List<UNNotificationAction>();
+            var userInfo = new NSMutableDictionary();
 
-                data.TryGetValue(Constants.ConfirmTextKey, out var confirmText);
+            if (data.ContainsKey(Constants.ConfirmUrlKey) && data.ContainsKey(Constants.ConfirmTextKey))
+            {
+                userInfo.Add(new NSString(Constants.ConfirmUrlKey), new NSString(data[Constants.ConfirmUrlKey]));
 
                 var confirmAction = UNNotificationAction.FromIdentifier(
                     Constants.ConfirmAction,
-                    confirmText,
+                    data[Constants.ConfirmTextKey],
                     UNNotificationActionOptions.Foreground);
 
-                var category = UNNotificationCategory.FromIdentifier(
-                    Constants.ConfirmCategory,
-                    new UNNotificationAction[] { confirmAction },
+                actions.Add(confirmAction);
+            }
+
+            if (data.ContainsKey(Constants.LinkUrlKey) && data.ContainsKey(Constants.LinkTextKey))
+            {
+                userInfo.Add(new NSString(Constants.LinkUrlKey), new NSString(data[Constants.LinkUrlKey]));
+
+                var linkAction = UNNotificationAction.FromIdentifier(
+                    Constants.LinkAction,
+                    data[Constants.LinkTextKey],
+                    UNNotificationActionOptions.Foreground);
+
+                actions.Add(linkAction);
+            }
+
+            if (actions.Any())
+            {
+                content.UserInfo = userInfo;
+
+                var categoryId = Guid.NewGuid().ToString();
+
+                var newCategory = UNNotificationCategory.FromIdentifier(
+                    categoryId,
+                    actions.ToArray(),
                     new string[] { },
                     UNNotificationCategoryOptions.None);
 
-                var categories = new[] { category };
-                UNUserNotificationCenter.Current.SetNotificationCategories(new NSSet<UNNotificationCategory>(categories));
+                var categories = new List<UNNotificationCategory>();
+
+                var allCategories = await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
+
+                if (allCategories != null)
+                {
+                    foreach (UNNotificationCategory category in allCategories)
+                    {
+                        if (category.Identifier != categoryId)
+                        {
+                            categories.Add(category);
+                        }
+                    }
+
+                    categories.Add(newCategory);
+                }
+                else
+                {
+                    categories.Add(newCategory);
+                }
+
+                UNUserNotificationCenter.Current.SetNotificationCategories(new NSSet<UNNotificationCategory>(categories.ToArray()));
 
                 // without this call action buttons won't be added or updated
-                var registeredCategories = await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
+                _ = await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
 
-                content.CategoryIdentifier = Constants.ConfirmCategory;
+                content.CategoryIdentifier = categoryId;
             }
 
             return content;
@@ -137,10 +177,23 @@ namespace Notifo.SDK.NotifoMobilePush
 
         public void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
         {
-            if (response.ActionIdentifier == Constants.ConfirmAction)
+            string url = string.Empty;
+
+            var userInfo = response.Notification.Request.Content.UserInfo.ToDictionary();
+
+            switch (response.ActionIdentifier)
             {
-                var confirmUrl = response.Notification.Request.Content.UserInfo[Constants.ConfirmUrlKey].ToString();
-                Browser.OpenAsync(confirmUrl, BrowserLaunchMode.SystemPreferred);
+                case Constants.ConfirmAction:
+                    userInfo.TryGetValue(Constants.ConfirmUrlKey, out url);
+                    break;
+                case Constants.LinkAction:
+                    userInfo.TryGetValue(Constants.LinkUrlKey, out url);
+                    break;
+            }
+
+            if (!string.IsNullOrWhiteSpace(url))
+            {
+                Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
             }
 
             completionHandler();
