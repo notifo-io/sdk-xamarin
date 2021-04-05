@@ -32,7 +32,7 @@
                                 Margin="8,0"
                                 FontSize="14"
                                 HorizontalTextAlignment="End"
-                                Text="{Binding FormattedCreated}"
+                                Text="{Binding Created, StringFormat='{0:dd MMM, HH:mm}'}"
                                 TextColor="Gray" />
                             <BoxView BackgroundColor="LightGray" HeightRequest="1" />
                         </StackLayout>
