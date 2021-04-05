@@ -195,8 +195,6 @@ namespace Notifo.SDK.NotifoMobilePush
             {
                 Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
             }
-
-            completionHandler();
         }
 
         private async Task<string> GetImageAsync(string imageUrl)
