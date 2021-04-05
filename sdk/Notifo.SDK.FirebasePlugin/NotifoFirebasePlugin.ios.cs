@@ -41,7 +41,14 @@ namespace Notifo.SDK.FirebasePlugin
         public static void RemoteNotificationRegistrationFailed(NSError error) =>
             FirebasePushNotificationManager.RemoteNotificationRegistrationFailed(error);
 
-        public static void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler) =>
+        public static void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
+        {
             NotifoIO.DidReceiveNotificationResponse(center, response, completionHandler);
+
+            if (CrossFirebasePushNotification.Current is IUNUserNotificationCenterDelegate notificationDelegate)
+            {
+                notificationDelegate.DidReceiveNotificationResponse(center, response, completionHandler);
+            }
+        }
     }
 }
