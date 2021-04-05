@@ -136,7 +136,7 @@ namespace Notifo.SDK.UnitTests
 
             var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
 
-            void EventHandler(object s, NotificationDataEventArgs e)
+            void EventHandler(object s, NotificationEventArgs e)
             {
             }
 
@@ -162,7 +162,7 @@ namespace Notifo.SDK.UnitTests
             notifoMobilePush.SetPushEventsProvider(eventsProvider);
 
             int invokeCount = 0;
-            void EventHandler(object s, NotificationDataEventArgs e) => invokeCount += 1;
+            void EventHandler(object s, NotificationEventArgs e) => invokeCount += 1;
 
             notifoMobilePush.OnNotificationReceived += EventHandler;
 
@@ -186,7 +186,7 @@ namespace Notifo.SDK.UnitTests
 
             var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
 
-            void EventHandler(object s, NotificationResponseEventArgs e)
+            void EventHandler(object s, NotificationEventArgs e)
             {
             }
 
@@ -212,7 +212,7 @@ namespace Notifo.SDK.UnitTests
             notifoMobilePush.SetPushEventsProvider(eventsProvider);
 
             int invokeCount = 0;
-            void EventHandler(object s, NotificationResponseEventArgs e) => invokeCount += 1;
+            void EventHandler(object s, NotificationEventArgs e) => invokeCount += 1;
 
             notifoMobilePush.OnNotificationOpened += EventHandler;
 
@@ -271,10 +271,10 @@ namespace Notifo.SDK.UnitTests
                 .SetPushEventsProvider(eventsProviderA);
 
             int invokeOpenCount = 0;
-            void EventOpenHandler(object s, NotificationResponseEventArgs e) => invokeOpenCount += 1;
+            void EventOpenHandler(object s, NotificationEventArgs e) => invokeOpenCount += 1;
 
             int invokeReceivedCount = 0;
-            void EventReceivedHandler(object s, NotificationDataEventArgs e) => invokeReceivedCount += 1;
+            void EventReceivedHandler(object s, NotificationEventArgs e) => invokeReceivedCount += 1;
 
             notifoMobilePush.OnNotificationOpened += EventOpenHandler;
             notifoMobilePush.OnNotificationReceived += EventReceivedHandler;

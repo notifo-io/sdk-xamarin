@@ -14,8 +14,8 @@ namespace Notifo.SDK.UnitTests.Mocks
     public class EventsProviderMock : IPushEventsProvider
     {
         public event EventHandler<TokenRefreshEventArgs> OnTokenRefresh;
-        public event EventHandler<NotificationDataEventArgs> OnNotificationReceived;
-        public event EventHandler<NotificationResponseEventArgs> OnNotificationOpened;
+        public event EventHandler<NotificationEventArgs> OnNotificationReceived;
+        public event EventHandler<NotificationEventArgs> OnNotificationOpened;
 
         protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args) =>
             OnTokenRefresh?.Invoke(this, args);
@@ -26,21 +26,21 @@ namespace Notifo.SDK.UnitTests.Mocks
             OnRefreshTokenEvent(args);
         }
 
-        protected virtual void OnNotificationReceivedEvent(NotificationDataEventArgs args) =>
+        protected virtual void OnNotificationReceivedEvent(NotificationEventArgs args) =>
             OnNotificationReceived?.Invoke(this, args);
 
         public void RaiseOnNotificationReceivedEvent()
         {
-            var args = new NotificationDataEventArgs(new Dictionary<string, object>());
+            var args = new NotificationEventArgs(new Dictionary<string, object>());
             OnNotificationReceivedEvent(args);
         }
 
-        protected virtual void OnNotificationOpenedEvent(NotificationResponseEventArgs args) =>
+        protected virtual void OnNotificationOpenedEvent(NotificationEventArgs args) =>
             OnNotificationOpened?.Invoke(this, args);
 
         public void RaiseOnNotificationOpenedEvent()
         {
-            var args = new NotificationResponseEventArgs(new Dictionary<string, object>());
+            var args = new NotificationEventArgs(new Dictionary<string, object>());
             OnNotificationOpenedEvent(args);
         }
     }

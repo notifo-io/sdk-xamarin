@@ -26,7 +26,7 @@ namespace Sample
             notifo.OnNotificationOpened += Current_OnNotificationOpened;
         }
 
-        private void Current_OnNotificationOpened(object source, NotificationResponseEventArgs e)
+        private void Current_OnNotificationOpened(object source, NotificationEventArgs e)
         {
             Device.BeginInvokeOnMainThread(() =>
             {

@@ -40,7 +40,7 @@ namespace Sample
             base.OnDisappearing();
         }
 
-        private void Current_OnNotificationReceived(object sender, NotificationDataEventArgs e)
+        private void Current_OnNotificationReceived(object sender, NotificationEventArgs e)
         {
             RefreshEventsAsync();
         }

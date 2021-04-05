@@ -13,8 +13,8 @@ namespace Notifo.SDK.PushEventProvider
     {
         event EventHandler<TokenRefreshEventArgs> OnTokenRefresh;
 
-        event EventHandler<NotificationDataEventArgs> OnNotificationReceived;
+        event EventHandler<NotificationEventArgs> OnNotificationReceived;
 
-        event EventHandler<NotificationResponseEventArgs> OnNotificationOpened;
+        event EventHandler<NotificationEventArgs> OnNotificationOpened;
     }
 }

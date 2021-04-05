@@ -12,8 +12,8 @@ namespace Notifo.SDK.NotifoMobilePush
 {
     public interface INotifoMobilePush
     {
-        event EventHandler<NotificationDataEventArgs> OnNotificationReceived;
-        event EventHandler<NotificationResponseEventArgs> OnNotificationOpened;
+        event EventHandler<NotificationEventArgs> OnNotificationReceived;
+        event EventHandler<NotificationEventArgs> OnNotificationOpened;
         INotifoMobilePush SetApiKey(string appId);
         INotifoMobilePush SetBaseUrl(string baseUrl);
         INotifoMobilePush SetPushEventsProvider(IPushEventsProvider pushEventsProvider);

@@ -28,12 +28,12 @@ namespace Notifo.SDK.NotifoMobilePush
 
         private IPushEventsProvider? pushEventsProvider;
 
-        private List<EventHandler<NotificationResponseEventArgs>> openedNotificationEvents;
-        private List<EventHandler<NotificationDataEventArgs>> receivedNotificationEvents;
+        private List<EventHandler<NotificationEventArgs>> openedNotificationEvents;
+        private List<EventHandler<NotificationEventArgs>> receivedNotificationEvents;
 
         private int refreshExecutingCount;
 
-        public event EventHandler<NotificationDataEventArgs> OnNotificationReceived
+        public event EventHandler<NotificationEventArgs> OnNotificationReceived
         {
             add
             {
@@ -58,7 +58,7 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
-        public event EventHandler<NotificationResponseEventArgs> OnNotificationOpened
+        public event EventHandler<NotificationEventArgs> OnNotificationOpened
         {
             add
             {
@@ -92,8 +92,8 @@ namespace Notifo.SDK.NotifoMobilePush
 
             clientProvider = new NotifoClientProvider(httpClient);
 
-            openedNotificationEvents = new List<EventHandler<NotificationResponseEventArgs>>();
-            receivedNotificationEvents = new List<EventHandler<NotificationDataEventArgs>>();
+            openedNotificationEvents = new List<EventHandler<NotificationEventArgs>>();
+            receivedNotificationEvents = new List<EventHandler<NotificationEventArgs>>();
 
             refreshExecutingCount = 0;
         }
@@ -140,18 +140,15 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
-        private void PushEventsProvider_OnNotificationReceived(object sender, NotificationDataEventArgs e)
+        private void PushEventsProvider_OnNotificationReceived(object sender, NotificationEventArgs e)
         {
             // we are tracking notifications only for Android here because it is the entry point for all notifications that the Android device receives
             // this is not the case for iOS where the entry point is in Notification Service Extension
             if (DevicePlatform.Android == DeviceInfo.Platform)
             {
-                if (e.Data.ContainsKey(Constants.IdKey) && e.Data.ContainsKey(Constants.TrackingUrlKey))
+                if (!string.IsNullOrWhiteSpace(e.TrackingUrl))
                 {
-                    var notificationId = Guid.Parse(e.Data[Constants.IdKey].ToString());
-                    var trackingUrl = e.Data[Constants.TrackingUrlKey].ToString();
-
-                    _ = TrackNotificationAsync(notificationId, trackingUrl);
+                    _ = TrackNotificationAsync(e.Id, e.TrackingUrl);
                 }
             }
         }

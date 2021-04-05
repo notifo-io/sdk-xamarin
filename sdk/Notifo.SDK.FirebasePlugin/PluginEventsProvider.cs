@@ -14,8 +14,8 @@ namespace Notifo.SDK.FirebasePlugin
     internal class PluginEventsProvider : IPushEventsProvider
     {
         public event EventHandler<TokenRefreshEventArgs>? OnTokenRefresh;
-        public event EventHandler<NotificationDataEventArgs>? OnNotificationReceived;
-        public event EventHandler<NotificationResponseEventArgs>? OnNotificationOpened;
+        public event EventHandler<NotificationEventArgs>? OnNotificationReceived;
+        public event EventHandler<NotificationEventArgs>? OnNotificationOpened;
 
         public PluginEventsProvider()
         {
@@ -35,20 +35,20 @@ namespace Notifo.SDK.FirebasePlugin
 
         private void FirebasePushNotification_OnNotificationReceived(object source, FirebasePushNotificationDataEventArgs e)
         {
-            var args = new NotificationDataEventArgs(e.Data);
+            var args = new NotificationEventArgs(e.Data);
             OnNotificationReceivedEvent(args);
         }
 
-        protected virtual void OnNotificationReceivedEvent(NotificationDataEventArgs args) =>
+        protected virtual void OnNotificationReceivedEvent(NotificationEventArgs args) =>
             OnNotificationReceived?.Invoke(this, args);
 
         private void FirebasePushNotification_OnNotificationOpened(object source, FirebasePushNotificationResponseEventArgs e)
         {
-            var args = new NotificationResponseEventArgs(e.Data);
+            var args = new NotificationEventArgs(e.Data);
             OnNotificationOpenedEvent(args);
         }
 
-        protected virtual void OnNotificationOpenedEvent(NotificationResponseEventArgs args) =>
+        protected virtual void OnNotificationOpenedEvent(NotificationEventArgs args) =>
             OnNotificationOpened?.Invoke(this, args);
     }
 }
