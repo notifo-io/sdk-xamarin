@@ -45,6 +45,16 @@ namespace Notifo.SDK.Extensions
                 data[Constants.ConfirmTextKey] = notification.ConfirmText;
             }
 
+            if (!string.IsNullOrWhiteSpace(notification.LinkUrl))
+            {
+                data[Constants.LinkUrlKey] = notification.LinkUrl;
+            }
+
+            if (!string.IsNullOrWhiteSpace(notification.LinkText))
+            {
+                data[Constants.LinkTextKey] = notification.LinkText;
+            }
+
             return data;
         }
     }
