@@ -20,6 +20,8 @@ namespace Notifo.SDK
         public const string LinkTextKey = "linkText";
         public const string TrackingUrlKey = "trackingUrl";
         public const string ApsContentAvailableKey = "aps.content-available";
+        public const string ApsAlertTitleKey = "aps.alert.title";
+        public const string ApsAlertBodyKey = "aps.alert.body";
 
         public const string ConfirmAction = "notifo-confirm-action";
         public const string LinkAction = "notifo-link-action";

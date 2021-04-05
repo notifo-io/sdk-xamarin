@@ -44,7 +44,7 @@ namespace Notifo.SDK.FirebasePlugin
 
         private void FirebasePushNotification_OnNotificationOpened(object source, FirebasePushNotificationResponseEventArgs e)
         {
-            var args = new NotificationResponseEventArgs(e.Data, e.Identifier);
+            var args = new NotificationResponseEventArgs(e.Data);
             OnNotificationOpenedEvent(args);
         }
 

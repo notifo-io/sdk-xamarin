@@ -11,13 +11,28 @@ namespace Notifo.SDK.PushEventProvider
 {
     public class NotificationResponseEventArgs
     {
-        public string Identifier { get; }
-        public IDictionary<string, object> Data { get; }
+        public string Subject { get; }
+        public string? Body { get; }
 
-        public NotificationResponseEventArgs(IDictionary<string, object> data, string identifier = "")
+        public NotificationResponseEventArgs(IDictionary<string, object> data)
         {
-            Identifier = identifier;
-            Data = data;
+            if (data.TryGetValue(Constants.SubjectKey, out var subject))
+            {
+                Subject = subject.ToString();
+            }
+            else if (data.TryGetValue(Constants.ApsAlertTitleKey, out subject))
+            {
+                Subject = subject.ToString();
+            }
+
+            if (data.TryGetValue(Constants.BodyKey, out var body))
+            {
+                Body = body.ToString();
+            }
+            else if (data.TryGetValue(Constants.ApsAlertBodyKey, out body))
+            {
+                Body = body.ToString();
+            }
         }
     }
 }

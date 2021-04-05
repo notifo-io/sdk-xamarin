@@ -30,10 +30,7 @@ namespace Sample
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                if (e.Data.TryGetValue("subject", out var subject))
-                {
-                    Application.Current?.MainPage?.DisplayAlert("Notification opened", subject.ToString(), "OK");
-                }
+                Application.Current?.MainPage?.DisplayAlert("Notification opened", e.Subject, "OK");
             });
         }
     }
