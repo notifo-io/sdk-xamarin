@@ -8,6 +8,8 @@
 using Notifo.SDK;
 using Notifo.SDK.FirebasePlugin;
 using Notifo.SDK.NotifoMobilePush;
+using Notifo.SDK.PushEventProvider;
+using Xamarin.Forms;
 
 namespace Sample
 {
@@ -20,6 +22,19 @@ namespace Sample
                 .SetApiKey(Constants.UserApiKey)
                 .UseFirebasePluginEventsProvider()
                 .Register();
+
+            notifo.OnNotificationOpened += Current_OnNotificationOpened;
+        }
+
+        private void Current_OnNotificationOpened(object source, NotificationResponseEventArgs e)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                if (e.Data.TryGetValue("subject", out var subject))
+                {
+                    Application.Current?.MainPage?.DisplayAlert("Notification opened", subject.ToString(), "OK");
+                }
+            });
         }
     }
 }

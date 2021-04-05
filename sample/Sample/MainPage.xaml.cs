@@ -29,7 +29,6 @@ namespace Sample
             base.OnAppearing();
 
             NotifoIO.Current.OnNotificationReceived += Current_OnNotificationReceived;
-            NotifoIO.Current.OnNotificationOpened += Current_OnNotificationOpened;
 
             RefreshEventsAsync();
         }
@@ -37,17 +36,11 @@ namespace Sample
         protected override void OnDisappearing()
         {
             NotifoIO.Current.OnNotificationReceived -= Current_OnNotificationReceived;
-            NotifoIO.Current.OnNotificationOpened -= Current_OnNotificationOpened;
 
             base.OnDisappearing();
         }
 
         private void Current_OnNotificationReceived(object sender, NotificationDataEventArgs e)
-        {
-            RefreshEventsAsync();
-        }
-
-        private void Current_OnNotificationOpened(object source, NotificationResponseEventArgs e)
         {
             RefreshEventsAsync();
         }
