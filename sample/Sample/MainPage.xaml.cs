@@ -7,8 +7,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Net.Http;
-using System.Text.Json;
 using MvvmHelpers;
 using Notifo.SDK;
 using Notifo.SDK.PushEventProvider;
@@ -18,17 +16,12 @@ namespace Sample
 {
     public partial class MainPage : ContentPage
     {
-        public ObservableRangeCollection<EventDto> Events { get; private set; } = new ObservableRangeCollection<EventDto>() { };
-
-        private readonly HttpClient httpClient;
+        public ObservableRangeCollection<NotificationDto> Notifications { get; private set; } = new ObservableRangeCollection<NotificationDto>() { };
 
         public MainPage()
         {
             InitializeComponent();
             BindingContext = this;
-
-            httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("ApiKey", Constants.AdminApiKey);
         }
 
         protected override void OnAppearing()
@@ -70,13 +63,8 @@ namespace Sample
             {
                 try
                 {
-                    string url = $"{Constants.ApiUrl}/api/apps/{Constants.AppId}/events/?query=users/{Constants.UserId}";
-                    var response = await httpClient.GetAsync(url);
-
-                    var eventsJson = await response.Content.ReadAsStringAsync();
-                    var eventsList = JsonSerializer.Deserialize<ListResponseDtoOfEventDto>(eventsJson);
-
-                    Events.ReplaceRange(eventsList.Items);
+                    var notifications = await NotifoIO.Current.Notifications.GetNotificationsAsync();
+                    Notifications.ReplaceRange(notifications.Items);
                 }
                 catch (Exception ex)
                 {

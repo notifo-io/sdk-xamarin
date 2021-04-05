@@ -18,5 +18,6 @@ namespace Notifo.SDK.NotifoMobilePush
         INotifoMobilePush SetBaseUrl(string baseUrl);
         INotifoMobilePush SetPushEventsProvider(IPushEventsProvider pushEventsProvider);
         void Register();
+        INotificationsClient Notifications { get; }
     }
 }

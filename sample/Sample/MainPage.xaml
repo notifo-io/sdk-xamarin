@@ -12,7 +12,7 @@
             <CollectionView
                 Margin="0,8,0,0"
                 HorizontalOptions="FillAndExpand"
-                ItemsSource="{Binding Events}"
+                ItemsSource="{Binding Notifications}"
                 VerticalOptions="FillAndExpand">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>

@@ -83,6 +83,8 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
+        public INotificationsClient Notifications => clientProvider.Notifications;
+
         public NotifoMobilePushImplementation(HttpClient httpClient, ISettings settings)
         {
             this.httpClient = httpClient;
