@@ -39,9 +39,11 @@ namespace Sample.iOS
             NotifoFirebasePlugin.RemoteNotificationRegistrationFailed(error);
         }
 
-        public override void DidReceiveRemoteNotification(UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
+#pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
+        public override async void DidReceiveRemoteNotification(UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
+#pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
         {
-            NotifoFirebasePlugin.DidReceiveMessage(userInfo);
+            await NotifoFirebasePlugin.DidReceiveMessageAsync(userInfo);
             completionHandler(UIBackgroundFetchResult.NewData);
         }
 

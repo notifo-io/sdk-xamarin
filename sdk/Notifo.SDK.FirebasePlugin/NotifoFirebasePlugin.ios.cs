@@ -6,8 +6,11 @@
 // ==========================================================================
 
 using System;
+using System.Threading.Tasks;
 using Foundation;
+using Notifo.SDK.Resources;
 using Plugin.FirebasePushNotification;
+using Serilog;
 using UserNotifications;
 
 namespace Notifo.SDK.FirebasePlugin
@@ -28,12 +31,21 @@ namespace Notifo.SDK.FirebasePlugin
 
         public static void Initialize(NSDictionary options, INotifoStartup notifoStartup, bool autoRegistration = true)
         {
-            FirebasePushNotificationManager.Initialize(options, new NotifoPushNotificationHandler(), autoRegistration);
+            FirebasePushNotificationManager.Initialize(options, autoRegistration);
             notifoStartup.ConfigureService(NotifoIO.Current);
         }
 
-        public static void DidReceiveMessage(NSDictionary data) =>
+        public static async Task DidReceiveMessageAsync(NSDictionary data)
+        {
+            Log.Debug(Strings.ReceivedNotification, data);
+
+            if (ContainsPullRefreshRequest(data))
+            {
+                await NotifoIO.DidReceivePullRefreshRequestAsync();
+            }
+
             FirebasePushNotificationManager.DidReceiveMessage(data);
+        }
 
         public static void DidRegisterRemoteNotifications(NSData deviceToken) =>
             FirebasePushNotificationManager.DidRegisterRemoteNotifications(deviceToken);
@@ -49,6 +61,13 @@ namespace Notifo.SDK.FirebasePlugin
             {
                 notificationDelegate.DidReceiveNotificationResponse(center, response, completionHandler);
             }
+        }
+
+        private static bool ContainsPullRefreshRequest(NSDictionary data)
+        {
+            var aps = data?.ObjectForKey(new NSString(Constants.ApsKey)) as NSDictionary;
+
+            return aps != null && aps.ContainsKey(new NSString(Constants.ContentAvailableKey));
         }
     }
 }
