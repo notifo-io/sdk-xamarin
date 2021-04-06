@@ -9,10 +9,8 @@ using System;
 using System.Collections.Generic;
 using Android.App;
 using Android.Content;
-using Android.Graphics;
 using Android.Support.V4.App;
-using Java.Net;
-using Microsoft.Extensions.Caching.Memory;
+using Notifo.SDK.NotifoMobilePush;
 using Notifo.SDK.Resources;
 using Plugin.FirebasePushNotification;
 using Serilog;
@@ -21,11 +19,11 @@ namespace Notifo.SDK.FirebasePlugin
 {
     internal class NotifoPushNotificationHandler : DefaultPushNotificationHandler
     {
-        private IMemoryCache bitmapCache;
+        private NotifoMobilePushImplementation notifoMobilePush;
 
         public NotifoPushNotificationHandler()
         {
-            bitmapCache = new MemoryCache(new MemoryCacheOptions());
+            notifoMobilePush = (NotifoMobilePushImplementation)NotifoIO.Current;
         }
 
         public override void OnReceived(IDictionary<string, object> parameters)
@@ -53,7 +51,7 @@ namespace Notifo.SDK.FirebasePlugin
                 int width = GetDimension(Resource.Dimension.notification_large_icon_width);
                 int height = GetDimension(Resource.Dimension.notification_large_icon_height);
 
-                var largeIcon = GetBitmap(largeIconUrl.ToString(), width, height);
+                var largeIcon = notifoMobilePush.GetBitmap(largeIconUrl.ToString(), width, height);
                 if (largeIcon != null)
                 {
                     notificationBuilder.SetLargeIcon(largeIcon);
@@ -62,7 +60,7 @@ namespace Notifo.SDK.FirebasePlugin
 
             if (parameters.TryGetValue(Constants.ImageLargeKey, out var bigPictureUrl))
             {
-                var bigPicture = GetBitmap(bigPictureUrl.ToString());
+                var bigPicture = notifoMobilePush.GetBitmap(bigPictureUrl.ToString());
                 if (bigPicture != null)
                 {
                     parameters.TryGetValue(BodyKey, out var summaryText);
@@ -100,37 +98,5 @@ namespace Notifo.SDK.FirebasePlugin
 
         private int GetDimension(int resourceId) =>
             Application.Context?.Resources?.GetDimensionPixelSize(resourceId) ?? -1;
-
-        private Bitmap? GetBitmap(string bitmapUrl, int requestWidth = -1, int requestHeight = -1)
-        {
-            try
-            {
-                if (requestWidth > 0 && requestHeight > 0)
-                {
-                    bitmapUrl = $"{bitmapUrl}?width={requestWidth}&height={requestHeight}";
-                }
-
-                if (bitmapCache.TryGetValue(bitmapUrl, out Bitmap cachedBitmap))
-                {
-                    return cachedBitmap;
-                }
-
-                var inputStream = new URL(bitmapUrl)?.OpenConnection()?.InputStream;
-
-                var bitmap = BitmapFactory.DecodeStream(inputStream);
-                if (bitmap != null)
-                {
-                    bitmapCache.Set(bitmapUrl, bitmap);
-                }
-
-                return bitmap;
-            }
-            catch (Exception ex)
-            {
-                Log.Error(Strings.DownloadImageError, ex);
-            }
-
-            return null;
-        }
     }
 }

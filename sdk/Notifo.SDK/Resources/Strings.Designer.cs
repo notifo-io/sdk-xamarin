@@ -133,6 +133,15 @@ namespace Notifo.SDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not resize image..
+        /// </summary>
+        internal static string ResizeImageError {
+            get {
+                return ResourceManager.GetString("ResizeImageError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Token refresh end. Executing count: {0}.
         /// </summary>
         internal static string TokenRefreshEndExecutingCount {
