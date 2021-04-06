@@ -10,7 +10,7 @@ using Notifo.SDK.PushEventProvider;
 
 namespace Notifo.SDK.NotifoMobilePush
 {
-    public interface INotifoMobilePush
+    public interface INotifoMobilePush : INotifoClient
     {
         event EventHandler<NotificationEventArgs> OnNotificationReceived;
         event EventHandler<NotificationEventArgs> OnNotificationOpened;
@@ -18,6 +18,5 @@ namespace Notifo.SDK.NotifoMobilePush
         INotifoMobilePush SetBaseUrl(string baseUrl);
         INotifoMobilePush SetPushEventsProvider(IPushEventsProvider pushEventsProvider);
         void Register();
-        INotificationsClient Notifications { get; }
     }
 }

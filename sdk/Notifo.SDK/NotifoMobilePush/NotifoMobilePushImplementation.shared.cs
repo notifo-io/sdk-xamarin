@@ -83,7 +83,16 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
+        public IAppsClient Apps => clientProvider.Apps;
+        public IConfigsClient Configs => clientProvider.Configs;
+        public IEventsClient Events => clientProvider.Events;
+        public ILogsClient Logs => clientProvider.Logs;
+        public IMediaClient Media => clientProvider.Media;
+        public IMobilePushClient MobilePush => clientProvider.MobilePush;
         public INotificationsClient Notifications => clientProvider.Notifications;
+        public ITemplatesClient Templates => clientProvider.Templates;
+        public ITopicsClient Topics => clientProvider.Topics;
+        public IUsersClient Users => clientProvider.Users;
 
         public NotifoMobilePushImplementation(HttpClient httpClient, ISettings settings)
         {
@@ -181,7 +190,7 @@ namespace Notifo.SDK.NotifoMobilePush
                     DeviceType = DeviceInfo.Platform.ToMobileDeviceType()
                 };
 
-                await clientProvider.MobilePush.PostTokenAsync(registerMobileTokenDto);
+                await MobilePush.PostTokenAsync(registerMobileTokenDto);
 
                 settings.IsTokenRefreshed = true;
                 Log.Debug(Strings.TokenRefreshSuccess, token);
@@ -227,7 +236,7 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             try
             {
-                var allNotifications = await clientProvider.Notifications.GetNotificationsAsync();
+                var allNotifications = await Notifications.GetNotificationsAsync();
                 var pendingNotifications = allNotifications
                     .Items
                     .Where(x => !settings.IsNotificationSeen(x.Id) && !x.IsSeen)
@@ -277,7 +286,7 @@ namespace Notifo.SDK.NotifoMobilePush
                     DeviceIdentifier = settings.Token
                 };
 
-                await clientProvider.Notifications.ConfirmAsync(trackNotificationDto);
+                await Notifications.ConfirmAsync(trackNotificationDto);
             }
             catch (Exception ex)
             {

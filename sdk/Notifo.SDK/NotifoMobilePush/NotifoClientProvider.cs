@@ -9,7 +9,7 @@ using System.Net.Http;
 
 namespace Notifo.SDK.NotifoMobilePush
 {
-    internal class NotifoClientProvider
+    internal class NotifoClientProvider : INotifoClient
     {
         private bool rebuild;
 
@@ -64,8 +64,16 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
+        public IAppsClient Apps => Client.Apps;
+        public IConfigsClient Configs => Client.Configs;
+        public IEventsClient Events => Client.Events;
+        public ILogsClient Logs => Client.Logs;
+        public IMediaClient Media => Client.Media;
         public IMobilePushClient MobilePush => Client.MobilePush;
         public INotificationsClient Notifications => Client.Notifications;
+        public ITemplatesClient Templates => Client.Templates;
+        public ITopicsClient Topics => Client.Topics;
+        public IUsersClient Users => Client.Users;
 
         private readonly HttpClient httpClient;
         private readonly NotifoClientBuilder clientBuilder;
