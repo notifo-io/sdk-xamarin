@@ -61,6 +61,35 @@ namespace Notifo.SDK
         }
 
         [Fact]
+        public void MobileClient_ShouldNotRebuildClient_IfApiKeyOrApiUrlNotChanged()
+        {
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupAnyRequest()
+                .ReturnsResponse(HttpStatusCode.NoContent);
+
+            var client = handler.CreateClient();
+
+            var mocker = new AutoMocker();
+            mocker.Use(client);
+
+            var notifoMobilePush = mocker.CreateInstance<NotifoClientProvider>();
+            notifoMobilePush.ApiKey = "test api key";
+            notifoMobilePush.ApiUrl = "https://test.com/";
+
+            var mobilePush1 = notifoMobilePush.MobilePush;
+            var mobilePush2 = notifoMobilePush.MobilePush;
+
+            mobilePush1.Should().BeSameAs(mobilePush2);
+
+            notifoMobilePush.ApiKey = "test api key";
+            notifoMobilePush.ApiUrl = "https://test.com/";
+
+            mobilePush2 = notifoMobilePush.MobilePush;
+
+            mobilePush1.Should().BeSameAs(mobilePush2);
+        }
+
+        [Fact]
         public void MobileClient_ShouldRebuildClient_IfApiKeyOrApiUrlChanged()
         {
             var handler = new Mock<HttpMessageHandler>();

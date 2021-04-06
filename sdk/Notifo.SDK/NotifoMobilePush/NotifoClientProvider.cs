@@ -19,10 +19,13 @@ namespace Notifo.SDK.NotifoMobilePush
             get => apiKey;
             set
             {
-                apiKey = value;
-                clientBuilder.SetApiKey(apiKey);
+                if (apiKey != value)
+                {
+                    apiKey = value;
+                    clientBuilder.SetApiKey(apiKey);
 
-                rebuild = true;
+                    rebuild = true;
+                }
             }
         }
 
@@ -32,10 +35,15 @@ namespace Notifo.SDK.NotifoMobilePush
             get => apiUrl;
             set
             {
-                apiUrl = value.TrimEnd('/');
-                clientBuilder.SetApiUrl(apiUrl);
+                value = value.TrimEnd('/');
 
-                rebuild = true;
+                if (apiUrl != value)
+                {
+                    apiUrl = value;
+                    clientBuilder.SetApiUrl(apiUrl);
+
+                    rebuild = true;
+                }
             }
         }
 
