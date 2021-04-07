@@ -106,7 +106,7 @@ namespace Notifo.SDK.Extensions
 
             if (data.TryGetValue(Constants.IsConfirmedKey, out var isConfirmed))
             {
-                notification.IsConfirmed = Convert.ToBoolean(isConfirmed);
+                notification.IsConfirmed = Convert.ToBoolean(isConfirmed.ToString());
             }
 
             if (data.TryGetValue(Constants.ImageSmallKey, out var imageSmall))
