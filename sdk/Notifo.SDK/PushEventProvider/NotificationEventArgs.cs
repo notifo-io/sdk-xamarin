@@ -25,10 +25,8 @@ namespace Notifo.SDK.PushEventProvider
         public string? LinkUrl { get; }
         public string? LinkText { get; }
 
-        public NotificationEventArgs(Dictionary<string, object> data)
+        public NotificationEventArgs(NotificationDto notification)
         {
-            var notification = new NotificationDto().FromDictionary(data);
-
             Id = notification.Id;
             Subject = notification.Subject;
             Body = notification.Body;
@@ -40,6 +38,11 @@ namespace Notifo.SDK.PushEventProvider
             TrackingUrl = notification.TrackingUrl;
             LinkUrl = notification.LinkUrl;
             LinkText = notification.LinkText;
+        }
+
+        public NotificationEventArgs(Dictionary<string, object> data)
+            : this(new NotificationDto().FromDictionary(data))
+        {
         }
     }
 }

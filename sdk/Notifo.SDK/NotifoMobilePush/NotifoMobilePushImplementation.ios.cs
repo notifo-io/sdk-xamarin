@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Foundation;
 using Microsoft.Extensions.Caching.Memory;
 using Notifo.SDK.Extensions;
+using Notifo.SDK.PushEventProvider;
 using Notifo.SDK.Resources;
 using Serilog;
 using UserNotifications;
@@ -45,10 +46,21 @@ namespace Notifo.SDK.NotifoMobilePush
 
             foreach (var notification in notifications)
             {
+                var eventArgs = new NotificationEventArgs(notification);
+                OnReceived(eventArgs);
+
                 _ = ShowLocalNotificationAsync(notification);
             }
 
             await TrackNotificationsAsync(notifications);
+        }
+
+        private void OnReceived(NotificationEventArgs eventArgs)
+        {
+            foreach (var handler in receivedNotificationEvents)
+            {
+                handler.Invoke(this, eventArgs);
+            }
         }
 
         private async Task ShowLocalNotificationAsync(NotificationDto notification)
