@@ -14,6 +14,7 @@ namespace Notifo.SDK
         public const string BodyKey = "body";
         public const string ConfirmUrlKey = "confirmUrl";
         public const string ConfirmTextKey = "confirmText";
+        public const string IsConfirmedKey = "isConfirmed";
         public const string ImageLargeKey = "imageLarge";
         public const string ImageSmallKey = "imageSmall";
         public const string LinkUrlKey = "linkUrl";

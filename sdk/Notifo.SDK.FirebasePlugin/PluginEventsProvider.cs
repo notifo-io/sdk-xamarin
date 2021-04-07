@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Collections.Generic;
 using Notifo.SDK.PushEventProvider;
 using Plugin.FirebasePushNotification;
 
@@ -35,7 +36,7 @@ namespace Notifo.SDK.FirebasePlugin
 
         private void FirebasePushNotification_OnNotificationReceived(object source, FirebasePushNotificationDataEventArgs e)
         {
-            var args = new NotificationEventArgs(e.Data);
+            var args = new NotificationEventArgs(new Dictionary<string, object>(e.Data));
             OnNotificationReceivedEvent(args);
         }
 
@@ -44,7 +45,7 @@ namespace Notifo.SDK.FirebasePlugin
 
         private void FirebasePushNotification_OnNotificationOpened(object source, FirebasePushNotificationResponseEventArgs e)
         {
-            var args = new NotificationEventArgs(e.Data);
+            var args = new NotificationEventArgs(new Dictionary<string, object>(e.Data));
             OnNotificationOpenedEvent(args);
         }
 

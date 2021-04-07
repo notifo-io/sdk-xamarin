@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Android.App;
 using Android.Content;
 using Android.Support.V4.App;
+using Notifo.SDK.Extensions;
 using Notifo.SDK.NotifoMobilePush;
 using Notifo.SDK.Resources;
 using Plugin.FirebasePushNotification;
@@ -41,49 +42,53 @@ namespace Notifo.SDK.FirebasePlugin
 
         public override void OnBuildNotification(NotificationCompat.Builder notificationBuilder, IDictionary<string, object> parameters)
         {
-            if (parameters.TryGetValue(Constants.SubjectKey, out var subject))
+            var notification = new NotificationDto()
+                .FromDictionary(new Dictionary<string, object>(parameters));
+
+            if (!string.IsNullOrWhiteSpace(notification.Subject))
             {
-                notificationBuilder.SetContentTitle(subject?.ToString());
+                notificationBuilder.SetContentTitle(notification.Subject);
             }
 
-            if (parameters.TryGetValue(Constants.ImageSmallKey, out var largeIconUrl))
+            if (!string.IsNullOrWhiteSpace(notification.ImageSmall))
             {
                 int width = GetDimension(Resource.Dimension.notification_large_icon_width);
                 int height = GetDimension(Resource.Dimension.notification_large_icon_height);
 
-                var largeIcon = notifoMobilePush.GetBitmap(largeIconUrl.ToString(), width, height);
+                var largeIcon = notifoMobilePush.GetBitmap(notification.ImageSmall, width, height);
                 if (largeIcon != null)
                 {
                     notificationBuilder.SetLargeIcon(largeIcon);
                 }
             }
 
-            if (parameters.TryGetValue(Constants.ImageLargeKey, out var bigPictureUrl))
+            if (!string.IsNullOrWhiteSpace(notification.ImageLarge))
             {
-                var bigPicture = notifoMobilePush.GetBitmap(bigPictureUrl.ToString());
+                var bigPicture = notifoMobilePush.GetBitmap(notification.ImageLarge);
                 if (bigPicture != null)
                 {
-                    parameters.TryGetValue(BodyKey, out var summaryText);
-
                     notificationBuilder.SetStyle(
                         new NotificationCompat
                             .BigPictureStyle()
                             .BigPicture(bigPicture)
-                            .SetSummaryText(summaryText?.ToString())
+                            .SetSummaryText(notification.Body)
                     );
                 }
             }
 
-            if (parameters.TryGetValue(Constants.ConfirmUrlKey, out var confirmUrl) &&
-                parameters.TryGetValue(Constants.ConfirmTextKey, out var confirmText))
+            notificationBuilder.MActions.Clear();
+
+            if (!string.IsNullOrWhiteSpace(notification.ConfirmUrl) &&
+                !string.IsNullOrWhiteSpace(notification.ConfirmText) &&
+                !notification.IsConfirmed)
             {
-                AddAction(notificationBuilder, confirmText.ToString(), confirmUrl.ToString());
+                AddAction(notificationBuilder, notification.ConfirmText, notification.ConfirmUrl);
             }
 
-            if (parameters.TryGetValue(Constants.LinkUrlKey, out var linkUrl) &&
-                parameters.TryGetValue(Constants.LinkTextKey, out var linkText))
+            if (!string.IsNullOrWhiteSpace(notification.LinkUrl) &&
+                !string.IsNullOrWhiteSpace(notification.LinkText))
             {
-                AddAction(notificationBuilder, linkText.ToString(), linkUrl.ToString());
+                AddAction(notificationBuilder, notification.LinkText, notification.LinkUrl);
             }
         }
 
