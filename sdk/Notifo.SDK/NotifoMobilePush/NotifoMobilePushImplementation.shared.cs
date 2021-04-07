@@ -83,15 +83,34 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
+        /// <inheritdoc/>
         public IAppsClient Apps => clientProvider.Apps;
+
+        /// <inheritdoc/>
         public IConfigsClient Configs => clientProvider.Configs;
+
+        /// <inheritdoc/>
         public IEventsClient Events => clientProvider.Events;
+
+        /// <inheritdoc/>
         public ILogsClient Logs => clientProvider.Logs;
+
+        /// <inheritdoc/>
         public IMediaClient Media => clientProvider.Media;
+
+        /// <inheritdoc/>
         public IMobilePushClient MobilePush => clientProvider.MobilePush;
+
+        /// <inheritdoc/>
         public INotificationsClient Notifications => clientProvider.Notifications;
+
+        /// <inheritdoc/>
         public ITemplatesClient Templates => clientProvider.Templates;
+
+        /// <inheritdoc/>
         public ITopicsClient Topics => clientProvider.Topics;
+
+        /// <inheritdoc/>
         public IUsersClient Users => clientProvider.Users;
 
         public NotifoMobilePushImplementation(HttpClient httpClient, ISettings settings)
