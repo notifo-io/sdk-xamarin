@@ -19,5 +19,13 @@ namespace Notifo.SDK.Extensions
                 item => item.Key as NSString, item => item.Value
             );
         }
+
+        public static NSDictionary ToNSDictionary(this Dictionary<string, string> dictionary)
+        {
+            return NSDictionary.FromObjectsAndKeys(
+                dictionary.Values.ToArray(),
+                dictionary.Keys.ToArray()
+            );
+        }
     }
 }

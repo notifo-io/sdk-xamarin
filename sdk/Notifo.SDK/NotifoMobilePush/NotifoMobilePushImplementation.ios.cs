@@ -42,6 +42,7 @@ namespace Notifo.SDK.NotifoMobilePush
         public async Task DidReceivePullRefreshRequestAsync()
         {
             var notifications = await GetPendingNotificationsAsync();
+
             foreach (var notification in notifications)
             {
                 _ = ShowLocalNotificationAsync(notification);
@@ -54,6 +55,8 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             var content = new UNMutableNotificationContent();
             content = await EnrichNotificationContentAsync(content, notification);
+
+            content.UserInfo = notification.ToDictionary().ToNSDictionary();
 
             var request = UNNotificationRequest.FromIdentifier(notification.Id.ToString(), content, trigger: null);
             UNUserNotificationCenter.Current.AddNotificationRequest(request, (error) =>
@@ -100,14 +103,11 @@ namespace Notifo.SDK.NotifoMobilePush
             }
 
             var actions = new List<UNNotificationAction>();
-            var userInfo = new NSMutableDictionary();
 
             if (!string.IsNullOrWhiteSpace(notification.ConfirmUrl) &&
                 !string.IsNullOrWhiteSpace(notification.ConfirmText) &&
                 !notification.IsConfirmed)
             {
-                userInfo.Add(new NSString(Constants.ConfirmUrlKey), new NSString(notification.ConfirmUrl));
-
                 var confirmAction = UNNotificationAction.FromIdentifier(
                     Constants.ConfirmAction,
                     notification.ConfirmText,
@@ -119,8 +119,6 @@ namespace Notifo.SDK.NotifoMobilePush
             if (!string.IsNullOrWhiteSpace(notification.LinkUrl) &&
                 !string.IsNullOrWhiteSpace(notification.LinkText))
             {
-                userInfo.Add(new NSString(Constants.LinkUrlKey), new NSString(notification.LinkUrl));
-
                 var linkAction = UNNotificationAction.FromIdentifier(
                     Constants.LinkAction,
                     notification.LinkText,
@@ -131,8 +129,6 @@ namespace Notifo.SDK.NotifoMobilePush
 
             if (actions.Any())
             {
-                content.UserInfo = userInfo;
-
                 var categoryId = Guid.NewGuid().ToString();
 
                 var newCategory = UNNotificationCategory.FromIdentifier(
