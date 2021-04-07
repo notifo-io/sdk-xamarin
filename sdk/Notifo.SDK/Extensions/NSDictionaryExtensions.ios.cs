@@ -13,10 +13,10 @@ namespace Notifo.SDK.Extensions
 {
     public static class NSDictionaryExtensions
     {
-        public static Dictionary<string, string> ToDictionary(this NSDictionary nsDictionary)
+        public static Dictionary<string, object> ToDictionary(this NSDictionary nsDictionary)
         {
-            return nsDictionary.ToDictionary<KeyValuePair<NSObject, NSObject>, string, string>(
-                item => item.Key as NSString, item => item.Value.ToString()
+            return nsDictionary.ToDictionary<KeyValuePair<NSObject, NSObject>, string, object>(
+                item => item.Key as NSString, item => item.Value
             );
         }
     }

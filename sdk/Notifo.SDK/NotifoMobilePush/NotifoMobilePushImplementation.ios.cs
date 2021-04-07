@@ -29,19 +29,14 @@ namespace Notifo.SDK.NotifoMobilePush
             Log.Debug(Strings.ReceivedNotification, request.Content.UserInfo);
 
             var userInfo = request.Content.UserInfo.ToDictionary();
+            var notification = new NotificationDto().FromDictionary(userInfo);
 
-            if (userInfo.TryGetValue(Constants.TrackingUrlKey, out var trackingUrl))
+            if (!string.IsNullOrWhiteSpace(notification.TrackingUrl))
             {
-                var notificationId = Guid.Empty;
-                if (userInfo.TryGetValue(Constants.IdKey, out var id))
-                {
-                    notificationId = Guid.Parse(id);
-                }
-
-                await TrackNotificationAsync(notificationId, trackingUrl);
+                await TrackNotificationAsync(notification.Id, notification.TrackingUrl);
             }
 
-            await EnrichNotificationContentAsync(bestAttemptContent, userInfo);
+            await EnrichNotificationContentAsync(bestAttemptContent, notification);
         }
 
         public async Task DidReceivePullRefreshRequestAsync()
@@ -58,7 +53,7 @@ namespace Notifo.SDK.NotifoMobilePush
         private async Task ShowLocalNotificationAsync(NotificationDto notification)
         {
             var content = new UNMutableNotificationContent();
-            content = await EnrichNotificationContentAsync(content, notification.ToDictionary());
+            content = await EnrichNotificationContentAsync(content, notification);
 
             var request = UNNotificationRequest.FromIdentifier(notification.Id.ToString(), content, trigger: null);
             UNUserNotificationCenter.Current.AddNotificationRequest(request, (error) =>
@@ -70,21 +65,21 @@ namespace Notifo.SDK.NotifoMobilePush
             });
         }
 
-        private async Task<UNMutableNotificationContent> EnrichNotificationContentAsync(UNMutableNotificationContent content, Dictionary<string, string> data)
+        private async Task<UNMutableNotificationContent> EnrichNotificationContentAsync(UNMutableNotificationContent content, NotificationDto notification)
         {
-            if (data.TryGetValue(Constants.SubjectKey, out var subject))
+            if (!string.IsNullOrWhiteSpace(notification.Subject))
             {
-                content.Title = subject;
+                content.Title = notification.Subject;
             }
 
-            if (data.TryGetValue(Constants.BodyKey, out var body))
+            if (!string.IsNullOrWhiteSpace(notification.Body))
             {
-                content.Body = body;
+                content.Body = notification.Body;
             }
 
-            if (data.TryGetValue(Constants.ImageLargeKey, out var imageLarge))
+            if (!string.IsNullOrWhiteSpace(notification.ImageLarge))
             {
-                var imagePath = await GetImageAsync(imageLarge);
+                var imagePath = await GetImageAsync(notification.ImageLarge);
                 if (!string.IsNullOrWhiteSpace(imagePath))
                 {
                     var attachement = UNNotificationAttachment.FromIdentifier(
@@ -107,25 +102,28 @@ namespace Notifo.SDK.NotifoMobilePush
             var actions = new List<UNNotificationAction>();
             var userInfo = new NSMutableDictionary();
 
-            if (data.ContainsKey(Constants.ConfirmUrlKey) && data.ContainsKey(Constants.ConfirmTextKey))
+            if (!string.IsNullOrWhiteSpace(notification.ConfirmUrl) &&
+                !string.IsNullOrWhiteSpace(notification.ConfirmText) &&
+                !notification.IsConfirmed)
             {
-                userInfo.Add(new NSString(Constants.ConfirmUrlKey), new NSString(data[Constants.ConfirmUrlKey]));
+                userInfo.Add(new NSString(Constants.ConfirmUrlKey), new NSString(notification.ConfirmUrl));
 
                 var confirmAction = UNNotificationAction.FromIdentifier(
                     Constants.ConfirmAction,
-                    data[Constants.ConfirmTextKey],
+                    notification.ConfirmText,
                     UNNotificationActionOptions.Foreground);
 
                 actions.Add(confirmAction);
             }
 
-            if (data.ContainsKey(Constants.LinkUrlKey) && data.ContainsKey(Constants.LinkTextKey))
+            if (!string.IsNullOrWhiteSpace(notification.LinkUrl) &&
+                !string.IsNullOrWhiteSpace(notification.LinkText))
             {
-                userInfo.Add(new NSString(Constants.LinkUrlKey), new NSString(data[Constants.LinkUrlKey]));
+                userInfo.Add(new NSString(Constants.LinkUrlKey), new NSString(notification.LinkUrl));
 
                 var linkAction = UNNotificationAction.FromIdentifier(
                     Constants.LinkAction,
-                    data[Constants.LinkTextKey],
+                    notification.LinkText,
                     UNNotificationActionOptions.Foreground);
 
                 actions.Add(linkAction);
@@ -177,20 +175,20 @@ namespace Notifo.SDK.NotifoMobilePush
 
         public void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
         {
-            string url = string.Empty;
-
             var userInfo = response.Notification.Request.Content.UserInfo.ToDictionary();
 
+            object? value = default;
             switch (response.ActionIdentifier)
             {
                 case Constants.ConfirmAction:
-                    userInfo.TryGetValue(Constants.ConfirmUrlKey, out url);
+                    userInfo.TryGetValue(Constants.ConfirmUrlKey, out value);
                     break;
                 case Constants.LinkAction:
-                    userInfo.TryGetValue(Constants.LinkUrlKey, out url);
+                    userInfo.TryGetValue(Constants.LinkUrlKey, out value);
                     break;
             }
 
+            var url = value?.ToString();
             if (!string.IsNullOrWhiteSpace(url))
             {
                 Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
