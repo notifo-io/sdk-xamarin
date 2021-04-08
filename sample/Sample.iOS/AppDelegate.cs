@@ -8,6 +8,8 @@
 using System;
 using Foundation;
 using Notifo.SDK.FirebasePlugin;
+using Prism;
+using Prism.Ioc;
 using UIKit;
 using UserNotifications;
 
@@ -21,7 +23,7 @@ namespace Sample.iOS
         public override bool FinishedLaunching(UIApplication uiApplication, NSDictionary launchOptions)
         {
             global::Xamarin.Forms.Forms.Init();
-            LoadApplication(new App());
+            LoadApplication(new App(new iOSInitializer()));
 
             NotifoFirebasePlugin.Initialize(launchOptions, new NotifoStartup(), true);
             UNUserNotificationCenter.Current.Delegate = this;
@@ -50,5 +52,15 @@ namespace Sample.iOS
         [Export("userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:")]
         public void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler) =>
             NotifoFirebasePlugin.DidReceiveNotificationResponse(center, response, completionHandler);
+
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+        public class iOSInitializer : IPlatformInitializer
+#pragma warning restore SA1300 // Element should begin with upper-case letter
+        {
+            public void RegisterTypes(IContainerRegistry containerRegistry)
+            {
+                // Register any platform specific implementations
+            }
+        }
     }
 }

@@ -11,6 +11,8 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
 using Notifo.SDK.FirebasePlugin;
+using Prism;
+using Prism.Ioc;
 
 namespace Sample.Droid
 {
@@ -26,7 +28,7 @@ namespace Sample.Droid
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            LoadApplication(new App());
+            LoadApplication(new App(new AndroidInitializer()));
 
             NotifoFirebasePlugin.ProcessIntent(this, Intent);
         }
@@ -42,6 +44,14 @@ namespace Sample.Droid
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        public class AndroidInitializer : IPlatformInitializer
+        {
+            public void RegisterTypes(IContainerRegistry containerRegistry)
+            {
+                // Register any platform specific implementations
+            }
         }
     }
 }
