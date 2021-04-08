@@ -45,11 +45,19 @@ namespace Notifo.SDK.FirebasePlugin
 
         private void FirebasePushNotification_OnNotificationOpened(object source, FirebasePushNotificationResponseEventArgs e)
         {
+            if (!IsNotificationData(e.Data))
+            {
+                return;
+            }
+
             var args = new NotificationEventArgs(new Dictionary<string, object>(e.Data));
             OnNotificationOpenedEvent(args);
         }
 
         protected virtual void OnNotificationOpenedEvent(NotificationEventArgs args) =>
             OnNotificationOpened?.Invoke(this, args);
+
+        private bool IsNotificationData(IDictionary<string, object> data) =>
+            data?.ContainsKey(Constants.IdKey) ?? false;
     }
 }
