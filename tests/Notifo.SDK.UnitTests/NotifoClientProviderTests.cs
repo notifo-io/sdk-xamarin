@@ -15,7 +15,7 @@ using Moq.Contrib.HttpClient;
 using Notifo.SDK.NotifoMobilePush;
 using Xunit;
 
-namespace Notifo.SDK
+namespace Notifo.SDK.UnitTests
 {
     public class NotifoClientProviderTests
     {

@@ -113,12 +113,12 @@ namespace Notifo.SDK.NotifoMobilePush
         /// <inheritdoc/>
         public IUsersClient Users => clientProvider.Users;
 
-        public NotifoMobilePushImplementation(HttpClient httpClient, ISettings settings)
+        public NotifoMobilePushImplementation(Func<HttpClient> httpClientFactory, ISettings settings)
         {
-            this.httpClient = httpClient;
+            httpClient = httpClientFactory();
             this.settings = settings;
 
-            clientProvider = new NotifoClientProvider(httpClient);
+            clientProvider = new NotifoClientProvider(httpClientFactory);
 
             openedNotificationEvents = new List<EventHandler<NotificationEventArgs>>();
             receivedNotificationEvents = new List<EventHandler<NotificationEventArgs>>();

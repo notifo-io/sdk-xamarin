@@ -8,12 +8,10 @@
 using System;
 using System.Net.Http;
 using System.Threading;
-using Microsoft.Extensions.Http;
 using Notifo.SDK.Extensions;
+using Notifo.SDK.Helpers;
 using Notifo.SDK.NotifoMobilePush;
 using Notifo.SDK.Services;
-using Polly;
-using Polly.Extensions.Http;
 using Serilog;
 
 namespace Notifo.SDK
@@ -27,10 +25,9 @@ namespace Notifo.SDK
         {
             Log.Logger = ConfigureLogger();
 
-            var httpClient = ConfigureHttpClient();
             var settings = new Settings();
 
-            return new NotifoMobilePushImplementation(httpClient, settings);
+            return new NotifoMobilePushImplementation(HttpClientFactory, settings);
         }
 
         private static ILogger ConfigureLogger()
@@ -45,18 +42,6 @@ namespace Notifo.SDK
                 .CreateLogger();
         }
 
-        private static HttpClient ConfigureHttpClient()
-        {
-            var retryPolicy = HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .WaitAndRetryAsync(retryCount: 3, sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(300));
-
-            var handler = new PolicyHttpMessageHandler(retryPolicy)
-            {
-                InnerHandler = new HttpClientHandler()
-            };
-
-            return new HttpClient(handler);
-        }
+        private static HttpClient HttpClientFactory() => new HttpClient(new NotifoHttpMessageHandler());
     }
 }

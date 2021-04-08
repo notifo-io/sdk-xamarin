@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Net.Http;
 
 namespace Notifo.SDK.NotifoMobilePush
@@ -56,7 +57,9 @@ namespace Notifo.SDK.NotifoMobilePush
                 {
                     rebuild = false;
 
-                    httpClient.DefaultRequestHeaders.Clear();
+                    var httpClient = httpClientFactory();
+                    clientBuilder.SetClient(httpClient);
+
                     client = clientBuilder.Build();
                 }
 
@@ -75,16 +78,15 @@ namespace Notifo.SDK.NotifoMobilePush
         public ITopicsClient Topics => Client.Topics;
         public IUsersClient Users => Client.Users;
 
-        private readonly HttpClient httpClient;
+        private readonly Func<HttpClient> httpClientFactory;
         private readonly NotifoClientBuilder clientBuilder;
 
-        public NotifoClientProvider(HttpClient httpClient)
+        public NotifoClientProvider(Func<HttpClient> httpClientFactory)
         {
-            this.httpClient = httpClient;
+            this.httpClientFactory = httpClientFactory;
 
             clientBuilder = NotifoClientBuilder
-                .Create()
-                .SetClient(httpClient);
+                .Create();
         }
     }
 }
