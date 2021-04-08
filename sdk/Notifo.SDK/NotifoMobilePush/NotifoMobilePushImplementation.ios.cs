@@ -97,11 +97,20 @@ namespace Notifo.SDK.NotifoMobilePush
                 var imagePath = await GetImageAsync(notification.ImageLarge);
                 if (!string.IsNullOrWhiteSpace(imagePath))
                 {
+                    var uniqueName = $"{Guid.NewGuid()}{Path.GetExtension(imagePath)}";
+                    var attachementUrl = new NSUrl(uniqueName, NSFileManager.DefaultManager.GetTemporaryDirectory());
+
+                    NSFileManager.DefaultManager.Copy(NSUrl.FromFilename(imagePath), attachementUrl, out var error);
+                    if (error != null)
+                    {
+                        Log.Error(error.LocalizedDescription);
+                    }
+
                     var attachement = UNNotificationAttachment.FromIdentifier(
                         Constants.ImageLargeKey,
-                        NSUrl.FromFilename(imagePath),
+                        attachementUrl,
                         new UNNotificationAttachmentOptions(),
-                        out var error);
+                        out error);
 
                     if (error == null)
                     {
