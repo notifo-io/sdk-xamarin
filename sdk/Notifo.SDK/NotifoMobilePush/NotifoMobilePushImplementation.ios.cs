@@ -188,6 +188,11 @@ namespace Notifo.SDK.NotifoMobilePush
                 content.CategoryIdentifier = categoryId;
             }
 
+            if (content.Sound == null)
+            {
+                content.Sound = UNNotificationSound.Default;
+            }
+
             return content;
         }
 
