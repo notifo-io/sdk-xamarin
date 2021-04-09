@@ -7,14 +7,14 @@
 
     <RootNamespace>Notifo.SDK.UnitTests</RootNamespace>
   </PropertyGroup>
-  
-  	<PropertyGroup>
-		<CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
 
-	<ItemGroup>
-		<AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
-	</ItemGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />

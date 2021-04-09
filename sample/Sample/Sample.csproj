@@ -9,14 +9,14 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
-  
-  	<PropertyGroup>
-		<CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
 
-	<ItemGroup>
-		<AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
-	</ItemGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Prism.DryIoc.Forms" Version="8.0.0.1909" />
