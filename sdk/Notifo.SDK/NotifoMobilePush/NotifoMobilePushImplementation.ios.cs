@@ -49,7 +49,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 var eventArgs = new NotificationEventArgs(notification);
                 OnReceived(eventArgs);
 
-                _ = ShowLocalNotificationAsync(notification);
+                await ShowLocalNotificationAsync(notification);
             }
 
             await TrackNotificationsAsync(notifications);
@@ -66,6 +66,7 @@ namespace Notifo.SDK.NotifoMobilePush
         private async Task ShowLocalNotificationAsync(NotificationDto notification)
         {
             var content = new UNMutableNotificationContent();
+
             content = await EnrichNotificationContentAsync(content, notification);
 
             content.UserInfo = notification.ToDictionary().ToNSDictionary();
