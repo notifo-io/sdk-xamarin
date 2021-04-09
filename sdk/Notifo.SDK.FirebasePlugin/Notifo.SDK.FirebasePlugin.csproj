@@ -6,16 +6,6 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>sebastianstehle</Authors>
-    <Company>Squidex UG (haftungsbeschränkt)</Company>
-    <Copyright>MIT</Copyright>
-    <Description>Notifo SDK for Xamarin - Plugin.FirebasePushNotification integration.</Description>
-    <PackageId>Notifo.Xamarin.Firebase</PackageId>
-    <PackageIcon>logo-squared.png</PackageIcon>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://notifo.io</PackageProjectUrl>
-    <PackageTags>notifo xamarin firebase</PackageTags>
-    <Version>0.0.1-alpha</Version>
   </PropertyGroup>
 
   <ItemGroup>
