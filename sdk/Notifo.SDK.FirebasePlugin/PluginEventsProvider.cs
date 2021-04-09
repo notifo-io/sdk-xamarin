@@ -36,6 +36,11 @@ namespace Notifo.SDK.FirebasePlugin
 
         private void FirebasePushNotification_OnNotificationReceived(object source, FirebasePushNotificationDataEventArgs e)
         {
+            if (!IsNotificationData(e.Data))
+            {
+                return;
+            }
+
             var args = new NotificationEventArgs(new Dictionary<string, object>(e.Data));
             OnNotificationReceivedEvent(args);
         }
