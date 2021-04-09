@@ -1,146 +1,146 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C4EF6311-9993-40BD-BEF8-3C495F571302}</ProjectGuid>
-    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TemplateGuid>{c9e5eea5-ca05-42a1-839b-61506e0a37df}</TemplateGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>Sample.Droid</RootNamespace>
-    <AssemblyName>Sample.Android</AssemblyName>
-    <Deterministic>True</Deterministic>
-    <AndroidApplication>True</AndroidApplication>
-    <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
-    <AndroidResgenClass>Resource</AndroidResgenClass>
-    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
-    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
-    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
-    <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
-    <AndroidUseAapt2>true</AndroidUseAapt2>
-    <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>portable</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AndroidLinkMode>None</AndroidLinkMode>
-    <AotAssemblies>false</AotAssemblies>
-    <EnableLLVM>false</EnableLLVM>
-    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
-    <BundleAssemblies>false</BundleAssemblies>
-    <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>portable</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AndroidManagedSymbols>true</AndroidManagedSymbols>
-    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
-  </PropertyGroup>
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Mono.Android" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Prism.DryIoc.Forms">
-      <Version>8.0.0.1909</Version>
-    </PackageReference>
-    <PackageReference Include="RefactoringEssentials">
-      <Version>5.6.0</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Refractored.MvvmHelpers">
-      <Version>1.6.2</Version>
-    </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers">
-      <Version>1.1.118</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="System.Text.Json">
-      <Version>5.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Firebase.Common">
-      <Version>119.5.0</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="MainActivity.cs" />
-    <Compile Include="MainApplication.cs" />
-    <Compile Include="Resources\Resource.designer.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <GoogleServicesJson Include="google-services.json" />
-    <None Include="Resources\AboutResources.txt" />
-    <None Include="Assets\AboutAssets.txt" />
-    <None Include="Properties\AndroidManifest.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\Tabbar.xml" />
-    <AndroidResource Include="Resources\layout\Toolbar.xml" />
-    <AndroidResource Include="Resources\values\styles.xml" />
-    <AndroidResource Include="Resources\values\colors.xml" />
-    <AndroidResource Include="Resources\mipmap-anydpi-v26\icon.xml" />
-    <AndroidResource Include="Resources\mipmap-anydpi-v26\icon_round.xml" />
-    <AndroidResource Include="Resources\mipmap-hdpi\icon.png" />
-    <AndroidResource Include="Resources\mipmap-hdpi\launcher_foreground.png" />
-    <AndroidResource Include="Resources\mipmap-mdpi\icon.png" />
-    <AndroidResource Include="Resources\mipmap-mdpi\launcher_foreground.png" />
-    <AndroidResource Include="Resources\mipmap-xhdpi\icon.png" />
-    <AndroidResource Include="Resources\mipmap-xhdpi\launcher_foreground.png" />
-    <AndroidResource Include="Resources\mipmap-xxhdpi\icon.png" />
-    <AndroidResource Include="Resources\mipmap-xxhdpi\launcher_foreground.png" />
-    <AndroidResource Include="Resources\mipmap-xxxhdpi\icon.png" />
-    <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\drawable\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\sdk\Notifo.SDK.FirebasePlugin\Notifo.SDK.FirebasePlugin.csproj">
-      <Project>{258dee06-bb0d-404b-b981-43b091744bd3}</Project>
-      <Name>Notifo.SDK.FirebasePlugin</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\sdk\Notifo.SDK\Notifo.SDK.csproj">
-      <Project>{4f928a67-c5e7-44e2-be71-6ed155afed9c}</Project>
-      <Name>Notifo.SDK</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Sample\Sample.csproj">
-      <Project>{D59C868F-F97E-4931-B667-094C1FBC822E}</Project>
-      <Name>Sample</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties TriggeredFromHotReload="False" />
-    </VisualStudio>
-  </ProjectExtensions>
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+		<ProjectGuid>{C4EF6311-9993-40BD-BEF8-3C495F571302}</ProjectGuid>
+		<ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+		<TemplateGuid>{c9e5eea5-ca05-42a1-839b-61506e0a37df}</TemplateGuid>
+		<OutputType>Library</OutputType>
+		<RootNamespace>Sample.Droid</RootNamespace>
+		<AssemblyName>Sample.Android</AssemblyName>
+		<Deterministic>True</Deterministic>
+		<AndroidApplication>True</AndroidApplication>
+		<AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
+		<AndroidResgenClass>Resource</AndroidResgenClass>
+		<AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+		<MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
+		<MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+		<AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
+		<TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
+		<AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
+		<AndroidUseAapt2>true</AndroidUseAapt2>
+		<AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
+		<NuGetPackageImportStamp>
+		</NuGetPackageImportStamp>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>portable</DebugType>
+		<Optimize>false</Optimize>
+		<OutputPath>bin\Debug</OutputPath>
+		<DefineConstants>DEBUG;</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+		<AndroidLinkMode>None</AndroidLinkMode>
+		<AotAssemblies>false</AotAssemblies>
+		<EnableLLVM>false</EnableLLVM>
+		<AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+		<BundleAssemblies>false</BundleAssemblies>
+		<EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>portable</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>bin\Release</OutputPath>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+		<AndroidManagedSymbols>true</AndroidManagedSymbols>
+		<AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+	</PropertyGroup>
+	<PropertyGroup>
+		<CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+	<ItemGroup>
+		<AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
+	</ItemGroup>
+	<ItemGroup>
+		<Reference Include="Mono.Android" />
+		<Reference Include="System" />
+		<Reference Include="System.Core" />
+		<Reference Include="System.Xml.Linq" />
+		<Reference Include="System.Xml" />
+		<Reference Include="System.Numerics" />
+		<Reference Include="System.Numerics.Vectors" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Prism.DryIoc.Forms">
+			<Version>8.0.0.1909</Version>
+		</PackageReference>
+		<PackageReference Include="RefactoringEssentials">
+			<Version>5.6.0</Version>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="Refractored.MvvmHelpers">
+			<Version>1.6.2</Version>
+		</PackageReference>
+		<PackageReference Include="StyleCop.Analyzers">
+			<Version>1.1.118</Version>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="System.Text.Json">
+			<Version>5.0.1</Version>
+		</PackageReference>
+		<PackageReference Include="Xamarin.Firebase.Common">
+			<Version>119.5.0</Version>
+		</PackageReference>
+		<PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
+		<PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="MainActivity.cs" />
+		<Compile Include="MainApplication.cs" />
+		<Compile Include="Resources\Resource.designer.cs" />
+		<Compile Include="Properties\AssemblyInfo.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<GoogleServicesJson Include="google-services.json" />
+		<None Include="Resources\AboutResources.txt" />
+		<None Include="Assets\AboutAssets.txt" />
+		<None Include="Properties\AndroidManifest.xml" />
+	</ItemGroup>
+	<ItemGroup>
+		<AndroidResource Include="Resources\layout\Tabbar.xml" />
+		<AndroidResource Include="Resources\layout\Toolbar.xml" />
+		<AndroidResource Include="Resources\values\styles.xml" />
+		<AndroidResource Include="Resources\values\colors.xml" />
+		<AndroidResource Include="Resources\mipmap-anydpi-v26\icon.xml" />
+		<AndroidResource Include="Resources\mipmap-anydpi-v26\icon_round.xml" />
+		<AndroidResource Include="Resources\mipmap-hdpi\icon.png" />
+		<AndroidResource Include="Resources\mipmap-hdpi\launcher_foreground.png" />
+		<AndroidResource Include="Resources\mipmap-mdpi\icon.png" />
+		<AndroidResource Include="Resources\mipmap-mdpi\launcher_foreground.png" />
+		<AndroidResource Include="Resources\mipmap-xhdpi\icon.png" />
+		<AndroidResource Include="Resources\mipmap-xhdpi\launcher_foreground.png" />
+		<AndroidResource Include="Resources\mipmap-xxhdpi\icon.png" />
+		<AndroidResource Include="Resources\mipmap-xxhdpi\launcher_foreground.png" />
+		<AndroidResource Include="Resources\mipmap-xxxhdpi\icon.png" />
+		<AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Resources\drawable\" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\sdk\Notifo.SDK.FirebasePlugin\Notifo.SDK.FirebasePlugin.csproj">
+			<Project>{258dee06-bb0d-404b-b981-43b091744bd3}</Project>
+			<Name>Notifo.SDK.FirebasePlugin</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\sdk\Notifo.SDK\Notifo.SDK.csproj">
+			<Project>{4f928a67-c5e7-44e2-be71-6ed155afed9c}</Project>
+			<Name>Notifo.SDK</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\Sample\Sample.csproj">
+			<Project>{D59C868F-F97E-4931-B667-094C1FBC822E}</Project>
+			<Name>Sample</Name>
+		</ProjectReference>
+	</ItemGroup>
+	<Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties TriggeredFromHotReload="False" />
+		</VisualStudio>
+	</ProjectExtensions>
 </Project>
