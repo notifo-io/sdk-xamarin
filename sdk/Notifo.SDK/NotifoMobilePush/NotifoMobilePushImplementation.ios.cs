@@ -49,7 +49,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 var eventArgs = new NotificationEventArgs(notification);
                 OnReceived(eventArgs);
 
-                _ = ShowLocalNotificationAsync(notification);
+                await ShowLocalNotificationAsync(notification);
             }
 
             await TrackNotificationsAsync(notifications);
@@ -66,6 +66,7 @@ namespace Notifo.SDK.NotifoMobilePush
         private async Task ShowLocalNotificationAsync(NotificationDto notification)
         {
             var content = new UNMutableNotificationContent();
+
             content = await EnrichNotificationContentAsync(content, notification);
 
             content.UserInfo = notification.ToDictionary().ToNSDictionary();
@@ -97,11 +98,20 @@ namespace Notifo.SDK.NotifoMobilePush
                 var imagePath = await GetImageAsync(notification.ImageLarge);
                 if (!string.IsNullOrWhiteSpace(imagePath))
                 {
+                    var uniqueName = $"{Guid.NewGuid()}{Path.GetExtension(imagePath)}";
+                    var attachementUrl = new NSUrl(uniqueName, NSFileManager.DefaultManager.GetTemporaryDirectory());
+
+                    NSFileManager.DefaultManager.Copy(NSUrl.FromFilename(imagePath), attachementUrl, out var error);
+                    if (error != null)
+                    {
+                        Log.Error(error.LocalizedDescription);
+                    }
+
                     var attachement = UNNotificationAttachment.FromIdentifier(
                         Constants.ImageLargeKey,
-                        NSUrl.FromFilename(imagePath),
+                        attachementUrl,
                         new UNNotificationAttachmentOptions(),
-                        out var error);
+                        out error);
 
                     if (error == null)
                     {
@@ -176,6 +186,11 @@ namespace Notifo.SDK.NotifoMobilePush
                 _ = await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
 
                 content.CategoryIdentifier = categoryId;
+            }
+
+            if (content.Sound == null)
+            {
+                content.Sound = UNNotificationSound.Default;
             }
 
             return content;
