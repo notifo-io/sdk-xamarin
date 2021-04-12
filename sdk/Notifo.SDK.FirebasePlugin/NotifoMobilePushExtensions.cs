@@ -17,6 +17,13 @@ namespace Notifo.SDK.FirebasePlugin
         private static readonly Lazy<IPushEventsProvider> CurrentPluginEventsProvider =
             new Lazy<IPushEventsProvider>(() => new PluginEventsProvider(), LazyThreadSafetyMode.PublicationOnly);
 
+        /// <summary>
+        /// Use the firebase plugin as the push events provider.
+        /// </summary>
+        /// <param name="notifoMobilePush">
+        /// The <see cref="INotifoMobilePush"/> instance.
+        /// </param>
+        /// <returns>The current instance.</returns>
         public static INotifoMobilePush UseFirebasePluginEventsProvider(this INotifoMobilePush notifoMobilePush) =>
             notifoMobilePush.SetPushEventsProvider(CurrentPluginEventsProvider.Value);
     }
