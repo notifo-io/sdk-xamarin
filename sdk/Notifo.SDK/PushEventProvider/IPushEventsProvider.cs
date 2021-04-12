@@ -9,6 +9,9 @@ using System;
 
 namespace Notifo.SDK.PushEventProvider
 {
+    /// <summary>
+    /// Push events provider interface.
+    /// </summary>
     public interface IPushEventsProvider
     {
         /// <summary>

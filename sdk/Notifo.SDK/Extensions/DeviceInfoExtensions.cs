@@ -9,7 +9,7 @@ using Xamarin.Essentials;
 
 namespace Notifo.SDK.Extensions
 {
-    public static class DeviceInfoExtensions
+    internal static class DeviceInfoExtensions
     {
         public static MobileDeviceType ToMobileDeviceType(this DevicePlatform platform)
         {

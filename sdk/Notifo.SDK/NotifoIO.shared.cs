@@ -16,9 +16,16 @@ using Serilog;
 
 namespace Notifo.SDK
 {
+    /// <summary>
+    /// Notifo service implementation.
+    /// </summary>
     public static partial class NotifoIO
     {
         private static readonly Lazy<INotifoMobilePush> Instance = new Lazy<INotifoMobilePush>(() => SetupNotifoMobilePush(), LazyThreadSafetyMode.PublicationOnly);
+
+        /// <summary>
+        /// Current service implementation to use.
+        /// </summary>
         public static INotifoMobilePush Current => Instance.Value;
 
         private static INotifoMobilePush SetupNotifoMobilePush()

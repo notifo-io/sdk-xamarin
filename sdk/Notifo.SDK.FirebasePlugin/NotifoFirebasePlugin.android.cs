@@ -12,35 +12,34 @@ using Plugin.FirebasePushNotification;
 
 namespace Notifo.SDK.FirebasePlugin
 {
+    /// <summary>
+    /// Plugin initialization.
+    /// </summary>
     public class NotifoFirebasePlugin
     {
-        public static void Initialize(Context context, INotifoStartup notifoStartup, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
+        /// <summary>
+        /// Initializes the firebase plugin.
+        /// </summary>
+        /// <param name="context">The current application context.</param>
+        /// <param name="notifoStartup">The <see cref="INotifoStartup"/> implementation.</param>
+        /// <param name="resetToken">Set to <see langword="true"/> while debugging.</param>
+        /// <param name="autoRegistration">Automatically register for push notifications.</param>
+        public static void Initialize(Context context, INotifoStartup notifoStartup, bool resetToken, bool autoRegistration = true)
         {
             ConfigureDefaultChannel();
 
-            FirebasePushNotificationManager.Initialize(context, new NotifoPushNotificationHandler(), resetToken, createDefaultNotificationChannel, autoRegistration);
+            FirebasePushNotificationManager.Initialize(context, new NotifoPushNotificationHandler(), resetToken, createDefaultNotificationChannel: true, autoRegistration);
             notifoStartup.ConfigureService(NotifoIO.Current);
         }
 
-        public static void Initialize(Context context, INotifoStartup notifoStartup, NotificationUserCategory[] notificationCategories, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
+        /// <summary>
+        /// Method for processing open notification intent.
+        /// </summary>
+        /// <param name="activity">The current activity.</param>
+        /// <param name="intent">The intent for processing.</param>
+        public static void ProcessIntent(Activity activity, Intent intent)
         {
-            ConfigureDefaultChannel();
-
-            FirebasePushNotificationManager.Initialize(context, notificationCategories, resetToken, createDefaultNotificationChannel, autoRegistration);
-            notifoStartup.ConfigureService(NotifoIO.Current);
-        }
-
-        public static void Initialize(Context context, INotifoStartup notifoStartup, IPushNotificationHandler pushNotificationHandler, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
-        {
-            ConfigureDefaultChannel();
-
-            FirebasePushNotificationManager.Initialize(context, pushNotificationHandler, resetToken, createDefaultNotificationChannel, autoRegistration);
-            notifoStartup.ConfigureService(NotifoIO.Current);
-        }
-
-        public static void ProcessIntent(Activity activity, Intent intent, bool enableDelayedResponse = true)
-        {
-            FirebasePushNotificationManager.ProcessIntent(activity, intent, enableDelayedResponse);
+            FirebasePushNotificationManager.ProcessIntent(activity, intent, enableDelayedResponse: true);
             NotifoIO.Current.UseFirebasePluginEventsProvider();
         }
 

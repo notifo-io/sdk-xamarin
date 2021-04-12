@@ -11,7 +11,7 @@ using Foundation;
 
 namespace Notifo.SDK.Extensions
 {
-    public static class NSDictionaryExtensions
+    internal static class NSDictionaryExtensions
     {
         public static Dictionary<string, object> ToDictionary(this NSDictionary nsDictionary)
         {

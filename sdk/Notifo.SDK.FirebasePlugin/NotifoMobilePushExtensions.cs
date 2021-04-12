@@ -12,6 +12,9 @@ using Notifo.SDK.PushEventProvider;
 
 namespace Notifo.SDK.FirebasePlugin
 {
+    /// <summary>
+    /// The <see cref="INotifoMobilePush"/> extension methods.
+    /// </summary>
     public static class NotifoMobilePushExtensions
     {
         private static readonly Lazy<IPushEventsProvider> CurrentPluginEventsProvider =

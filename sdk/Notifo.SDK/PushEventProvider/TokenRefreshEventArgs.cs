@@ -9,10 +9,20 @@ using System;
 
 namespace Notifo.SDK.PushEventProvider
 {
+    /// <summary>
+    /// Event arguments containing a device token.
+    /// </summary>
     public class TokenRefreshEventArgs : EventArgs
     {
-        public string Token { get; set; }
+        /// <summary>
+        /// Gets the device token.
+        /// </summary>
+        public string Token { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenRefreshEventArgs"/> class.
+        /// </summary>
+        /// <param name="token">The device token.</param>
         public TokenRefreshEventArgs(string token)
         {
             Token = token;

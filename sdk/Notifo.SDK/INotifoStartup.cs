@@ -9,6 +9,9 @@ using Notifo.SDK.NotifoMobilePush;
 
 namespace Notifo.SDK
 {
+    /// <summary>
+    /// Provides a place to configure Notifo mobile push service.
+    /// </summary>
     public interface INotifoStartup
     {
         /// <summary>

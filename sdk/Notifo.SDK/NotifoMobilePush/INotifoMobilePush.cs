@@ -10,6 +10,9 @@ using Notifo.SDK.PushEventProvider;
 
 namespace Notifo.SDK.NotifoMobilePush
 {
+    /// <summary>
+    /// Notifo mobile push service interface.
+    /// </summary>
     public interface INotifoMobilePush : INotifoClient
     {
         /// <summary>
