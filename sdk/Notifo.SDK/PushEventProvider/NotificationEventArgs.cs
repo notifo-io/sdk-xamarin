@@ -72,6 +72,11 @@ namespace Notifo.SDK.PushEventProvider
         public string? LinkText { get; }
 
         /// <summary>
+        /// Optional data, usually a json object.
+        /// </summary>
+        public string? Data { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="NotificationEventArgs"/> class.
         /// </summary>
         /// <param name="notification">The notification DTO.</param>
@@ -88,6 +93,7 @@ namespace Notifo.SDK.PushEventProvider
             TrackingUrl = notification.TrackingUrl;
             LinkUrl = notification.LinkUrl;
             LinkText = notification.LinkText;
+            Data = notification.Data;
         }
 
         /// <summary>
