@@ -12,19 +12,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Build
+      - name: Deploy
         run: |
           tagParts=(${GITHUB_REF//\// })
           VERSION="${tagParts[2]}"
           VERSION="${VERSION//v}"
           nuget restore
           cd sdk/Notifo.SDK/
-          msbuild Notifo.SDK.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION /p:OutputPath=../../Core
+          msbuild Notifo.SDK.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION
+          dotnet nuget push bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
           cd ../Notifo.SDK.FirebasePlugin/
-          msbuild Notifo.SDK.FirebasePlugin.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION /p:OutputPath=../../FirebasePlugin
-      - name: Publish NuGet
-        run: |
-          dotnet nuget push Core/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
-          dotnet nuget push FirebasePlugin/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
+          msbuild Notifo.SDK.FirebasePlugin.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION
+          dotnet nuget push bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
+          
+          
           
 
