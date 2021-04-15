@@ -93,9 +93,11 @@ namespace Notifo.SDK.NotifoMobilePush
                 content.Body = notification.Body;
             }
 
-            if (!string.IsNullOrWhiteSpace(notification.ImageLarge))
+            string image = string.IsNullOrWhiteSpace(notification.ImageLarge) ? notification.ImageSmall : notification.ImageLarge;
+
+            if (!string.IsNullOrWhiteSpace(image))
             {
-                var imagePath = await GetImageAsync(notification.ImageLarge);
+                var imagePath = await GetImageAsync(image);
                 if (!string.IsNullOrWhiteSpace(imagePath))
                 {
                     var uniqueName = $"{Guid.NewGuid()}{Path.GetExtension(imagePath)}";
