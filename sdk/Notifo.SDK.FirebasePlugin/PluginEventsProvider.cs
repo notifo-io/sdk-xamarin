@@ -62,7 +62,14 @@ namespace Notifo.SDK.FirebasePlugin
         protected virtual void OnNotificationOpenedEvent(NotificationEventArgs args) =>
             OnNotificationOpened?.Invoke(this, args);
 
-        private bool IsNotificationData(IDictionary<string, object> data) =>
-            data?.ContainsKey(Constants.IdKey) ?? false;
+        private bool IsNotificationData(IDictionary<string, object> data)
+        {
+            if (data == null)
+            {
+                return false;
+            }
+
+            return data.ContainsKey(Constants.SubjectKey) || data.ContainsKey(Constants.ApsAlertTitleKey);
+        }
     }
 }
