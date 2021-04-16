@@ -7,7 +7,6 @@
 
 using Android.App;
 using Android.Content;
-using Android.OS;
 using Plugin.FirebasePushNotification;
 
 namespace Notifo.SDK.FirebasePlugin
@@ -26,8 +25,6 @@ namespace Notifo.SDK.FirebasePlugin
         /// <param name="autoRegistration">Automatically register for push notifications.</param>
         public static void Initialize(Context context, INotifoStartup notifoStartup, bool resetToken, bool autoRegistration = true)
         {
-            ConfigureDefaultChannel();
-
             FirebasePushNotificationManager.Initialize(context, new NotifoPushNotificationHandler(), resetToken, createDefaultNotificationChannel: true, autoRegistration);
             notifoStartup.ConfigureService(NotifoIO.Current);
         }
@@ -41,15 +38,6 @@ namespace Notifo.SDK.FirebasePlugin
         {
             FirebasePushNotificationManager.ProcessIntent(activity, intent, enableDelayedResponse: true);
             NotifoIO.Current.UseFirebasePluginEventsProvider();
-        }
-
-        private static void ConfigureDefaultChannel()
-        {
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-            {
-                FirebasePushNotificationManager.DefaultNotificationChannelId = "FirebasePushNotificationChannel";
-                FirebasePushNotificationManager.DefaultNotificationChannelName = "General";
-            }
         }
     }
 }
