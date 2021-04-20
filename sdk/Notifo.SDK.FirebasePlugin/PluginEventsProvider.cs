@@ -25,6 +25,8 @@ namespace Notifo.SDK.FirebasePlugin
             CrossFirebasePushNotification.Current.OnNotificationOpened += FirebasePushNotification_OnNotificationOpened;
         }
 
+        public string Token => CrossFirebasePushNotification.Current.Token;
+
         private void FirebasePushNotification_OnTokenRefresh(object source, FirebasePushNotificationTokenEventArgs e)
         {
             var args = new TokenRefreshEventArgs(e.Token);

@@ -16,6 +16,7 @@ namespace Notifo.SDK.UnitTests.Mocks
         public event EventHandler<TokenRefreshEventArgs> OnTokenRefresh;
         public event EventHandler<NotificationEventArgs> OnNotificationReceived;
         public event EventHandler<NotificationEventArgs> OnNotificationOpened;
+        public string Token => "test token";
 
         protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args) =>
             OnTokenRefresh?.Invoke(this, args);

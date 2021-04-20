@@ -398,8 +398,6 @@ namespace Notifo.SDK.UnitTests
         [Fact]
         public void Register_ShouldNotRefreshToken_IfTokenIsEmpty()
         {
-            var eventsProvider = new EventsProviderMock();
-
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupAnyRequest()
                 .ReturnsResponse(HttpStatusCode.Unauthorized);
@@ -408,7 +406,10 @@ namespace Notifo.SDK.UnitTests
 
             var mocker = new AutoMocker();
             mocker.Use(client);
+            mocker.Setup<IPushEventsProvider, string>(x => x.Token).Returns(string.Empty);
             mocker.Setup<ISettings, string>(x => x.Token).Returns(string.Empty);
+
+            var eventsProvider = mocker.GetMock<IPushEventsProvider>().Object;
 
             var notifoMobilePush = mocker.CreateInstance<NotifoMobilePushImplementation>();
             notifoMobilePush

@@ -164,7 +164,12 @@ namespace Notifo.SDK.NotifoMobilePush
             bool notRefreshing = refreshExecutingCount == 0;
             if (notRefreshing)
             {
-                _ = EnsureTokenRefreshedAsync(settings.Token);
+                string token =
+                    string.IsNullOrWhiteSpace(pushEventsProvider?.Token)
+                        ? settings.Token
+                        : pushEventsProvider.Token;
+
+                _ = EnsureTokenRefreshedAsync(token);
             }
         }
 

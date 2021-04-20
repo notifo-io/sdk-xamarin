@@ -28,5 +28,10 @@ namespace Notifo.SDK.PushEventProvider
         /// Event triggered when a notification is opened.
         /// </summary>
         event EventHandler<NotificationEventArgs> OnNotificationOpened;
+
+        /// <summary>
+        /// Push notification token.
+        /// </summary>
+        public string Token { get; }
     }
 }
