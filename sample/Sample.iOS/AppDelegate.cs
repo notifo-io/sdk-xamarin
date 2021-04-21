@@ -25,7 +25,7 @@ namespace Sample.iOS
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App(new iOSInitializer()));
 
-            NotifoFirebasePlugin.Initialize(launchOptions, new NotifoStartup(), true);
+            NotifoFirebasePlugin.Initialize(launchOptions, new NotifoStartup(), new NotificationHandler(), true);
             UNUserNotificationCenter.Current.Delegate = this;
 
             return base.FinishedLaunching(uiApplication, launchOptions);

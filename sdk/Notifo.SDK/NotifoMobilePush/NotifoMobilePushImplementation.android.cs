@@ -6,7 +6,10 @@
 // ==========================================================================
 
 using System;
+using Android.App;
+using Android.Content;
 using Android.Graphics;
+using Android.Support.V4.App;
 using Java.Net;
 using Microsoft.Extensions.Caching.Memory;
 using Notifo.SDK.Resources;
@@ -16,9 +19,68 @@ namespace Notifo.SDK.NotifoMobilePush
 {
     internal partial class NotifoMobilePushImplementation
     {
+        private INotificationHandler? notificationHandler;
+        public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
+        {
+            this.notificationHandler = notificationHandler;
+
+            return this;
+        }
+
         private readonly IMemoryCache bitmapCache = new MemoryCache(new MemoryCacheOptions());
 
-        public Bitmap? GetBitmap(string bitmapUrl, int requestWidth = -1, int requestHeight = -1)
+        internal void OnBuildNotification(NotificationCompat.Builder notificationBuilder, NotificationDto notification)
+        {
+            if (!string.IsNullOrWhiteSpace(notification.Subject))
+            {
+                notificationBuilder.SetContentTitle(notification.Subject);
+            }
+
+            if (!string.IsNullOrWhiteSpace(notification.ImageSmall))
+            {
+                int width = GetDimension(Resource.Dimension.notification_large_icon_width);
+                int height = GetDimension(Resource.Dimension.notification_large_icon_height);
+
+                var largeIcon = GetBitmap(notification.ImageSmall, width, height);
+                if (largeIcon != null)
+                {
+                    notificationBuilder.SetLargeIcon(largeIcon);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(notification.ImageLarge))
+            {
+                var bigPicture = GetBitmap(notification.ImageLarge);
+                if (bigPicture != null)
+                {
+                    notificationBuilder.SetStyle(
+                        new NotificationCompat
+                            .BigPictureStyle()
+                            .BigPicture(bigPicture)
+                            .SetSummaryText(notification.Body)
+                    );
+                }
+            }
+
+            notificationBuilder.MActions.Clear();
+
+            if (!string.IsNullOrWhiteSpace(notification.ConfirmUrl) &&
+                !string.IsNullOrWhiteSpace(notification.ConfirmText) &&
+                !notification.IsConfirmed)
+            {
+                AddAction(notificationBuilder, notification.ConfirmText, notification.ConfirmUrl);
+            }
+
+            if (!string.IsNullOrWhiteSpace(notification.LinkUrl) &&
+                !string.IsNullOrWhiteSpace(notification.LinkText))
+            {
+                AddAction(notificationBuilder, notification.LinkText, notification.LinkUrl);
+            }
+
+            notificationHandler?.OnBuildNotification(notificationBuilder, notification);
+        }
+
+        private Bitmap? GetBitmap(string bitmapUrl, int requestWidth = -1, int requestHeight = -1)
         {
             try
             {
@@ -94,5 +156,17 @@ namespace Notifo.SDK.NotifoMobilePush
 
             return bitmap;
         }
+
+        private void AddAction(NotificationCompat.Builder notificationBuilder, string title, string url)
+        {
+            var notificationIntent = new Intent(Intent.ActionView);
+            notificationIntent.SetData(Android.Net.Uri.Parse(url));
+            var buttonIntent = PendingIntent.GetActivity(Application.Context, 0, notificationIntent, 0);
+
+            notificationBuilder.AddAction(0, title, buttonIntent);
+        }
+
+        private int GetDimension(int resourceId) =>
+            Application.Context?.Resources?.GetDimensionPixelSize(resourceId) ?? -1;
     }
 }

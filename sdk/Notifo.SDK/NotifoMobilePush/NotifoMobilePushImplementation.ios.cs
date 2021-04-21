@@ -23,6 +23,14 @@ namespace Notifo.SDK.NotifoMobilePush
 {
     internal partial class NotifoMobilePushImplementation : NSObject
     {
+        private INotificationHandler? notificationHandler;
+        public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
+        {
+            this.notificationHandler = notificationHandler;
+
+            return this;
+        }
+
         private readonly IMemoryCache imageCache = new MemoryCache(new MemoryCacheOptions());
 
         public async Task DidReceiveNotificationRequestAsync(UNNotificationRequest request, UNMutableNotificationContent bestAttemptContent)
@@ -194,6 +202,8 @@ namespace Notifo.SDK.NotifoMobilePush
             {
                 content.Sound = UNNotificationSound.Default;
             }
+
+            notificationHandler?.OnBuildNotification(content, notification);
 
             return content;
         }

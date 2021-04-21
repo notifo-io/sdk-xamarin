@@ -21,11 +21,14 @@ namespace Notifo.SDK.FirebasePlugin
         /// </summary>
         /// <param name="context">The current application context.</param>
         /// <param name="notifoStartup">The <see cref="INotifoStartup"/> implementation.</param>
+        /// <param name="notificationHandler">The <see cref="INotificationHandler"/> implementation.</param>
         /// <param name="resetToken">Set to <see langword="true"/> while debugging.</param>
         /// <param name="autoRegistration">Automatically register for push notifications.</param>
-        public static void Initialize(Context context, INotifoStartup notifoStartup, bool resetToken, bool autoRegistration = true)
+        public static void Initialize(Context context, INotifoStartup notifoStartup, INotificationHandler? notificationHandler = null, bool resetToken = false, bool autoRegistration = true)
         {
             FirebasePushNotificationManager.Initialize(context, new NotifoPushNotificationHandler(), resetToken, createDefaultNotificationChannel: true, autoRegistration);
+
+            NotifoIO.Current.SetNotificationHandler(notificationHandler);
             notifoStartup.ConfigureService(NotifoIO.Current);
         }
 

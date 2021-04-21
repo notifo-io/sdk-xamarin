@@ -13,7 +13,7 @@ namespace Notifo.SDK.NotifoMobilePush
     /// <summary>
     /// Notifo mobile push service interface.
     /// </summary>
-    public interface INotifoMobilePush : INotifoClient
+    public partial interface INotifoMobilePush : INotifoClient
     {
         /// <summary>
         /// Event triggered when a notification is received.
