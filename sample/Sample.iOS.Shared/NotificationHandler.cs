@@ -8,9 +8,7 @@
 using Notifo.SDK;
 using UserNotifications;
 
-#pragma warning disable SA1300 // Element should begin with upper-case letter
-namespace Sample.iOS
-#pragma warning restore SA1300 // Element should begin with upper-case letter
+namespace Sample.iOS.Shared
 {
     public class NotificationHandler : INotificationHandler
     {

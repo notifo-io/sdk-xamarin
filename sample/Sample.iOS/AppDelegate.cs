@@ -10,6 +10,7 @@ using Foundation;
 using Notifo.SDK.FirebasePlugin;
 using Prism;
 using Prism.Ioc;
+using Sample.iOS.Shared;
 using UIKit;
 using UserNotifications;
 

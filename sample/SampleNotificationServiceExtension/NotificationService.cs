@@ -1,6 +1,7 @@
 ﻿using System;
 using Foundation;
 using Notifo.SDK;
+using Sample.iOS.Shared;
 using UserNotifications;
 
 namespace SampleNotificationServiceExtension
@@ -20,6 +21,8 @@ namespace SampleNotificationServiceExtension
 		{
 			ContentHandler = contentHandler;
 			BestAttemptContent = (UNMutableNotificationContent)request.Content.MutableCopy();
+
+			NotifoIO.Current.SetNotificationHandler(new NotificationHandler());
 
 			await NotifoIO.DidReceiveNotificationRequestAsync(request, BestAttemptContent);
 

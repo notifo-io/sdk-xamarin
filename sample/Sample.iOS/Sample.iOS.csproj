@@ -52,7 +52,7 @@
     <MtouchLink>None</MtouchLink>
     <MtouchInterpreter>-all</MtouchInterpreter>
     <CodesignProvision>
-	</CodesignProvision>
+    </CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
@@ -76,7 +76,6 @@
     <BundleResource Include="GoogleService-Info.plist" />
     <None Include="Info.plist" />
     <Compile Include="Application.cs" />
-    <Compile Include="NotificationHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <BundleResource Include="Resources\announcement.caf" />
   </ItemGroup>
@@ -162,9 +161,15 @@
       <Project>{258dee06-bb0d-404b-b981-43b091744bd3}</Project>
       <Name>Notifo.SDK.FirebasePlugin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\sdk\Notifo.SDK\Notifo.SDK.csproj">
+    <ProjectReference Include="..\..\sdk\Notifo.SDK\Notifo.SDK.Core.csproj">
       <Project>{4f928a67-c5e7-44e2-be71-6ed155afed9c}</Project>
-      <Name>Notifo.SDK</Name>
+      <Name>Notifo.SDK.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sample.iOS.Shared\Sample.iOS.Shared.csproj">
+      <Project>{7d4a0e79-8075-42a6-acc5-e5b666f75313}</Project>
+      <Name>Sample.iOS.Shared</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
     <ProjectReference Include="..\Sample\Sample.csproj">
       <Project>{DD43F8B0-1925-477A-9FF5-BE3E01350E30}</Project>
