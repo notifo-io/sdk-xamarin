@@ -61,6 +61,8 @@ namespace Notifo.SDK.Extensions
                 data[Constants.LinkTextKey] = notification.LinkText;
             }
 
+            data[Constants.SilentKey] = notification.Silent.ToString();
+
             if (!string.IsNullOrWhiteSpace(notification.TrackingUrl))
             {
                 data[Constants.TrackingUrlKey] = notification.TrackingUrl;
@@ -132,6 +134,11 @@ namespace Notifo.SDK.Extensions
             if (data.TryGetValue(Constants.LinkTextKey, out var linkText))
             {
                 notification.LinkText = linkText.ToString();
+            }
+
+            if (data.TryGetValue(Constants.SilentKey, out var silent))
+            {
+                notification.Silent = Convert.ToBoolean(silent.ToString());
             }
 
             if (data.TryGetValue(Constants.TrackingUrlKey, out var trackingUrl))

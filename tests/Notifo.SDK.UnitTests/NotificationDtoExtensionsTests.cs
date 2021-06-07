@@ -27,6 +27,7 @@ namespace Notifo.SDK.UnitTests
             var linkUrl = "https://app.notifo.io";
             var linkText = "Go to link";
             var subject = "subject1";
+            var silent = true;
             var trackingUrl = "https://track.notifo.com";
 
             var notification = new NotificationDto
@@ -40,6 +41,7 @@ namespace Notifo.SDK.UnitTests
                 LinkText = linkText,
                 LinkUrl = linkUrl,
                 Subject = subject,
+                Silent = silent,
                 IsConfirmed = isConfirmed,
                 TrackingUrl = trackingUrl
             };
@@ -57,6 +59,7 @@ namespace Notifo.SDK.UnitTests
             Assert.Equal(dictionary[nameof(linkUrl)], linkUrl);
             Assert.Equal(dictionary[nameof(trackingUrl)], trackingUrl);
             Assert.Equal(dictionary[nameof(subject)], subject);
+            Assert.Equal(dictionary[nameof(silent)], silent.ToString());
         }
 
         [Fact]
@@ -72,6 +75,7 @@ namespace Notifo.SDK.UnitTests
             var linkUrl = "https://app.notifo.io";
             var linkText = "Go to link";
             var subject = "subject1";
+            var silent = true;
             var trackingUrl = "https://track.notifo.com";
 
             var dictionary = new Dictionary<string, object>
@@ -86,7 +90,8 @@ namespace Notifo.SDK.UnitTests
                 [nameof(linkText)] = linkText,
                 [nameof(linkUrl)] = linkUrl,
                 [nameof(trackingUrl)] = trackingUrl,
-                [nameof(subject)] = subject
+                [nameof(subject)] = subject,
+                [nameof(silent)] = silent
             };
 
             var notification = new NotificationDto().FromDictionary(dictionary);
@@ -102,6 +107,7 @@ namespace Notifo.SDK.UnitTests
             Assert.Equal(notification.LinkUrl, linkUrl);
             Assert.Equal(notification.TrackingUrl, trackingUrl);
             Assert.Equal(notification.Subject, subject);
+            Assert.Equal(notification.Silent, silent);
         }
     }
 }
