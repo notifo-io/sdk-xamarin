@@ -29,6 +29,14 @@ namespace Notifo.SDK.FirebasePlugin
         {
             Log.Debug(Strings.ReceivedNotification, parameters);
 
+            var notification = new NotificationDto()
+                .FromDictionary(new Dictionary<string, object>(parameters));
+
+            if (notification.Silent)
+            {
+                return;
+            }
+
             if (parameters.TryGetValue(IdKey, out var id))
             {
                 var notificationId = Math.Abs(id.GetHashCode());
