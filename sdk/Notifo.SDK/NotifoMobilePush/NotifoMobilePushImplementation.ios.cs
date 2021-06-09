@@ -57,6 +57,11 @@ namespace Notifo.SDK.NotifoMobilePush
                 var eventArgs = new NotificationEventArgs(notification);
                 OnReceived(eventArgs);
 
+                if (notification.Silent)
+                {
+                    continue;
+                }
+
                 await ShowLocalNotificationAsync(notification);
             }
 
