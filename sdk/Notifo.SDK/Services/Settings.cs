@@ -17,7 +17,7 @@ namespace Notifo.SDK.Services
 {
     internal class Settings : ISettings
     {
-        private static readonly string SharedName = $"{AppInfo.PackageName}.notifo";
+        private static readonly string SharedName = $"group.{AppInfo.PackageName}.notifo";
         private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
 
         public string Token
