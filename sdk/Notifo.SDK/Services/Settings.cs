@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -17,7 +18,9 @@ namespace Notifo.SDK.Services
 {
     internal class Settings : ISettings
     {
-        private static readonly string SharedName = $"group.{AppInfo.PackageName}.notifo";
+        private static readonly string PrimaryPackageName = Regex.Replace(AppInfo.PackageName, @"\.([^.]*)ServiceExtension$", string.Empty);
+        private static readonly string SharedName = $"group.{PrimaryPackageName}.notifo";
+
         private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
 
         public string Token
