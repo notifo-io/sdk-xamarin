@@ -20,6 +20,7 @@ namespace Notifo.SDK.Services
     {
         private static readonly string PrimaryPackageName = Regex.Replace(AppInfo.PackageName, @"\.([^.]*)ServiceExtension$", string.Empty);
         private static readonly string SharedName = $"group.{PrimaryPackageName}.notifo";
+        private static readonly string SeenNotificationsKey = "SeenNotifications";
 
         private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
 
@@ -35,60 +36,40 @@ namespace Notifo.SDK.Services
             set => Preferences.Set(nameof(IsTokenRefreshed), value, SharedName);
         }
 
-        private SlidingSet<Guid> seenNotifications;
-        private SlidingSet<Guid> SeenNotifications
+        public SlidingSet<Guid> GetSeenNotifications()
         {
-            get
+            var seenNotifications = new SlidingSet<Guid>(capacity: 500);
+
+            var serialized = Preferences.Get(SeenNotificationsKey, string.Empty, SharedName);
+            if (!string.IsNullOrWhiteSpace(serialized))
             {
-                if (seenNotifications == null)
-                {
-                    seenNotifications = new SlidingSet<Guid>(capacity: 500);
-
-                    var serialized = Preferences.Get(nameof(SeenNotifications), string.Empty, SharedName);
-                    if (!string.IsNullOrWhiteSpace(serialized))
-                    {
-                        seenNotifications = JsonConvert.DeserializeObject<SlidingSet<Guid>>(serialized) ?? seenNotifications;
-                    }
-                }
-
-                return seenNotifications;
+                seenNotifications = JsonConvert.DeserializeObject<SlidingSet<Guid>>(serialized) ?? seenNotifications;
             }
-            set
-            {
-                seenNotifications = value;
 
-                var serialized = JsonConvert.SerializeObject(seenNotifications);
-                Preferences.Set(nameof(SeenNotifications), serialized, SharedName);
-            }
+            return seenNotifications;
         }
 
-        public bool IsNotificationSeen(Guid id) => SeenNotifications.Contains(id);
-
-        public async Task TrackNotificationAsync(Guid id)
+        private void SetSeenNotifications(SlidingSet<Guid> seenNotifications)
         {
-            await Semaphore.WaitAsync();
-            try
-            {
-                SeenNotifications.Add(id);
-                await Task.Run(() => SeenNotifications = SeenNotifications);
-            }
-            finally
-            {
-                Semaphore.Release();
-            }
+            var serialized = JsonConvert.SerializeObject(seenNotifications);
+            Preferences.Set(SeenNotificationsKey, serialized, SharedName);
         }
+
+        public Task TrackNotificationAsync(Guid id) => TrackNotificationsAsync(new Guid[] { id });
 
         public async Task TrackNotificationsAsync(IEnumerable<Guid> ids)
         {
             await Semaphore.WaitAsync();
             try
             {
+                var seenNotifications = GetSeenNotifications();
+
                 foreach (var id in ids)
                 {
-                    SeenNotifications.Add(id);
+                    seenNotifications.Add(id);
                 }
 
-                await Task.Run(() => SeenNotifications = SeenNotifications);
+                await Task.Run(() => SetSeenNotifications(seenNotifications));
             }
             finally
             {

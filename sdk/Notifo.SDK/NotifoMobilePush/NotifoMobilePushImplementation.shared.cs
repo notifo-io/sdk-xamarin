@@ -261,9 +261,10 @@ namespace Notifo.SDK.NotifoMobilePush
             try
             {
                 var allNotifications = await Notifications.GetNotificationsAsync();
+                var seenNotifications = settings.GetSeenNotifications();
                 var pendingNotifications = allNotifications
                     .Items
-                    .Where(x => !settings.IsNotificationSeen(x.Id))
+                    .Where(x => !seenNotifications.Contains(x.Id))
                     .OrderBy(x => x.Created)
                     .ToArray();
 

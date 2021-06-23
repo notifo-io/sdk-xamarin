@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Notifo.SDK.Helpers;
 
 namespace Notifo.SDK.Services
 {
@@ -21,6 +22,6 @@ namespace Notifo.SDK.Services
 
         Task TrackNotificationsAsync(IEnumerable<Guid> ids);
 
-        bool IsNotificationSeen(Guid id);
+        SlidingSet<Guid> GetSeenNotifications();
     }
 }
