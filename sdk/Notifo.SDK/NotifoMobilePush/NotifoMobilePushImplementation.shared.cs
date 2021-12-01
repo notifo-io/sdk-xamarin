@@ -256,15 +256,19 @@ namespace Notifo.SDK.NotifoMobilePush
             receivedNotificationEvents.Clear();
         }
 
-        private async Task<ICollection<NotificationDto>> GetPendingNotificationsAsync()
+        private async Task<ICollection<NotificationDto>> GetPendingNotificationsAsync(int take, TimeSpan period)
         {
             try
             {
-                var allNotifications = await Notifications.GetNotificationsAsync();
+                var allNotifications = await Notifications.GetNotificationsAsync(take: take);
                 var seenNotifications = settings.GetSeenNotifications();
+
+                var utcNow = DateTimeOffset.UtcNow;
+
                 var pendingNotifications = allNotifications
                     .Items
                     .Where(x => !seenNotifications.Contains(x.Id))
+                    .Where(x => (utcNow - x.Created.UtcDateTime) <= period)
                     .OrderBy(x => x.Created)
                     .ToArray();
 

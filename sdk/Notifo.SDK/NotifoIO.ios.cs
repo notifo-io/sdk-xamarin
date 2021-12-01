@@ -31,12 +31,13 @@ namespace Notifo.SDK
         /// <summary>
         /// Method for pulling pending notifications.
         /// </summary>
+        /// <param name="options">The options for handling the pending notifications pull refresh request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        public static async Task DidReceivePullRefreshRequestAsync()
+        public static async Task DidReceivePullRefreshRequestAsync(PullRefreshOptions? options = null)
         {
             if (Current is NotifoMobilePushImplementation notifoMobilePush)
             {
-                await notifoMobilePush.DidReceivePullRefreshRequestAsync();
+                await notifoMobilePush.DidReceivePullRefreshRequestAsync(options);
             }
         }
 

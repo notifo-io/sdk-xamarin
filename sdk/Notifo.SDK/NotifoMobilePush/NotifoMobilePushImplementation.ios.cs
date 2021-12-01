@@ -48,21 +48,29 @@ namespace Notifo.SDK.NotifoMobilePush
             await EnrichNotificationContentAsync(bestAttemptContent, notification);
         }
 
-        public async Task DidReceivePullRefreshRequestAsync()
+        public async Task DidReceivePullRefreshRequestAsync(PullRefreshOptions? options = null)
         {
-            var notifications = await GetPendingNotificationsAsync();
+            options ??= new PullRefreshOptions();
+
+            var notifications = await GetPendingNotificationsAsync(options.Take, options.Period);
 
             foreach (var notification in notifications)
             {
-                var eventArgs = new NotificationEventArgs(notification);
-                OnReceived(eventArgs);
+                if (options.RaiseEvent)
+                {
+                    var eventArgs = new NotificationEventArgs(notification);
+                    OnReceived(eventArgs);
+                }
 
                 if (notification.Silent)
                 {
                     continue;
                 }
 
-                await ShowLocalNotificationAsync(notification);
+                if (options.PresentNotification)
+                {
+                    await ShowLocalNotificationAsync(notification);
+                }
             }
 
             await TrackNotificationsAsync(notifications);
