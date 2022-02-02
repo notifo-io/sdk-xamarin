@@ -156,6 +156,9 @@
   <data name="TokenRefreshSuccess" xml:space="preserve">
     <value>Token was successfully refreshed. Token: {0}</value>
   </data>
+  <data name="TokenRemoveFailException" xml:space="preserve">
+    <value>Fail to remove push token on the server.</value>
+  </data>
   <data name="TrackingException" xml:space="preserve">
     <value>Fail to track notification.</value>
   </data>

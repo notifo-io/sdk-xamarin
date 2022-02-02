@@ -56,5 +56,10 @@ namespace Notifo.SDK.NotifoMobilePush
         /// Register for notifications on demand.
         /// </summary>
         void Register();
+
+        /// <summary>
+        /// Unregister notifications on demand.
+        /// </summary>
+        void Unregister();
     }
 }

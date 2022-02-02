@@ -76,5 +76,7 @@ namespace Notifo.SDK.Services
                 Semaphore.Release();
             }
         }
+
+        public void Clear() => Preferences.Clear(SharedName);
     }
 }

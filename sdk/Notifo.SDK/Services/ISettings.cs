@@ -23,5 +23,7 @@ namespace Notifo.SDK.Services
         Task TrackNotificationsAsync(IEnumerable<Guid> ids);
 
         SlidingSet<Guid> GetSeenNotifications();
+
+        void Clear();
     }
 }

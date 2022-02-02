@@ -173,6 +173,24 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
+        public void Unregister()
+        {
+            try
+            {
+                string token = settings.Token;
+                if (!string.IsNullOrWhiteSpace(token))
+                {
+                    _ = MobilePush.DeleteTokenAsync(token);
+                }
+
+                settings.Clear();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, Strings.TokenRemoveFailException);
+            }
+        }
+
         private void PushEventsProvider_OnNotificationReceived(object sender, NotificationEventArgs e)
         {
             // we are tracking notifications only for Android here because it is the entry point for all notifications that the Android device receives
