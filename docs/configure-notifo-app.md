@@ -10,7 +10,7 @@ You can find your Firebase Service Account Details under the "Service accounts" 
 ![Firebase Service Account Details](media/firebase-service-account-details.png)
 
 ### **2. Add Firebase Project ID, and Service Account Details to Notifo**
-In Notifo go to More -> Settings and paste your Project ID and Service Account Details in the appropriate fields and click Save.
+In Notifo go to More -> Integrations -> Firebase and paste your Project ID and Credentials in the appropriate fields and click Save.
 
 ![Notifo Firebase Settings](media/notifo-settings.png)
 
