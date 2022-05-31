@@ -9,7 +9,7 @@ using System;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
-using Android.Support.V4.App;
+using AndroidX.Core.App;
 using Java.Net;
 using Microsoft.Extensions.Caching.Memory;
 using Notifo.SDK.Resources;

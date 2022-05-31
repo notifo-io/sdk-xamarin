@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Android.Support.V4.App;
+using AndroidX.Core.App;
 
 namespace Notifo.SDK
 {
