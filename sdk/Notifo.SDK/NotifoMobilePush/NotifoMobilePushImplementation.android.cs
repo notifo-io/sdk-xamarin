@@ -9,7 +9,7 @@ using System;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
-using Android.Support.V4.App;
+using AndroidX.Core.App;
 using Java.Net;
 using Microsoft.Extensions.Caching.Memory;
 using Notifo.SDK.Resources;
@@ -161,7 +161,7 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             var notificationIntent = new Intent(Intent.ActionView);
             notificationIntent.SetData(Android.Net.Uri.Parse(url));
-            var buttonIntent = PendingIntent.GetActivity(Application.Context, 0, notificationIntent, 0);
+            var buttonIntent = PendingIntent.GetActivity(Application.Context, 0, notificationIntent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
 
             notificationBuilder.AddAction(0, title, buttonIntent);
         }

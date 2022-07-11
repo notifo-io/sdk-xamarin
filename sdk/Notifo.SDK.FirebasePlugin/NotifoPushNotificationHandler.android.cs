@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using Android.Support.V4.App;
+using AndroidX.Core.App;
 using Notifo.SDK.Extensions;
 using Notifo.SDK.NotifoMobilePush;
 using Notifo.SDK.Resources;
