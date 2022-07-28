@@ -1,59 +1,72 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
 
-	<PropertyGroup>
-		<TargetFrameworks>netstandard2.1;xamarinios10;monoandroid12.0;</TargetFrameworks>
-		<LangVersion>8.0</LangVersion>
-		<Nullable>enable</Nullable>
-		<RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;xamarinios10;monoandroid12.0;</TargetFrameworks>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<None Include="logo-squared.png" Pack="true" PackagePath="\" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="logo-squared.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
-	<PropertyGroup>
-		<CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
-		<AssemblyName>Notifo.Xamarin.FirebasePlugin</AssemblyName>
-	</PropertyGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
+    <AssemblyName>Notifo.Xamarin.FirebasePlugin</AssemblyName>
+  <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
-	</ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<Compile Remove="**\*.netstandard.cs" />
-		<Compile Remove="**\*.android.cs" />
-		<Compile Remove="**\*.ios.cs" />
-	</ItemGroup>
+  <ItemGroup>
+    <Compile Remove="**\*.netstandard.cs" />
+    <Compile Remove="**\*.android.cs" />
+    <Compile Remove="**\*.ios.cs" />
+  </ItemGroup>
 
-	<ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-		<Compile Include="**\*.netstandard.cs" />
-	</ItemGroup>
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+    <Compile Include="**\*.netstandard.cs" />
+  </ItemGroup>
 
-	<ItemGroup Condition=" $(TargetFramework.StartsWith('xamarinios')) ">
-		<Compile Include="**\*.ios.cs" />
-	</ItemGroup>
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarinios')) ">
+    <Compile Include="**\*.ios.cs" />
+    <PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging" Version="8.10.0" />
+    <PackageReference Include="Xamarin.Firebase.iOS.Installations" Version="8.10.0" />
+    <PackageReference Include="Xamarin.Firebase.iOS.Core" Version="8.10.0" />
+    <PackageReference Include="Xamarin.Firebase.iOS.InstanceID" Version="4.8.0" />
+  </ItemGroup>
 
-	<ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
-		<Compile Include="**\*.android.cs" />
-	</ItemGroup>
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
+    <Compile Include="**\*.android.cs" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
-		<PackageReference Include="Plugin.FirebasePushNotification" Version="3.4.22" />
-		<PackageReference Include="RefactoringEssentials" Version="5.6.0">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
+    <PackageReference Include="RefactoringEssentials" Version="5.6.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Notifo.SDK\Notifo.SDK.Core.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Notifo.SDK\Notifo.SDK.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'monoandroid12.0'">
+    <PackageReference Include="Xamarin.Firebase.Common">
+      <Version>120.0.0.5</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Firebase.Messaging">
+      <Version>122.0.0.5</Version>
+    </PackageReference>
+  </ItemGroup>
 </Project>
