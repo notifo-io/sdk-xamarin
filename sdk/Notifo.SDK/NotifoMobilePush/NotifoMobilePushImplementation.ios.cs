@@ -37,8 +37,7 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             Log.Debug(Strings.ReceivedNotification, request.Content.UserInfo);
 
-            var userInfo = request.Content.UserInfo.ToDictionary();
-            var notification = new NotificationDto().FromDictionary(userInfo);
+            var notification = new NotificationDto().FromDictionary(request.Content.UserInfo.ToDictionary());
 
             if (!string.IsNullOrWhiteSpace(notification.TrackingUrl))
             {
@@ -89,10 +88,10 @@ namespace Notifo.SDK.NotifoMobilePush
             var content = new UNMutableNotificationContent();
 
             content = await EnrichNotificationContentAsync(content, notification);
-
             content.UserInfo = notification.ToDictionary().ToNSDictionary();
 
             var request = UNNotificationRequest.FromIdentifier(notification.Id.ToString(), content, trigger: null);
+            
             UNUserNotificationCenter.Current.AddNotificationRequest(request, (error) =>
             {
                 if (error != null)
@@ -247,16 +246,23 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             try
             {
+                // Not really sure if the dictionary provides any value at all.
                 if (imageCache.TryGetValue(imageUrl, out string imagePath) && File.Exists(imagePath))
                 {
                     return imagePath;
                 }
 
-                var uri = new Uri(imageUrl);
-                var imageByteArray = await httpClient.GetByteArrayAsync(uri);
+                // Use the base64 value of the URL.
+                imagePath = Path.Combine(FileSystem.CacheDirectory, imageUrl.ToBase64());
 
-                imagePath = Path.Combine(FileSystem.CacheDirectory, uri.Segments.Last());
-                File.WriteAllBytes(imagePath, imageByteArray);
+                // Copy directly from the web stream to the image stream to reduce memory allocations.
+                using (var fileStream = new FileStream(imagePath, FileMode.Open))
+                {
+                    using (var imageStream = await httpClient.GetStreamAsync(imageUrl))
+                    {
+                        await imageStream.CopyToAsync(fileStream);
+                    }
+                }
 
                 imageCache.Set(imageUrl, imagePath);
 
