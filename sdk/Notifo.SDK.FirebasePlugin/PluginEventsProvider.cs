@@ -19,25 +19,26 @@ namespace Notifo.SDK.FirebasePlugin
         public event EventHandler<TokenRefreshEventArgs>? OnTokenRefresh;
         public event EventHandler<NotificationEventArgs>? OnNotificationReceived;
         public event EventHandler<NotificationEventArgs>? OnNotificationOpened;
+        public event EventHandler<NotificationErrorEventArgs> OnError;
 
         public PluginEventsProvider()
         {
             CrossFirebasePushNotification.Current.OnTokenRefresh += FirebasePushNotification_OnTokenRefresh;
             CrossFirebasePushNotification.Current.OnNotificationReceived += FirebasePushNotification_OnNotificationReceived;
             CrossFirebasePushNotification.Current.OnNotificationOpened += FirebasePushNotification_OnNotificationOpened;
+            CrossFirebasePushNotification.Current.OnNotificationError += Current_OnNotificationError;
         }
 
         public string Token => CrossFirebasePushNotification.Current.Token;
 
         private void FirebasePushNotification_OnTokenRefresh(object source, FirebasePushNotificationTokenEventArgs e)
         {
-            var args = new TokenRefreshEventArgs(e.Token);
-            OnRefreshTokenEvent(args);
+            OnTokenRefresh?.Invoke(this, new TokenRefreshEventArgs(e.Token));
         }
 
-        protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args)
+        private void Current_OnNotificationError(object source, FirebasePushNotificationErrorEventArgs e)
         {
-            OnTokenRefresh?.Invoke(this, args);
+            OnError?.Invoke(this, new NotificationErrorEventArgs(e.Message, null, source));
         }
 
         private void FirebasePushNotification_OnNotificationReceived(object source, FirebasePushNotificationDataEventArgs e)
@@ -47,14 +48,10 @@ namespace Notifo.SDK.FirebasePlugin
                 return;
             }
 
-            var args = new NotificationEventArgs(
-                new UserNotificationDto().FromDictionary(new Dictionary<string, object>(e.Data)));
+            var args =
+                new NotificationEventArgs(
+                    new UserNotificationDto().FromDictionary(new Dictionary<string, object>(e.Data)));
 
-            OnNotificationReceivedEvent(args);
-        }
-
-        protected virtual void OnNotificationReceivedEvent(NotificationEventArgs args)
-        {
             OnNotificationReceived?.Invoke(this, args);
         }
 
@@ -65,14 +62,10 @@ namespace Notifo.SDK.FirebasePlugin
                 return;
             }
 
-            var args = new NotificationEventArgs(
-                new UserNotificationDto().FromDictionary(new Dictionary<string, object>(e.Data)));
+            var args = 
+                new NotificationEventArgs(
+                    new UserNotificationDto().FromDictionary(new Dictionary<string, object>(e.Data)));
 
-            OnNotificationOpenedEvent(args);
-        }
-
-        protected virtual void OnNotificationOpenedEvent(NotificationEventArgs args)
-        {
             OnNotificationOpened?.Invoke(this, args);
         }
 

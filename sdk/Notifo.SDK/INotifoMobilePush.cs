@@ -26,6 +26,11 @@ namespace Notifo.SDK
         event EventHandler<NotificationEventArgs> OnNotificationOpened;
 
         /// <summary>
+        /// Event triggered when an error happened.
+        /// </summary>
+        event EventHandler<NotificationErrorEventArgs> OnError;
+
+        /// <summary>
         /// Sets the api key to use.
         /// </summary>
         /// <param name="apiKey">

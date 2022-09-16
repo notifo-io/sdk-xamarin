@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
@@ -18,7 +19,15 @@ namespace Notifo.SDK.NotifoMobilePush
         public async ValueTask ExecuteAsync(
             CancellationToken ct)
         {
-            await NotifoIO.Current.MobilePush.DeleteMyTokenAsync(Token, ct);
+            try
+            {
+                await NotifoIO.Current.MobilePush.DeleteMyTokenAsync(Token, ct);
+            }
+            catch (Exception ex)
+            {
+                ((NotifoMobilePushImplementation)NotifoIO.Current).RaiseError(ex.Message, ex, this);
+                throw ex;
+            }
         }
 
         public bool Merge(ICommand other)

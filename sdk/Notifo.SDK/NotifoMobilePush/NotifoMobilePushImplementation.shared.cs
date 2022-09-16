@@ -27,6 +27,9 @@ namespace Notifo.SDK.NotifoMobilePush
         public event EventHandler<NotificationEventArgs> OnNotificationOpened;
 
         /// <inheritdoc/>
+        public event EventHandler<NotificationErrorEventArgs> OnError;
+
+        /// <inheritdoc/>
         public IAppsClient Apps => clientProvider.Client.Apps;
 
         /// <inheritdoc/>
@@ -91,6 +94,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 this.pushEventsProvider.OnTokenRefresh -= PushEventsProvider_OnTokenRefresh;
                 this.pushEventsProvider.OnNotificationReceived -= PushEventsProvider_OnNotificationReceived;
                 this.pushEventsProvider.OnNotificationOpened -= PushEventsProvider_OnNotificationOpened;
+                this.pushEventsProvider.OnError -= PushEventsProvider_OnError;
             }
 
             this.pushEventsProvider = pushEventsProvider;
@@ -100,16 +104,22 @@ namespace Notifo.SDK.NotifoMobilePush
                 this.pushEventsProvider.OnTokenRefresh += PushEventsProvider_OnTokenRefresh;
                 this.pushEventsProvider.OnNotificationReceived += PushEventsProvider_OnNotificationReceived;
                 this.pushEventsProvider.OnNotificationOpened += PushEventsProvider_OnNotificationOpened;
+                this.pushEventsProvider.OnError += PushEventsProvider_OnError;
             }
 
-            token = pushEventsProvider.Token;
+            if (!string.Equals(pushEventsProvider.Token, token))
+            {
+                token = pushEventsProvider.Token;
+
+                Register();
+            }
 
             return this;
         }
 
         public void Register()
         {
-            if (token == null)
+            if (string.IsNullOrEmpty(token))
             {
                 return;
             }
@@ -119,7 +129,7 @@ namespace Notifo.SDK.NotifoMobilePush
 
         public void Unregister()
         {
-            if (token == null)
+            if (string.IsNullOrEmpty(token))
             {
                 return;
             }
@@ -139,11 +149,22 @@ namespace Notifo.SDK.NotifoMobilePush
             OnNotificationOpened?.Invoke(sender, e);
         }
 
+        private void PushEventsProvider_OnError(object sender, NotificationErrorEventArgs e)
+        {
+            // Forward the event to the application.
+            OnError?.Invoke(sender, e);
+        }
+
         private void PushEventsProvider_OnTokenRefresh(object sender, TokenRefreshEventArgs e)
         {
             token = e.Token;
 
-            _ = commandQueue.ExecuteAsync(new TokenUnregisterCommand { Token = e.Token });
+            Register();
+        }
+
+        public void RaiseError(string error, Exception? exception, object? source)
+        {
+            OnError?.Invoke(this, new NotificationErrorEventArgs(error, exception, source));
         }
     }
 }
