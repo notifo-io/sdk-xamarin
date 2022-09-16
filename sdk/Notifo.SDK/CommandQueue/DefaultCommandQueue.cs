@@ -9,6 +9,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Notifo.SDK.CommandQueue
@@ -18,6 +19,7 @@ namespace Notifo.SDK.CommandQueue
         private readonly ICommandStore commandStore;
         private readonly ICommandTrigger[] commandTriggers;
         private readonly int maxRetries;
+        private readonly TimeSpan timeout;
         private readonly Task task;
         private readonly BlockingCollection<QueuedCommand> queue = new BlockingCollection<QueuedCommand>();
         private readonly Queue<QueuedCommand> retryQueue = new Queue<QueuedCommand>();
@@ -25,12 +27,13 @@ namespace Notifo.SDK.CommandQueue
         public DefaultCommandQueue(
             ICommandStore commandStore,
             ICommandTrigger[] commandTriggers,
-            int maxRetries)
+            int maxRetries,
+            TimeSpan timeout)
         {
             this.commandStore = commandStore;
             this.commandTriggers = commandTriggers;
             this.maxRetries = maxRetries;
-
+            this.timeout = timeout;
             foreach (var trigger in commandTriggers)
             {
                 trigger.Start(this);
@@ -105,7 +108,10 @@ namespace Notifo.SDK.CommandQueue
                 {
                     try
                     {
-                        await enqueued.Command.ExecuteAsync();
+                        using (var cts = new CancellationTokenSource(timeout))
+                        {
+                            await enqueued.Command.ExecuteAsync(cts.Token);
+                        }
 
                         // We have completed the command successfully, so we can remove it here.
                         await commandStore.RemoveAsync(enqueued.CommandId);

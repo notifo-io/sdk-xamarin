@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Resources;
@@ -20,7 +21,8 @@ namespace Notifo.SDK.NotifoMobilePush
 
         public string Token { get; set; }
 
-        public async ValueTask ExecuteAsync()
+        public async ValueTask ExecuteAsync(
+            CancellationToken ct)
         {
             refreshCount++;
 
@@ -45,7 +47,7 @@ namespace Notifo.SDK.NotifoMobilePush
                     request.DeviceType = MobileDeviceType.IOS;
                 }
 
-                await NotifoIO.Current.MobilePush.PostMyTokenAsync(request);
+                await NotifoIO.Current.MobilePush.PostMyTokenAsync(request, ct);
             }
             catch (Exception ex)
             {

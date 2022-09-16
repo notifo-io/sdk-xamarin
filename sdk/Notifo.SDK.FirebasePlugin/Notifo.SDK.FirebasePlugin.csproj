@@ -7,20 +7,13 @@
     <RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyName>Notifo.Xamarin.FirebasePlugin</AssemblyName>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="logo-squared.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
-    <AssemblyName>Notifo.Xamarin.FirebasePlugin</AssemblyName>
-  <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,15 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Notifo.SDK" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
-    <PackageReference Include="RefactoringEssentials" Version="5.6.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging" Version="8.10.0.1" />
     <PackageReference Include="Xamarin.Firebase.iOS.Core" Version="8.10.0.1" />
     <PackageReference Include="Xamarin.Firebase.iOS.Installations" Version="8.10.0.1" />

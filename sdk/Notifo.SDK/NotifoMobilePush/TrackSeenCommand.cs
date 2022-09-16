@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Resources;
@@ -20,7 +21,8 @@ namespace Notifo.SDK.NotifoMobilePush
 
         public string Token { get; set; }
 
-        public async ValueTask ExecuteAsync()
+        public async ValueTask ExecuteAsync(
+            CancellationToken ct)
         {
             try
             {
@@ -30,7 +32,7 @@ namespace Notifo.SDK.NotifoMobilePush
                     DeviceIdentifier = Token
                 };
 
-                await NotifoIO.Current.Notifications.ConfirmMeAsync(trackUserNotificationDto);
+                await NotifoIO.Current.Notifications.ConfirmMeAsync(trackUserNotificationDto, ct);
             }
             catch (Exception ex)
             {

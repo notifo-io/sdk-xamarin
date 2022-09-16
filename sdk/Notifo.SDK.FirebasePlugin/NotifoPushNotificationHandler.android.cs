@@ -29,7 +29,7 @@ namespace Notifo.SDK.FirebasePlugin
         {
             Log.Debug(Strings.ReceivedNotification, parameters);
 
-            var notification = new NotificationDto()
+            var notification = new UserNotificationDto()
                 .FromDictionary(new Dictionary<string, object>(parameters));
 
             if (notification.Silent)
@@ -48,7 +48,7 @@ namespace Notifo.SDK.FirebasePlugin
 
         public override void OnBuildNotification(NotificationCompat.Builder notificationBuilder, IDictionary<string, object> parameters)
         {
-            var notification = new NotificationDto()
+            var notification = new UserNotificationDto()
                 .FromDictionary(new Dictionary<string, object>(parameters));
 
             notifoMobilePush.OnBuildNotification(notificationBuilder, notification);

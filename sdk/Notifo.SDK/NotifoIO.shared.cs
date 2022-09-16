@@ -41,7 +41,7 @@ namespace Notifo.SDK
                     new TriggerPeriodically(TimeSpan.FromMinutes(10), CrossConnectivity.Current),
                     new TriggerWhenConnected(CrossConnectivity.Current)
                 },
-                10);
+                10, TimeSpan.FromSeconds(5));
 
             return new NotifoMobilePushImplementation(HttpClientFactory, settings, commandQueue);
         }
