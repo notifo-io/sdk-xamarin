@@ -35,6 +35,7 @@ namespace Notifo.SDK.CommandQueue
             this.commandTriggers = commandTriggers;
             this.maxRetries = maxRetries;
             this.timeout = timeout;
+
             foreach (var trigger in commandTriggers)
             {
                 trigger.Start(this);

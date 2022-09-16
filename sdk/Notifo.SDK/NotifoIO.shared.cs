@@ -37,7 +37,7 @@ namespace Notifo.SDK
                 settings,
                 new ICommandTrigger[]
                 {
-                    new TriggerOnStart(),
+                    new TriggerOnStart(TimeSpan.FromSeconds(10)),
                     new TriggerPeriodically(TimeSpan.FromMinutes(10), CrossConnectivity.Current),
                     new TriggerWhenConnected(CrossConnectivity.Current)
                 },
