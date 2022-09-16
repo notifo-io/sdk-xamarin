@@ -18,8 +18,10 @@ namespace Notifo.SDK.UnitTests.Mocks
         public event EventHandler<NotificationEventArgs> OnNotificationOpened;
         public string Token => "test token";
 
-        protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args) =>
+        protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args)
+        {
             OnTokenRefresh?.Invoke(this, args);
+        }
 
         public void RaiseOnTokenRefreshEvent()
         {
@@ -27,8 +29,10 @@ namespace Notifo.SDK.UnitTests.Mocks
             OnRefreshTokenEvent(args);
         }
 
-        protected virtual void OnNotificationReceivedEvent(NotificationEventArgs args) =>
+        protected virtual void OnNotificationReceivedEvent(NotificationEventArgs args)
+        {
             OnNotificationReceived?.Invoke(this, args);
+        }
 
         public void RaiseOnNotificationReceivedEvent()
         {
@@ -36,8 +40,10 @@ namespace Notifo.SDK.UnitTests.Mocks
             OnNotificationReceivedEvent(args);
         }
 
-        protected virtual void OnNotificationOpenedEvent(NotificationEventArgs args) =>
+        protected virtual void OnNotificationOpenedEvent(NotificationEventArgs args)
+        {
             OnNotificationOpened?.Invoke(this, args);
+        }
 
         public void RaiseOnNotificationOpenedEvent()
         {

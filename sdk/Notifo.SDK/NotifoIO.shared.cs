@@ -5,9 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using System.Net.Http;
-using System.Threading;
 using Notifo.SDK.Extensions;
 using Notifo.SDK.Helpers;
 using Notifo.SDK.NotifoMobilePush;
@@ -21,12 +19,10 @@ namespace Notifo.SDK
     /// </summary>
     public static partial class NotifoIO
     {
-        private static readonly Lazy<INotifoMobilePush> Instance = new Lazy<INotifoMobilePush>(() => SetupNotifoMobilePush(), LazyThreadSafetyMode.PublicationOnly);
-
         /// <summary>
         /// Current service implementation to use.
         /// </summary>
-        public static INotifoMobilePush Current => Instance.Value;
+        public static INotifoMobilePush Current { get; } = SetupNotifoMobilePush();
 
         private static INotifoMobilePush SetupNotifoMobilePush()
         {
@@ -49,6 +45,9 @@ namespace Notifo.SDK
                 .CreateLogger();
         }
 
-        private static HttpClient HttpClientFactory() => new HttpClient(new NotifoHttpMessageHandler());
+        private static HttpClient HttpClientFactory()
+        {
+            return new HttpClient(new NotifoHttpMessageHandler());
+        }
     }
 }

@@ -12,7 +12,9 @@ namespace Notifo.SDK.Extensions
 {
     internal static class LoggerExtensions
     {
-        public static LoggerConfiguration PlatformSink(this LoggerSinkConfiguration configuration) =>
-            configuration.NSLog();
+        public static LoggerConfiguration PlatformSink(this LoggerSinkConfiguration configuration)
+        {
+            return configuration.NSLog();
+        }
     }
 }

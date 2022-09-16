@@ -25,93 +25,44 @@ namespace Notifo.SDK.NotifoMobilePush
         private readonly HttpClient httpClient;
         private readonly ISettings settings;
         private readonly NotifoClientProvider clientProvider;
-
         private IPushEventsProvider? pushEventsProvider;
-
-        private List<EventHandler<NotificationEventArgs>> openedNotificationEvents;
-        private List<EventHandler<NotificationEventArgs>> receivedNotificationEvents;
-
         private int refreshExecutingCount;
 
-        public event EventHandler<NotificationEventArgs> OnNotificationReceived
-        {
-            add
-            {
-                if (pushEventsProvider == null)
-                {
-                    throw new InvalidOperationException(Strings.NotificationReceivedEventSubscribeException);
-                }
-
-                receivedNotificationEvents.Add(value);
-                pushEventsProvider.OnNotificationReceived += value;
-            }
-
-            remove
-            {
-                if (pushEventsProvider == null)
-                {
-                    throw new InvalidOperationException(Strings.NotificationReceivedEventUnsubscribeException);
-                }
-
-                receivedNotificationEvents.Remove(value);
-                pushEventsProvider.OnNotificationReceived -= value;
-            }
-        }
-
-        public event EventHandler<NotificationEventArgs> OnNotificationOpened
-        {
-            add
-            {
-                if (pushEventsProvider == null)
-                {
-                    throw new InvalidOperationException(Strings.NotificationOpenedEventSubscribeException);
-                }
-
-                openedNotificationEvents.Add(value);
-                pushEventsProvider.OnNotificationOpened += value;
-            }
-
-            remove
-            {
-                if (pushEventsProvider == null)
-                {
-                    throw new InvalidOperationException(Strings.NotificationOpenedEventUnsubscribeException);
-                }
-
-                openedNotificationEvents.Remove(value);
-                pushEventsProvider.OnNotificationOpened -= value;
-            }
-        }
+        /// <inheritdoc/>
+        public event EventHandler<NotificationEventArgs> OnNotificationReceived;
 
         /// <inheritdoc/>
-        public IAppsClient Apps => clientProvider.Apps;
+        public event EventHandler<NotificationEventArgs> OnNotificationOpened;
 
         /// <inheritdoc/>
-        public IConfigsClient Configs => clientProvider.Configs;
+        public IAppsClient Apps => clientProvider.Client.Apps;
 
         /// <inheritdoc/>
-        public IEventsClient Events => clientProvider.Events;
+        public IConfigsClient Configs => clientProvider.Client.Configs;
 
         /// <inheritdoc/>
-        public ILogsClient Logs => clientProvider.Logs;
+        public IEventsClient Events => clientProvider.Client.Events;
 
         /// <inheritdoc/>
-        public IMediaClient Media => clientProvider.Media;
+        public ILogsClient Logs => clientProvider.Client.Logs;
 
         /// <inheritdoc/>
-        public IMobilePushClient MobilePush => clientProvider.MobilePush;
+        public IMediaClient Media => clientProvider.Client.Media;
 
         /// <inheritdoc/>
-        public INotificationsClient Notifications => clientProvider.Notifications;
+        public IMobilePushClient MobilePush => clientProvider.Client.MobilePush;
 
         /// <inheritdoc/>
-        public ITemplatesClient Templates => clientProvider.Templates;
+        public INotificationsClient Notifications => clientProvider.Client.Notifications;
 
         /// <inheritdoc/>
-        public ITopicsClient Topics => clientProvider.Topics;
+        public ITemplatesClient Templates => clientProvider.Client.Templates;
 
         /// <inheritdoc/>
-        public IUsersClient Users => clientProvider.Users;
+        public ITopicsClient Topics => clientProvider.Client.Topics;
+
+        /// <inheritdoc/>
+        public IUsersClient Users => clientProvider.Client.Users;
 
         public NotifoMobilePushImplementation(Func<HttpClient> httpClientFactory, ISettings settings)
         {
@@ -119,24 +70,17 @@ namespace Notifo.SDK.NotifoMobilePush
             this.settings = settings;
 
             clientProvider = new NotifoClientProvider(httpClientFactory);
-
-            openedNotificationEvents = new List<EventHandler<NotificationEventArgs>>();
-            receivedNotificationEvents = new List<EventHandler<NotificationEventArgs>>();
-
-            refreshExecutingCount = 0;
         }
 
         public INotifoMobilePush SetApiKey(string apiKey)
         {
             clientProvider.ApiKey = apiKey;
-
             return this;
         }
 
         public INotifoMobilePush SetBaseUrl(string baseUrl)
         {
             clientProvider.ApiUrl = baseUrl;
-
             return this;
         }
 
@@ -149,12 +93,19 @@ namespace Notifo.SDK.NotifoMobilePush
 
             if (this.pushEventsProvider != null)
             {
-                UnsubscribeEventsFromCurrentProvider();
+                this.pushEventsProvider.OnTokenRefresh -= PushEventsProvider_OnTokenRefresh;
+                this.pushEventsProvider.OnNotificationReceived -= PushEventsProvider_OnNotificationReceived;
+                this.pushEventsProvider.OnNotificationOpened -= PushEventsProvider_OnNotificationOpened;
             }
 
             this.pushEventsProvider = pushEventsProvider;
-            this.pushEventsProvider.OnTokenRefresh += PushEventsProvider_OnTokenRefresh;
-            this.pushEventsProvider.OnNotificationReceived += PushEventsProvider_OnNotificationReceived;
+
+            if (this.pushEventsProvider != null)
+            {
+                this.pushEventsProvider.OnTokenRefresh += PushEventsProvider_OnTokenRefresh;
+                this.pushEventsProvider.OnNotificationReceived += PushEventsProvider_OnNotificationReceived;
+                this.pushEventsProvider.OnNotificationOpened += PushEventsProvider_OnNotificationOpened;
+            }
 
             return this;
         }
@@ -170,17 +121,43 @@ namespace Notifo.SDK.NotifoMobilePush
                         : pushEventsProvider.Token;
 
                 _ = EnsureTokenRefreshedAsync(token);
+                return;
+            }
+        }
+
+        private async Task RegisterCoreAsync()
+        {
+            try
+            {
+                var token = await settings.GetTokenAsync();
+
+                if (!string.IsNullOrWhiteSpace(token))
+                {
+                    await MobilePush.DeleteTokenAsync(token);
+                }
+
+                settings.Clear();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, Strings.TokenRemoveFailException);
             }
         }
 
         public void Unregister()
         {
+            _ = UnregisterCoreAsync();
+        }
+
+        private async Task UnregisterCoreAsync()
+        {
             try
             {
-                string token = settings.Token;
+                var token = await settings.GetTokenAsync();
+
                 if (!string.IsNullOrWhiteSpace(token))
                 {
-                    _ = MobilePush.DeleteTokenAsync(token);
+                    await MobilePush.DeleteTokenAsync(token);
                 }
 
                 settings.Clear();
@@ -193,15 +170,21 @@ namespace Notifo.SDK.NotifoMobilePush
 
         private void PushEventsProvider_OnNotificationReceived(object sender, NotificationEventArgs e)
         {
+            // Forward the event to the application.
+            OnNotificationReceived?.Invoke(sender, e);
+
             // we are tracking notifications only for Android here because it is the entry point for all notifications that the Android device receives
             // this is not the case for iOS where the entry point is in Notification Service Extension
-            if (DevicePlatform.Android == DeviceInfo.Platform)
+            if (DevicePlatform.Android == DeviceInfo.Platform && !string.IsNullOrWhiteSpace(e.Notification.TrackingUrl))
             {
-                if (!string.IsNullOrWhiteSpace(e.TrackingUrl))
-                {
-                    _ = TrackNotificationAsync(e.Id, e.TrackingUrl);
-                }
+                _ = TrackNotificationsAsync(e.Notification);
             }
+        }
+
+        private void PushEventsProvider_OnNotificationOpened(object sender, NotificationEventArgs e)
+        {
+            // Forward the event to the application.
+            OnNotificationOpened?.Invoke(sender, e);
         }
 
         private void PushEventsProvider_OnTokenRefresh(object sender, TokenRefreshEventArgs e)
@@ -249,37 +232,12 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
-        private void UnsubscribeEventsFromCurrentProvider()
-        {
-            if (pushEventsProvider == null)
-            {
-                return;
-            }
-
-            pushEventsProvider.OnTokenRefresh -= PushEventsProvider_OnTokenRefresh;
-            pushEventsProvider.OnNotificationReceived -= PushEventsProvider_OnNotificationReceived;
-
-            foreach (var oe in openedNotificationEvents)
-            {
-                pushEventsProvider.OnNotificationOpened -= oe;
-            }
-
-            openedNotificationEvents.Clear();
-
-            foreach (var re in receivedNotificationEvents)
-            {
-                pushEventsProvider.OnNotificationReceived -= re;
-            }
-
-            receivedNotificationEvents.Clear();
-        }
-
         private async Task<ICollection<NotificationDto>> GetPendingNotificationsAsync(int take, TimeSpan period)
         {
             try
             {
                 var allNotifications = await Notifications.GetNotificationsAsync(take: take);
-                var seenNotifications = settings.GetSeenNotifications();
+                var seenNotifications = await settings.GetSeenNotificationIdsAsync();
 
                 var utcNow = DateTimeOffset.UtcNow;
 
@@ -302,35 +260,18 @@ namespace Notifo.SDK.NotifoMobilePush
             return new NotificationDto[] { };
         }
 
-        private async Task TrackNotificationAsync(Guid notificationId, string trackingUrl)
-        {
-            Log.Debug(Strings.TrackingUrl, trackingUrl);
-
-            try
-            {
-                _ = settings.TrackNotificationAsync(notificationId);
-
-                var response = await httpClient.GetAsync(trackingUrl);
-                Log.Debug(Strings.TrackingResponseCode, response.StatusCode);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(Strings.TrackingException, ex);
-            }
-        }
-
-        private async Task TrackNotificationsAsync(IEnumerable<NotificationDto> notifications)
+        private async Task TrackNotificationsAsync(params NotificationDto[] notifications)
         {
             try
             {
                 var seenIds = notifications.Select(x => x.Id).ToArray();
 
-                _ = settings.TrackNotificationsAsync(seenIds);
+                await settings.SetSeenNotificationIdsAsync(seenIds);
 
                 var trackNotificationDto = new TrackNotificationDto
                 {
                     Seen = seenIds,
-                    DeviceIdentifier = settings.Token
+                    DeviceIdentifier = await settings.GetTokenAsync()
                 };
 
                 await Notifications.ConfirmAsync(trackNotificationDto);

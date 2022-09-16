@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using Notifo.SDK.NotifoMobilePush;
 using UserNotifications;
 
+#pragma warning disable IDE0060 // Remove unused parameter
+
 namespace Notifo.SDK
 {
     public static partial class NotifoIO
@@ -51,7 +53,7 @@ namespace Notifo.SDK
         {
             if (Current is NotifoMobilePushImplementation notifoMobilePush)
             {
-                notifoMobilePush.DidReceiveNotificationResponse(center, response, completionHandler);
+                notifoMobilePush.DidReceiveNotificationResponse(response);
             }
         }
     }

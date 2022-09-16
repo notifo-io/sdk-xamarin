@@ -32,7 +32,10 @@ namespace Notifo.SDK.Helpers
             history = new LinkedList<T>();
         }
 
-        public bool Contains(T item) => set.Contains(item);
+        public bool Contains(T item)
+        {
+            return set.Contains(item);
+        }
 
         public void Add(T item)
         {

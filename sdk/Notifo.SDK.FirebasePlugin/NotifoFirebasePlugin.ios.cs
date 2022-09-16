@@ -56,15 +56,19 @@ namespace Notifo.SDK.FirebasePlugin
         /// Indicates that a call to <see cref="UIKit.UIApplication.RegisterForRemoteNotifications"/> succeeded.
         /// </summary>
         /// <param name="deviceToken">The device token.</param>
-        public static void DidRegisterRemoteNotifications(NSData deviceToken) =>
+        public static void DidRegisterRemoteNotifications(NSData deviceToken)
+        {
             FirebasePushNotificationManager.DidRegisterRemoteNotifications(deviceToken);
+        }
 
         /// <summary>
         /// Indicates that a call to <see cref="UIKit.UIApplication.RegisterForRemoteNotifications"/> failed.
         /// </summary>
         /// <param name="error">The error.</param>
-        public static void RemoteNotificationRegistrationFailed(NSError error) =>
+        public static void RemoteNotificationRegistrationFailed(NSError error)
+        {
             FirebasePushNotificationManager.RemoteNotificationRegistrationFailed(error);
+        }
 
         /// <summary>
         /// Method for processing the user's response to a delivered notification.

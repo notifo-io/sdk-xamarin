@@ -33,8 +33,10 @@ namespace Notifo.SDK.FirebasePlugin
             OnRefreshTokenEvent(args);
         }
 
-        protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args) =>
+        protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args)
+        {
             OnTokenRefresh?.Invoke(this, args);
+        }
 
         private void FirebasePushNotification_OnNotificationReceived(object source, FirebasePushNotificationDataEventArgs e)
         {
@@ -47,8 +49,10 @@ namespace Notifo.SDK.FirebasePlugin
             OnNotificationReceivedEvent(args);
         }
 
-        protected virtual void OnNotificationReceivedEvent(NotificationEventArgs args) =>
+        protected virtual void OnNotificationReceivedEvent(NotificationEventArgs args)
+        {
             OnNotificationReceived?.Invoke(this, args);
+        }
 
         private void FirebasePushNotification_OnNotificationOpened(object source, FirebasePushNotificationResponseEventArgs e)
         {
@@ -61,8 +65,10 @@ namespace Notifo.SDK.FirebasePlugin
             OnNotificationOpenedEvent(args);
         }
 
-        protected virtual void OnNotificationOpenedEvent(NotificationEventArgs args) =>
+        protected virtual void OnNotificationOpenedEvent(NotificationEventArgs args)
+        {
             OnNotificationOpened?.Invoke(this, args);
+        }
 
         private bool IsNotificationData(IDictionary<string, object> data)
         {

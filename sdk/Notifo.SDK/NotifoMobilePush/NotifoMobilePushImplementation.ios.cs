@@ -23,15 +23,14 @@ namespace Notifo.SDK.NotifoMobilePush
 {
     internal partial class NotifoMobilePushImplementation : NSObject
     {
+        private readonly IMemoryCache imageCache = new MemoryCache(new MemoryCacheOptions());
         private INotificationHandler? notificationHandler;
+
         public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
         {
             this.notificationHandler = notificationHandler;
-
             return this;
         }
-
-        private readonly IMemoryCache imageCache = new MemoryCache(new MemoryCacheOptions());
 
         public async Task DidReceiveNotificationRequestAsync(UNNotificationRequest request, UNMutableNotificationContent bestAttemptContent)
         {
@@ -41,7 +40,7 @@ namespace Notifo.SDK.NotifoMobilePush
 
             if (!string.IsNullOrWhiteSpace(notification.TrackingUrl))
             {
-                await TrackNotificationAsync(notification.Id, notification.TrackingUrl);
+                await TrackNotificationsAsync(notification);
             }
 
             await EnrichNotificationContentAsync(bestAttemptContent, notification);
@@ -72,15 +71,12 @@ namespace Notifo.SDK.NotifoMobilePush
                 }
             }
 
-            await TrackNotificationsAsync(notifications);
+            await TrackNotificationsAsync(notifications.ToArray());
         }
 
         private void OnReceived(NotificationEventArgs eventArgs)
         {
-            foreach (var handler in receivedNotificationEvents)
-            {
-                handler.Invoke(this, eventArgs);
-            }
+            OnNotificationReceived?.Invoke(this, eventArgs);
         }
 
         private async Task ShowLocalNotificationAsync(NotificationDto notification)
@@ -91,7 +87,7 @@ namespace Notifo.SDK.NotifoMobilePush
             content.UserInfo = notification.ToDictionary().ToNSDictionary();
 
             var request = UNNotificationRequest.FromIdentifier(notification.Id.ToString(), content, trigger: null);
-            
+
             UNUserNotificationCenter.Current.AddNotificationRequest(request, (error) =>
             {
                 if (error != null)
@@ -220,7 +216,7 @@ namespace Notifo.SDK.NotifoMobilePush
             return content;
         }
 
-        public void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
+        public void DidReceiveNotificationResponse(UNNotificationResponse response)
         {
             var userInfo = response.Notification.Request.Content.UserInfo.ToDictionary();
 

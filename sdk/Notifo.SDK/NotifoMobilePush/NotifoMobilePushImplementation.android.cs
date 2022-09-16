@@ -8,6 +8,7 @@
 using System;
 using Android.App;
 using Android.Content;
+using Android.Graphics;
 using AndroidX.Core.App;
 using Java.Net;
 using Microsoft.Extensions.Caching.Memory;
@@ -20,7 +21,7 @@ namespace Notifo.SDK.NotifoMobilePush
     {
         private readonly IMemoryCache bitmapCache = new MemoryCache(new MemoryCacheOptions());
         private INotificationHandler? notificationHandler;
-        
+
         public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
         {
             this.notificationHandler = notificationHandler;
@@ -114,18 +115,20 @@ namespace Notifo.SDK.NotifoMobilePush
         private void AddAction(NotificationCompat.Builder notificationBuilder, string title, string url)
         {
             var notificationIntent = new Intent(Intent.ActionView);
-            
+
             // Set the URL to open when the button is clicked.
             notificationIntent.SetData(Android.Net.Uri.Parse(url));
 
-            var buttonIntent = PendingIntent.GetActivity(Application.Context, 0, notificationIntent, 
+            var buttonIntent = PendingIntent.GetActivity(Application.Context, 0, notificationIntent,
                 PendingIntentFlags.UpdateCurrent |
                 PendingIntentFlags.Immutable);
 
             notificationBuilder.AddAction(0, title, buttonIntent);
         }
 
-        private int GetDimension(int resourceId) =>
-            Application.Context?.Resources?.GetDimensionPixelSize(resourceId) ?? -1;
+        private int GetDimension(int resourceId)
+        {
+            return Application.Context?.Resources?.GetDimensionPixelSize(resourceId) ?? -1;
+        }
     }
 }

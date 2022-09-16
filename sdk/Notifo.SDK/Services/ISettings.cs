@@ -8,21 +8,22 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Notifo.SDK.Helpers;
 
 namespace Notifo.SDK.Services
 {
     internal interface ISettings
     {
-        string Token { get; set; }
+        ValueTask SetTokenAsync(string token);
 
-        bool IsTokenRefreshed { get; set; }
+        ValueTask<string> GetTokenAsync();
 
-        Task TrackNotificationAsync(Guid id);
+        ValueTask SetTokenRefreshedAsync(bool isTokenRefreshed);
 
-        Task TrackNotificationsAsync(IEnumerable<Guid> ids);
+        ValueTask<bool> GetTokenRefreshedAsync();
 
-        SlidingSet<Guid> GetSeenNotifications();
+        ValueTask SetSeenNotificationIdsAsync(params Guid[] ids);
+
+        ValueTask<ISet<Guid>> GetSeenNotificationIdsAsync();
 
         void Clear();
     }

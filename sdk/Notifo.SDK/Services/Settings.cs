@@ -7,76 +7,94 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Notifo.SDK.Helpers;
 using Xamarin.Essentials;
 
 namespace Notifo.SDK.Services
 {
     internal class Settings : ISettings
     {
+        private const int NotificationsCapacity = 500;
+        private const string KeyToken = "Token";
+        private const string KeySeenNotifications = "SeenNotifications";
+        private const string KeyIsTokenRefreshed = "IsTokenRefreshed";
         private static readonly string PrimaryPackageName = Regex.Replace(AppInfo.PackageName, @"\.([^.]*)ServiceExtension$", string.Empty);
         private static readonly string SharedName = $"group.{PrimaryPackageName}.notifo";
-        private static readonly string SeenNotificationsKey = "SeenNotifications";
 
-        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
-
-        public string Token
+        public ValueTask SetTokenAsync(string token)
         {
-            get => Preferences.Get(nameof(Token), string.Empty, SharedName);
-            set => Preferences.Set(nameof(Token), value, SharedName);
+            Preferences.Set(KeyToken, token, SharedName);
+
+            return default;
         }
 
-        public bool IsTokenRefreshed
+        public ValueTask<string> GetTokenAsync()
         {
-            get => Preferences.Get(nameof(IsTokenRefreshed), false, SharedName);
-            set => Preferences.Set(nameof(IsTokenRefreshed), value, SharedName);
+            var result = Preferences.Get(KeyToken, string.Empty, SharedName);
+
+            return new ValueTask<string>(result);
         }
 
-        public SlidingSet<Guid> GetSeenNotifications()
+        public ValueTask SetTokenRefreshedAsync(bool isTokenRefreshed)
         {
-            var seenNotifications = new SlidingSet<Guid>(capacity: 500);
+            Preferences.Set(KeyIsTokenRefreshed, isTokenRefreshed, SharedName);
 
-            var serialized = Preferences.Get(SeenNotificationsKey, string.Empty, SharedName);
+            return default;
+        }
+
+        public ValueTask<bool> GetTokenRefreshedAsync()
+        {
+            var result = Preferences.Get(KeyIsTokenRefreshed, false, SharedName);
+
+            return new ValueTask<bool>(result);
+        }
+
+        public async ValueTask SetSeenNotificationIdsAsync(params Guid[] ids)
+        {
+            await Task.Run(() =>
+            {
+                lock (this)
+                {
+                    var seenNotifications = GetSeenNotificationsCore();
+
+                    foreach (var id in ids)
+                    {
+                        if (seenNotifications.Count == NotificationsCapacity)
+                        {
+                            seenNotifications.RemoveFirst();
+                        }
+
+                        seenNotifications.AddLast(id);
+                    }
+                }
+            });
+        }
+
+        public ValueTask<ISet<Guid>> GetSeenNotificationIdsAsync()
+        {
+            var result = GetSeenNotificationsCore().ToHashSet();
+
+            return new ValueTask<ISet<Guid>>(result);
+        }
+
+        private LinkedList<Guid> GetSeenNotificationsCore()
+        {
+            var serialized = Preferences.Get(KeySeenNotifications, string.Empty, SharedName);
+
             if (!string.IsNullOrWhiteSpace(serialized))
             {
-                seenNotifications = JsonConvert.DeserializeObject<SlidingSet<Guid>>(serialized) ?? seenNotifications;
+                return JsonConvert.DeserializeObject<LinkedList<Guid>>(serialized);
             }
 
-            return seenNotifications;
+            return new LinkedList<Guid>();
         }
 
-        private void SetSeenNotifications(SlidingSet<Guid> seenNotifications)
+        public void Clear()
         {
-            var serialized = JsonConvert.SerializeObject(seenNotifications);
-            Preferences.Set(SeenNotificationsKey, serialized, SharedName);
+            Preferences.Clear(SharedName);
         }
-
-        public Task TrackNotificationAsync(Guid id) => TrackNotificationsAsync(new Guid[] { id });
-
-        public async Task TrackNotificationsAsync(IEnumerable<Guid> ids)
-        {
-            await Semaphore.WaitAsync();
-            try
-            {
-                var seenNotifications = GetSeenNotifications();
-
-                foreach (var id in ids)
-                {
-                    seenNotifications.Add(id);
-                }
-
-                await Task.Run(() => SetSeenNotifications(seenNotifications));
-            }
-            finally
-            {
-                Semaphore.Release();
-            }
-        }
-
-        public void Clear() => Preferences.Clear(SharedName);
     }
 }
