@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.SDK.NotifoMobilePush
+namespace Notifo.SDK
 {
     public partial interface INotifoMobilePush
     {

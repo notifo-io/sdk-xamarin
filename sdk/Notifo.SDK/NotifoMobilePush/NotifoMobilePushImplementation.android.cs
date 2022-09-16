@@ -22,6 +22,19 @@ namespace Notifo.SDK.NotifoMobilePush
         private readonly IMemoryCache bitmapCache = new MemoryCache(new MemoryCacheOptions());
         private INotificationHandler? notificationHandler;
 
+        partial void SetupPlatform()
+        {
+            OnNotificationReceived += PushEventsProvider_OnNotificationReceivedAndroid;
+        }
+
+        private void PushEventsProvider_OnNotificationReceivedAndroid(object sender, NotificationEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(e.Notification.TrackSeenUrl))
+            {
+                _ = TrackNotificationsAsync(e.Notification);
+            }
+        }
+
         public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
         {
             this.notificationHandler = notificationHandler;
@@ -29,7 +42,7 @@ namespace Notifo.SDK.NotifoMobilePush
             return this;
         }
 
-        internal void OnBuildNotification(NotificationCompat.Builder notificationBuilder, NotificationDto notification)
+        internal void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification)
         {
             if (!string.IsNullOrWhiteSpace(notification.Subject))
             {

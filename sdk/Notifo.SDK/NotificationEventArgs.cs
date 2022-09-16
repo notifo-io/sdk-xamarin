@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Notifo.SDK.PushEventProvider
+namespace Notifo.SDK
 {
     /// <summary>
     /// Event arguments containing notification data.
@@ -17,13 +17,13 @@ namespace Notifo.SDK.PushEventProvider
         /// <summary>
         /// Gets the notification.
         /// </summary>
-        public NotificationDto Notification { get; private set; }
+        public UserNotificationDto Notification { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationEventArgs"/> class with the notification token.
         /// </summary>
         /// <param name="notification">The push notification.</param>
-        public NotificationEventArgs(NotificationDto notification)
+        public NotificationEventArgs(UserNotificationDto notification)
         {
             Notification = notification;
         }

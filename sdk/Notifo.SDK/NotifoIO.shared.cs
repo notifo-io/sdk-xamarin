@@ -5,11 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Net.Http;
+using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Extensions;
 using Notifo.SDK.Helpers;
 using Notifo.SDK.NotifoMobilePush;
 using Notifo.SDK.Services;
+using Plugin.Connectivity;
 using Serilog;
 
 namespace Notifo.SDK
@@ -30,7 +33,17 @@ namespace Notifo.SDK
 
             var settings = new Settings();
 
-            return new NotifoMobilePushImplementation(HttpClientFactory, settings);
+            var commandQueue = new DefaultCommandQueue(
+                settings,
+                new ICommandTrigger[]
+                {
+                    new TriggerOnStart(),
+                    new TriggerPeriodically(TimeSpan.FromMinutes(10), CrossConnectivity.Current),
+                    new TriggerWhenConnected(CrossConnectivity.Current)
+                },
+                10);
+
+            return new NotifoMobilePushImplementation(HttpClientFactory, settings, commandQueue);
         }
 
         private static ILogger ConfigureLogger()

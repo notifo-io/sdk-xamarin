@@ -56,14 +56,17 @@ namespace Notifo.SDK.NotifoMobilePush
             {
                 if (clientInstance == null)
                 {
-                    var httpClient = httpClientFactory();
-
-                    clientBuilder.SetClient(httpClient);
+                    clientBuilder.SetClient(CreateHttpClient());
                     clientInstance = clientBuilder.Build();
                 }
 
                 return clientInstance;
             }
+        }
+
+        public HttpClient CreateHttpClient()
+        {
+            return httpClientFactory();
         }
 
         public NotifoClientProvider(Func<HttpClient> httpClientFactory)

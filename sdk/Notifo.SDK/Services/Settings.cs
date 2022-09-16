@@ -11,48 +11,20 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Notifo.SDK.CommandQueue;
+using Notifo.SDK.NotifoMobilePush;
 using Xamarin.Essentials;
 
 namespace Notifo.SDK.Services
 {
-    internal class Settings : ISettings
+    internal sealed class Settings : ISeenNotificationsStore, ICommandStore
     {
-        private const int NotificationsCapacity = 500;
-        private const string KeyToken = "Token";
-        private const string KeySeenNotifications = "SeenNotifications";
-        private const string KeyIsTokenRefreshed = "IsTokenRefreshed";
+        private const string KeyCommand = "Command";
+        private const string KeySeenNotifications = "SeenNotificationsV2";
         private static readonly string PrimaryPackageName = Regex.Replace(AppInfo.PackageName, @"\.([^.]*)ServiceExtension$", string.Empty);
         private static readonly string SharedName = $"group.{PrimaryPackageName}.notifo";
 
-        public ValueTask SetTokenAsync(string token)
-        {
-            Preferences.Set(KeyToken, token, SharedName);
-
-            return default;
-        }
-
-        public ValueTask<string> GetTokenAsync()
-        {
-            var result = Preferences.Get(KeyToken, string.Empty, SharedName);
-
-            return new ValueTask<string>(result);
-        }
-
-        public ValueTask SetTokenRefreshedAsync(bool isTokenRefreshed)
-        {
-            Preferences.Set(KeyIsTokenRefreshed, isTokenRefreshed, SharedName);
-
-            return default;
-        }
-
-        public ValueTask<bool> GetTokenRefreshedAsync()
-        {
-            var result = Preferences.Get(KeyIsTokenRefreshed, false, SharedName);
-
-            return new ValueTask<bool>(result);
-        }
-
-        public async ValueTask SetSeenNotificationIdsAsync(params Guid[] ids)
+        public async ValueTask AddSeenNotificationIdsAsync(int maxCapacity, params Guid[] ids)
         {
             await Task.Run(() =>
             {
@@ -62,22 +34,63 @@ namespace Notifo.SDK.Services
 
                     foreach (var id in ids)
                     {
-                        if (seenNotifications.Count == NotificationsCapacity)
+                        if (seenNotifications.Count == maxCapacity)
                         {
                             seenNotifications.RemoveFirst();
                         }
 
                         seenNotifications.AddLast(id);
                     }
+
+                    StoreSeenNotificationsCore(seenNotifications);
                 }
             });
         }
 
-        public ValueTask<ISet<Guid>> GetSeenNotificationIdsAsync()
+        public async ValueTask<Guid[]> GetSeenNotificationIdsAsync()
         {
-            var result = GetSeenNotificationsCore().ToHashSet();
+            return await Task.Run(() =>
+            {
+                return GetSeenNotificationsCore().ToArray();
+            });
+        }
 
-            return new ValueTask<ISet<Guid>>(result);
+        public async ValueTask<List<QueuedCommand>> GetCommandsAsync()
+        {
+            return await Task.Run(() =>
+            {
+                return GetCommandsCore().Values.ToList();
+            });
+        }
+
+        public async ValueTask RemoveAsync(Guid id)
+        {
+            await Task.Run(() =>
+            {
+                lock (this)
+                {
+                    var commands = GetCommandsCore();
+
+                    commands.Remove(id);
+
+                    StoreCommandsCore(commands);
+                }
+            });
+        }
+
+        public async ValueTask StoreAsync(QueuedCommand command)
+        {
+            await Task.Run(() =>
+            {
+                lock (this)
+                {
+                    var commands = GetCommandsCore();
+
+                    commands[command.CommandId] = command;
+
+                    StoreCommandsCore(commands);
+                }
+            });
         }
 
         private LinkedList<Guid> GetSeenNotificationsCore()
@@ -92,9 +105,30 @@ namespace Notifo.SDK.Services
             return new LinkedList<Guid>();
         }
 
-        public void Clear()
+        private void StoreSeenNotificationsCore(LinkedList<Guid> value)
         {
-            Preferences.Clear(SharedName);
+            var json = JsonConvert.SerializeObject(value);
+
+            Preferences.Set(KeySeenNotifications, json, SharedName);
+        }
+
+        private Dictionary<Guid, QueuedCommand> GetCommandsCore()
+        {
+            var serialized = Preferences.Get(KeyCommand, string.Empty, SharedName);
+
+            if (!string.IsNullOrWhiteSpace(serialized))
+            {
+                return JsonConvert.DeserializeObject<Dictionary<Guid, QueuedCommand>>(serialized);
+            }
+
+            return new Dictionary<Guid, QueuedCommand>();
+        }
+
+        private void StoreCommandsCore(Dictionary<Guid, QueuedCommand> value)
+        {
+            var json = JsonConvert.SerializeObject(value);
+
+            Preferences.Set(KeyCommand, json, SharedName);
         }
     }
 }

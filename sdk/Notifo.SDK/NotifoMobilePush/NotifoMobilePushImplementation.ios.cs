@@ -9,11 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Foundation;
 using Microsoft.Extensions.Caching.Memory;
 using Notifo.SDK.Extensions;
-using Notifo.SDK.PushEventProvider;
 using Notifo.SDK.Resources;
 using Serilog;
 using UserNotifications;
@@ -24,11 +24,18 @@ namespace Notifo.SDK.NotifoMobilePush
     internal partial class NotifoMobilePushImplementation : NSObject
     {
         private readonly IMemoryCache imageCache = new MemoryCache(new MemoryCacheOptions());
+        private HttpClient httpClient;
         private INotificationHandler? notificationHandler;
+
+        partial void SetupPlatform()
+        {
+            httpClient = clientProvider.CreateHttpClient();
+        }
 
         public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
         {
             this.notificationHandler = notificationHandler;
+
             return this;
         }
 
@@ -36,9 +43,9 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             Log.Debug(Strings.ReceivedNotification, request.Content.UserInfo);
 
-            var notification = new NotificationDto().FromDictionary(request.Content.UserInfo.ToDictionary());
+            var notification = new UserNotificationDto().FromDictionary(request.Content.UserInfo.ToDictionary());
 
-            if (!string.IsNullOrWhiteSpace(notification.TrackingUrl))
+            if (!string.IsNullOrWhiteSpace(notification.TrackSeenUrl))
             {
                 await TrackNotificationsAsync(notification);
             }
@@ -74,12 +81,40 @@ namespace Notifo.SDK.NotifoMobilePush
             await TrackNotificationsAsync(notifications.ToArray());
         }
 
+        private async Task<IEnumerable<UserNotificationDto>> GetPendingNotificationsAsync(int take, TimeSpan period)
+        {
+            try
+            {
+                var notificationPending = await Notifications.GetMyNotificationsAsync(take: take);
+                var notificationSeen = await GetSeenNotificationsAsync();
+
+                var utcNow = DateTimeOffset.UtcNow;
+
+                var pendingNotifications = notificationPending
+                    .Items
+                    .Where(x => !notificationSeen.Contains(x.Id))
+                    .Where(x => (utcNow - x.Created.UtcDateTime) <= period)
+                    .OrderBy(x => x.Created)
+                    .ToArray();
+
+                Log.Debug(Strings.PendingNotificationsCount, pendingNotifications.Length);
+
+                return pendingNotifications;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(Strings.NotificationsRetrieveException, ex);
+            }
+
+            return Array.Empty<UserNotificationDto>();
+        }
+
         private void OnReceived(NotificationEventArgs eventArgs)
         {
             OnNotificationReceived?.Invoke(this, eventArgs);
         }
 
-        private async Task ShowLocalNotificationAsync(NotificationDto notification)
+        private async Task ShowLocalNotificationAsync(UserNotificationDto notification)
         {
             var content = new UNMutableNotificationContent();
 
@@ -97,7 +132,7 @@ namespace Notifo.SDK.NotifoMobilePush
             });
         }
 
-        private async Task<UNMutableNotificationContent> EnrichNotificationContentAsync(UNMutableNotificationContent content, NotificationDto notification)
+        private async Task<UNMutableNotificationContent> EnrichNotificationContentAsync(UNMutableNotificationContent content, UserNotificationDto notification)
         {
             if (!string.IsNullOrWhiteSpace(notification.Subject))
             {
@@ -114,12 +149,14 @@ namespace Notifo.SDK.NotifoMobilePush
             if (!string.IsNullOrWhiteSpace(image))
             {
                 var imagePath = await GetImageAsync(image);
+
                 if (!string.IsNullOrWhiteSpace(imagePath))
                 {
                     var uniqueName = $"{Guid.NewGuid()}{Path.GetExtension(imagePath)}";
                     var attachementUrl = new NSUrl(uniqueName, NSFileManager.DefaultManager.GetTemporaryDirectory());
 
                     NSFileManager.DefaultManager.Copy(NSUrl.FromFilename(imagePath), attachementUrl, out var error);
+
                     if (error != null)
                     {
                         Log.Error(error.LocalizedDescription);
@@ -180,7 +217,6 @@ namespace Notifo.SDK.NotifoMobilePush
                 var categories = new List<UNNotificationCategory>();
 
                 var allCategories = await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
-
                 if (allCategories != null)
                 {
                     foreach (UNNotificationCategory category in allCategories)
@@ -221,6 +257,7 @@ namespace Notifo.SDK.NotifoMobilePush
             var userInfo = response.Notification.Request.Content.UserInfo.ToDictionary();
 
             object? value = default;
+
             switch (response.ActionIdentifier)
             {
                 case Constants.ConfirmAction:
@@ -232,6 +269,7 @@ namespace Notifo.SDK.NotifoMobilePush
             }
 
             var url = value?.ToString();
+
             if (!string.IsNullOrWhiteSpace(url))
             {
                 Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);

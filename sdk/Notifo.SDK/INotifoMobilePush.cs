@@ -8,7 +8,7 @@
 using System;
 using Notifo.SDK.PushEventProvider;
 
-namespace Notifo.SDK.NotifoMobilePush
+namespace Notifo.SDK
 {
     /// <summary>
     /// Notifo mobile push service interface.

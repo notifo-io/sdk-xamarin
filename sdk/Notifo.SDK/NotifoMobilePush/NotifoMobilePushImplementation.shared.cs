@@ -6,27 +6,19 @@
 // ==========================================================================
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Notifo.SDK.Extensions;
+using Notifo.SDK.CommandQueue;
 using Notifo.SDK.PushEventProvider;
-using Notifo.SDK.Resources;
-using Notifo.SDK.Services;
-using Serilog;
-using Xamarin.Essentials;
 
 namespace Notifo.SDK.NotifoMobilePush
 {
     internal partial class NotifoMobilePushImplementation : INotifoMobilePush
     {
-        private readonly HttpClient httpClient;
-        private readonly ISettings settings;
+        private readonly ISeenNotificationsStore seenNotificationsStore;
+        private readonly ICommandQueue commandQueue;
         private readonly NotifoClientProvider clientProvider;
         private IPushEventsProvider? pushEventsProvider;
-        private int refreshExecutingCount;
+        private string token;
 
         /// <inheritdoc/>
         public event EventHandler<NotificationEventArgs> OnNotificationReceived;
@@ -64,13 +56,16 @@ namespace Notifo.SDK.NotifoMobilePush
         /// <inheritdoc/>
         public IUsersClient Users => clientProvider.Client.Users;
 
-        public NotifoMobilePushImplementation(Func<HttpClient> httpClientFactory, ISettings settings)
+        public NotifoMobilePushImplementation(Func<HttpClient> httpClientFactory, ISeenNotificationsStore seenNotificationsStore, ICommandQueue commandQueue)
         {
-            httpClient = httpClientFactory();
-            this.settings = settings;
+            this.seenNotificationsStore = seenNotificationsStore;
+            this.clientProvider = new NotifoClientProvider(httpClientFactory);
+            this.commandQueue = commandQueue;
 
-            clientProvider = new NotifoClientProvider(httpClientFactory);
+            SetupPlatform();
         }
+
+        partial void SetupPlatform();
 
         public INotifoMobilePush SetApiKey(string apiKey)
         {
@@ -107,78 +102,35 @@ namespace Notifo.SDK.NotifoMobilePush
                 this.pushEventsProvider.OnNotificationOpened += PushEventsProvider_OnNotificationOpened;
             }
 
+            token = pushEventsProvider.Token;
+
             return this;
         }
 
         public void Register()
         {
-            bool notRefreshing = refreshExecutingCount == 0;
-            if (notRefreshing)
+            if (token == null)
             {
-                string token =
-                    string.IsNullOrWhiteSpace(pushEventsProvider?.Token)
-                        ? settings.Token
-                        : pushEventsProvider.Token;
-
-                _ = EnsureTokenRefreshedAsync(token);
                 return;
             }
-        }
 
-        private async Task RegisterCoreAsync()
-        {
-            try
-            {
-                var token = await settings.GetTokenAsync();
-
-                if (!string.IsNullOrWhiteSpace(token))
-                {
-                    await MobilePush.DeleteTokenAsync(token);
-                }
-
-                settings.Clear();
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, Strings.TokenRemoveFailException);
-            }
+            _ = commandQueue.ExecuteAsync(new TokenRegisterCommand { Token = token });
         }
 
         public void Unregister()
         {
-            _ = UnregisterCoreAsync();
-        }
-
-        private async Task UnregisterCoreAsync()
-        {
-            try
+            if (token == null)
             {
-                var token = await settings.GetTokenAsync();
-
-                if (!string.IsNullOrWhiteSpace(token))
-                {
-                    await MobilePush.DeleteTokenAsync(token);
-                }
-
-                settings.Clear();
+                return;
             }
-            catch (Exception ex)
-            {
-                Log.Error(ex, Strings.TokenRemoveFailException);
-            }
+
+            _ = commandQueue.ExecuteAsync(new TokenUnregisterCommand { Token = token });
         }
 
         private void PushEventsProvider_OnNotificationReceived(object sender, NotificationEventArgs e)
         {
             // Forward the event to the application.
             OnNotificationReceived?.Invoke(sender, e);
-
-            // we are tracking notifications only for Android here because it is the entry point for all notifications that the Android device receives
-            // this is not the case for iOS where the entry point is in Notification Service Extension
-            if (DevicePlatform.Android == DeviceInfo.Platform && !string.IsNullOrWhiteSpace(e.Notification.TrackingUrl))
-            {
-                _ = TrackNotificationsAsync(e.Notification);
-            }
         }
 
         private void PushEventsProvider_OnNotificationOpened(object sender, NotificationEventArgs e)
@@ -189,97 +141,9 @@ namespace Notifo.SDK.NotifoMobilePush
 
         private void PushEventsProvider_OnTokenRefresh(object sender, TokenRefreshEventArgs e)
         {
-            _ = EnsureTokenRefreshedAsync(e.Token);
-        }
+            token = e.Token;
 
-        private async Task EnsureTokenRefreshedAsync(string token)
-        {
-            try
-            {
-                Log.Debug(Strings.TokenRefreshStartExecutingCount, refreshExecutingCount);
-
-                Interlocked.Increment(ref refreshExecutingCount);
-
-                bool alreadyRefreshed = settings.Token == token && settings.IsTokenRefreshed;
-                if (alreadyRefreshed || string.IsNullOrWhiteSpace(token))
-                {
-                    return;
-                }
-
-                settings.Token = token;
-                settings.IsTokenRefreshed = false;
-
-                var registerMobileTokenDto = new RegisterMobileTokenDto
-                {
-                    Token = token,
-                    DeviceType = DeviceInfo.Platform.ToMobileDeviceType()
-                };
-
-                await MobilePush.PostTokenAsync(registerMobileTokenDto);
-
-                settings.IsTokenRefreshed = true;
-                Log.Debug(Strings.TokenRefreshSuccess, token);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, Strings.TokenRefreshFailException);
-            }
-            finally
-            {
-                Interlocked.Decrement(ref refreshExecutingCount);
-
-                Log.Debug(Strings.TokenRefreshEndExecutingCount, refreshExecutingCount);
-            }
-        }
-
-        private async Task<ICollection<NotificationDto>> GetPendingNotificationsAsync(int take, TimeSpan period)
-        {
-            try
-            {
-                var allNotifications = await Notifications.GetNotificationsAsync(take: take);
-                var seenNotifications = await settings.GetSeenNotificationIdsAsync();
-
-                var utcNow = DateTimeOffset.UtcNow;
-
-                var pendingNotifications = allNotifications
-                    .Items
-                    .Where(x => !seenNotifications.Contains(x.Id))
-                    .Where(x => (utcNow - x.Created.UtcDateTime) <= period)
-                    .OrderBy(x => x.Created)
-                    .ToArray();
-
-                Log.Debug(Strings.PendingNotificationsCount, pendingNotifications.Length);
-
-                return pendingNotifications;
-            }
-            catch (Exception ex)
-            {
-                Log.Error(Strings.NotificationsRetrieveException, ex);
-            }
-
-            return new NotificationDto[] { };
-        }
-
-        private async Task TrackNotificationsAsync(params NotificationDto[] notifications)
-        {
-            try
-            {
-                var seenIds = notifications.Select(x => x.Id).ToArray();
-
-                await settings.SetSeenNotificationIdsAsync(seenIds);
-
-                var trackNotificationDto = new TrackNotificationDto
-                {
-                    Seen = seenIds,
-                    DeviceIdentifier = await settings.GetTokenAsync()
-                };
-
-                await Notifications.ConfirmAsync(trackNotificationDto);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(Strings.TrackingException, ex);
-            }
+            _ = commandQueue.ExecuteAsync(new TokenUnregisterCommand { Token = e.Token });
         }
     }
 }
