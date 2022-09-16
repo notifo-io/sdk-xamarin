@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Notifo.SDK.Resources;
 
 namespace Notifo.SDK.CommandQueue
 {
@@ -24,6 +25,8 @@ namespace Notifo.SDK.CommandQueue
         private readonly Task task;
         private readonly BlockingCollection<QueuedCommand> queue = new BlockingCollection<QueuedCommand>();
         private readonly Queue<QueuedCommand> retryQueue = new Queue<QueuedCommand>();
+
+        public event EventHandler<NotificationErrorEventArgs> OnError;
 
         public DefaultCommandQueue(
             ICommandStore commandStore,
@@ -56,7 +59,7 @@ namespace Notifo.SDK.CommandQueue
             task.Wait();
         }
 
-        public Task ExecuteAsync(ICommand command)
+        public void Run(ICommand command)
         {
             var queudCommand = new QueuedCommand
             {
@@ -70,7 +73,7 @@ namespace Notifo.SDK.CommandQueue
                 {
                     if (existing.Command.Merge(command))
                     {
-                        return Task.CompletedTask;
+                        return;
                     }
                 }
 
@@ -79,7 +82,19 @@ namespace Notifo.SDK.CommandQueue
 
             Trigger();
 
-            return commandStore.StoreAsync(queudCommand).AsTask();
+            _ = StoreAsync(queudCommand);
+        }
+
+        private async Task StoreAsync(QueuedCommand queudCommand)
+        {
+            try
+            {
+                await commandStore.StoreAsync(queudCommand).AsTask();
+            }
+            catch (Exception ex)
+            {
+                OnError?.Invoke(this, new NotificationErrorEventArgs(Strings.CommandError, ex, this));
+            }
         }
 
         public void Trigger()
@@ -95,14 +110,21 @@ namespace Notifo.SDK.CommandQueue
 
         private async Task RunAsync()
         {
-            var pendingCommands = await commandStore.GetCommandsAsync();
-
-            foreach (var command in pendingCommands)
+            try
             {
-                retryQueue.Enqueue(command);
-            }
+                var pendingCommands = await commandStore.GetCommandsAsync();
 
-            Trigger();
+                foreach (var command in pendingCommands)
+                {
+                    retryQueue.Enqueue(command);
+                }
+
+                Trigger();
+            }
+            catch (Exception ex)
+            {
+                OnError?.Invoke(this, new NotificationErrorEventArgs(Strings.CommandError, ex, this));
+            }
 
             try
             {
@@ -123,7 +145,14 @@ namespace Notifo.SDK.CommandQueue
                         }
 
                         // We have completed the command successfully, so we can remove it here.
-                        await commandStore.RemoveAsync(enqueued.CommandId);
+                        try
+                        {
+                            await commandStore.RemoveAsync(enqueued.CommandId);
+                        }
+                        catch (Exception ex)
+                        {
+                            OnError?.Invoke(this, new NotificationErrorEventArgs(Strings.CommandError, ex, this));
+                        }
 
                         // We have just completed a command, so it is very likely that the next one will be successful as well.
                         Trigger();

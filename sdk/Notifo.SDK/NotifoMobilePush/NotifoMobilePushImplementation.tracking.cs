@@ -70,7 +70,7 @@ namespace Notifo.SDK.NotifoMobilePush
                     Add(id);
                 }
 
-                await commandQueue.ExecuteAsync(new TrackSeenCommand { Ids = ids.ToHashSet(), Token = token });
+                await commandQueue.Run(new TrackSeenCommand { Ids = ids.ToHashSet(), Token = token });
             }
             catch (Exception ex)
             {

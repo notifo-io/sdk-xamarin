@@ -62,8 +62,9 @@ namespace Notifo.SDK.NotifoMobilePush
         public NotifoMobilePushImplementation(Func<HttpClient> httpClientFactory, ISeenNotificationsStore seenNotificationsStore, ICommandQueue commandQueue)
         {
             this.seenNotificationsStore = seenNotificationsStore;
-            this.clientProvider = new NotifoClientProvider(httpClientFactory);
             this.commandQueue = commandQueue;
+            this.commandQueue.OnError += CommandQueue_OnError;
+            this.clientProvider = new NotifoClientProvider(httpClientFactory);
 
             SetupPlatform();
         }
@@ -119,7 +120,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 return;
             }
 
-            _ = commandQueue.ExecuteAsync(new TokenRegisterCommand { Token = token });
+            commandQueue.Run(new TokenRegisterCommand { Token = token });
         }
 
         public void Unregister()
@@ -129,7 +130,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 return;
             }
 
-            _ = commandQueue.ExecuteAsync(new TokenUnregisterCommand { Token = token });
+            commandQueue.Run(new TokenUnregisterCommand { Token = token });
         }
 
         private void PushEventsProvider_OnNotificationReceived(object sender, NotificationEventArgs e)
@@ -145,6 +146,12 @@ namespace Notifo.SDK.NotifoMobilePush
         }
 
         private void PushEventsProvider_OnError(object sender, NotificationErrorEventArgs e)
+        {
+            // Forward the event to the application.
+            OnError?.Invoke(sender, e);
+        }
+
+        private void CommandQueue_OnError(object sender, NotificationErrorEventArgs e)
         {
             // Forward the event to the application.
             OnError?.Invoke(sender, e);

@@ -61,6 +61,15 @@ namespace Notifo.SDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Command queue has thrown an error..
+        /// </summary>
+        internal static string CommandError {
+            get {
+                return ResourceManager.GetString("CommandError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not download image..
         /// </summary>
         internal static string DownloadImageError {

@@ -5,13 +5,15 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Threading.Tasks;
+using System;
 
 namespace Notifo.SDK.CommandQueue
 {
     internal interface ICommandQueue
     {
-        Task ExecuteAsync(ICommand command);
+        event EventHandler<NotificationErrorEventArgs> OnError;
+
+        void Run(ICommand command);
 
         void Trigger();
     }
