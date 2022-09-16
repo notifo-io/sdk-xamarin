@@ -107,12 +107,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 this.pushEventsProvider.OnError += PushEventsProvider_OnError;
             }
 
-            if (!string.Equals(pushEventsProvider.Token, token))
-            {
-                token = pushEventsProvider.Token;
-
-                Register();
-            }
+            UpdateToken(pushEventsProvider.Token);
 
             return this;
         }
@@ -157,9 +152,17 @@ namespace Notifo.SDK.NotifoMobilePush
 
         private void PushEventsProvider_OnTokenRefresh(object sender, TokenRefreshEventArgs e)
         {
-            token = e.Token;
+            UpdateToken(e.Token);
+        }
 
-            Register();
+        private void UpdateToken(string newToken)
+        {
+            if (!string.Equals(newToken, token))
+            {
+                token = newToken;
+
+                Register();
+            }
         }
 
         public void RaiseError(string error, Exception? exception, object? source)

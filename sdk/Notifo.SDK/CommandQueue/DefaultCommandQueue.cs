@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -108,9 +109,16 @@ namespace Notifo.SDK.CommandQueue
                 {
                     try
                     {
-                        using (var cts = new CancellationTokenSource(timeout))
+                        if (!Debugger.IsAttached)
                         {
-                            await enqueued.Command.ExecuteAsync(cts.Token);
+                            using (var cts = new CancellationTokenSource(timeout))
+                            {
+                                await enqueued.Command.ExecuteAsync(cts.Token);
+                            }
+                        }
+                        else
+                        {
+                            await enqueued.Command.ExecuteAsync(default);
                         }
 
                         // We have completed the command successfully, so we can remove it here.

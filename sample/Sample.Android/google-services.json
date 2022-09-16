@@ -134,48 +134,6 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:785212949830:android:f0c4195915e43b95",
-        "android_client_info": {
-          "package_name": "de.easierlife.hartmann"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCw0sotBgfCszGrj8dcmONR4h0_CuEIUS4"
-        },
-        {
-          "current_key": "AIzaSyBDoahAl8Z7GbwoysX0eNyG4TNizecQcPE"
-        },
-        {
-          "current_key": "AIzaSyCtqBa81Xf18ZLqKmNQk73yS4NnRIE9LJ4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "785212949830-49lttciqiqj0qo7d9bh4i0pn6scosbu0.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "785212949830-16kv5e3nqebkisl2e5b7v5i03g6g9mtb.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "de.energis.assist"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:785212949830:android:9dacf6f423401fcb",
         "android_client_info": {
           "package_name": "de.easierlife.newApp"
@@ -218,9 +176,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:785212949830:android:3d3ad7c025ae7334",
+        "mobilesdk_app_id": "1:785212949830:android:271a2c23083dfdd2a2d147",
         "android_client_info": {
-          "package_name": "de.eins.family_care"
+          "package_name": "de.easierlife.notifo"
         }
       },
       "oauth_client": [
@@ -260,9 +218,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:785212949830:android:07635dfe26d8d378",
+        "mobilesdk_app_id": "1:785212949830:android:3acbb03055704b36a2d147",
         "android_client_info": {
-          "package_name": "de.energis.assist"
+          "package_name": "de.heidelberg.sicherdaheim"
         }
       },
       "oauth_client": [
@@ -344,7 +302,7 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:785212949830:android:4380d7a0b74cdf0ba2d147",
+        "mobilesdk_app_id": "1:785212949830:android:662d7c2eb38263dea2d147",
         "android_client_info": {
           "package_name": "io.notifo.xamarin.sample"
         }
@@ -357,13 +315,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCw0sotBgfCszGrj8dcmONR4h0_CuEIUS4"
-        },
-        {
           "current_key": "AIzaSyBDoahAl8Z7GbwoysX0eNyG4TNizecQcPE"
-        },
-        {
-          "current_key": "AIzaSyCtqBa81Xf18ZLqKmNQk73yS4NnRIE9LJ4"
         }
       ],
       "services": {

@@ -19,10 +19,15 @@ namespace Notifo.SDK.Services
 {
     internal sealed class Settings : ISeenNotificationsStore, ICommandStore
     {
-        private const string KeyCommand = "Command";
+        private const string KeyCommand = "Command2";
         private const string KeySeenNotifications = "SeenNotificationsV2";
         private static readonly string PrimaryPackageName = Regex.Replace(AppInfo.PackageName, @"\.([^.]*)ServiceExtension$", string.Empty);
         private static readonly string SharedName = $"group.{PrimaryPackageName}.notifo";
+
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto
+        };
 
         public async ValueTask AddSeenNotificationIdsAsync(int maxCapacity, params Guid[] ids)
         {
@@ -99,7 +104,7 @@ namespace Notifo.SDK.Services
 
             if (!string.IsNullOrWhiteSpace(serialized))
             {
-                return JsonConvert.DeserializeObject<LinkedList<Guid>>(serialized);
+                return JsonConvert.DeserializeObject<LinkedList<Guid>>(serialized, SerializerSettings)!;
             }
 
             return new LinkedList<Guid>();
@@ -107,7 +112,7 @@ namespace Notifo.SDK.Services
 
         private void StoreSeenNotificationsCore(LinkedList<Guid> value)
         {
-            var json = JsonConvert.SerializeObject(value);
+            var json = JsonConvert.SerializeObject(value, SerializerSettings);
 
             Preferences.Set(KeySeenNotifications, json, SharedName);
         }
@@ -118,7 +123,7 @@ namespace Notifo.SDK.Services
 
             if (!string.IsNullOrWhiteSpace(serialized))
             {
-                return JsonConvert.DeserializeObject<Dictionary<Guid, QueuedCommand>>(serialized);
+                return JsonConvert.DeserializeObject<Dictionary<Guid, QueuedCommand>>(serialized, SerializerSettings)!;
             }
 
             return new Dictionary<Guid, QueuedCommand>();
@@ -126,7 +131,7 @@ namespace Notifo.SDK.Services
 
         private void StoreCommandsCore(Dictionary<Guid, QueuedCommand> value)
         {
-            var json = JsonConvert.SerializeObject(value);
+            var json = JsonConvert.SerializeObject(value, SerializerSettings);
 
             Preferences.Set(KeyCommand, json, SharedName);
         }
