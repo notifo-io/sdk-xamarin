@@ -5,65 +5,89 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace Notifo.SDK.Helpers
 {
-    internal class SlidingSet<T>
+    internal class SlidingSet<T> : ICollection<T>
     {
-        [JsonProperty]
-        private readonly HashSet<T> set;
+        private readonly HashSet<T> itemSet = new HashSet<T>();
+        private readonly LinkedList<T> itemHistory = new LinkedList<T>();
 
-        [JsonProperty]
-        private readonly LinkedList<T> history;
+        public int Count => itemSet.Count;
 
-        [JsonProperty]
-        private readonly int capacity;
+        public bool IsReadOnly => false;
 
-        [JsonIgnore]
-        public int Count => set.Count;
-
-        public SlidingSet(int capacity)
+        public void Clear()
         {
-            this.capacity = capacity;
+            itemSet.Clear();
+            itemHistory.Clear();
+        }
 
-            set = new HashSet<T>();
-            history = new LinkedList<T>();
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            itemHistory.CopyTo(array, arrayIndex);
         }
 
         public bool Contains(T item)
         {
-            return set.Contains(item);
+            return itemSet.Contains(item);
         }
 
         public void Add(T item)
         {
-            if (set.Contains(item))
-            {
-                history.Remove(item);
-                history.AddLast(item);
+            Add(item, 0);
+        }
 
+        public void Add(T item, int capacity)
+        {
+            if (!itemSet.Add(item))
+            {
+                itemHistory.Remove(item);
+                itemHistory.AddLast(item);
                 return;
             }
 
-            if (set.Count >= capacity)
+            if (capacity > 0 && itemSet.Count > capacity)
             {
                 RemoveFirst();
             }
 
-            set.Add(item);
-            history.AddLast(item);
+            itemHistory.AddLast(item);
         }
 
         private void RemoveFirst()
         {
-            var node = history.First;
+            var node = itemHistory.First;
+
             if (node != null)
             {
-                set.Remove(node.Value);
-                history.RemoveFirst();
+                itemSet.Remove(node.Value);
+                itemHistory.RemoveFirst();
             }
+        }
+
+        public bool Remove(T item)
+        {
+            var hasRemoved = itemSet.Remove(item);
+
+            if (hasRemoved)
+            {
+                itemHistory.Remove(item);
+            }
+
+            return hasRemoved;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return itemHistory.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return itemHistory.GetEnumerator();
         }
     }
 }

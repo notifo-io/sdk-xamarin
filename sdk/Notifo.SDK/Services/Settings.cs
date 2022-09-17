@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Notifo.SDK.CommandQueue;
+using Notifo.SDK.Helpers;
 using Notifo.SDK.NotifoMobilePush;
 using Xamarin.Essentials;
 
@@ -19,7 +20,7 @@ namespace Notifo.SDK.Services
 {
     internal sealed class Settings : ISeenNotificationsStore, ICommandStore
     {
-        private const string KeyCommand = "Command2";
+        private const string KeyCommand = "CommandV2";
         private const string KeySeenNotifications = "SeenNotificationsV2";
         private static readonly string PrimaryPackageName = Regex.Replace(AppInfo.PackageName, @"\.([^.]*)ServiceExtension$", string.Empty);
         private static readonly string SharedName = $"group.{PrimaryPackageName}.notifo";
@@ -39,12 +40,7 @@ namespace Notifo.SDK.Services
 
                     foreach (var id in ids)
                     {
-                        if (seenNotifications.Count == maxCapacity)
-                        {
-                            seenNotifications.RemoveFirst();
-                        }
-
-                        seenNotifications.AddLast(id);
+                        seenNotifications.Add(id, maxCapacity);
                     }
 
                     StoreSeenNotificationsCore(seenNotifications);
@@ -52,11 +48,11 @@ namespace Notifo.SDK.Services
             });
         }
 
-        public async ValueTask<Guid[]> GetSeenNotificationIdsAsync()
+        public async ValueTask<SlidingSet<Guid>> GetSeenNotificationIdsAsync()
         {
             return await Task.Run(() =>
             {
-                return GetSeenNotificationsCore().ToArray();
+                return GetSeenNotificationsCore();
             });
         }
 
@@ -98,19 +94,19 @@ namespace Notifo.SDK.Services
             });
         }
 
-        private LinkedList<Guid> GetSeenNotificationsCore()
+        private SlidingSet<Guid> GetSeenNotificationsCore()
         {
             var serialized = Preferences.Get(KeySeenNotifications, string.Empty, SharedName);
 
             if (!string.IsNullOrWhiteSpace(serialized))
             {
-                return JsonConvert.DeserializeObject<LinkedList<Guid>>(serialized, SerializerSettings)!;
+                return JsonConvert.DeserializeObject<SlidingSet<Guid>>(serialized, SerializerSettings)!;
             }
 
-            return new LinkedList<Guid>();
+            return new SlidingSet<Guid>();
         }
 
-        private void StoreSeenNotificationsCore(LinkedList<Guid> value)
+        private void StoreSeenNotificationsCore(SlidingSet<Guid> value)
         {
             var json = JsonConvert.SerializeObject(value, SerializerSettings);
 

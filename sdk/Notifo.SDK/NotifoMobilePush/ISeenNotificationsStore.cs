@@ -7,6 +7,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Notifo.SDK.Helpers;
 
 namespace Notifo.SDK.NotifoMobilePush
 {
@@ -14,6 +15,6 @@ namespace Notifo.SDK.NotifoMobilePush
     {
         ValueTask AddSeenNotificationIdsAsync(int maxCapacity, params Guid[] ids);
 
-        ValueTask<Guid[]> GetSeenNotificationIdsAsync();
+        ValueTask<SlidingSet<Guid>> GetSeenNotificationIdsAsync();
     }
 }

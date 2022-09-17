@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Notifo.SDK.Helpers;
 using Notifo.SDK.Resources;
 using Serilog;
 
@@ -19,17 +20,16 @@ namespace Notifo.SDK.NotifoMobilePush
     {
         private const int Capacity = 500;
         private readonly SemaphoreSlim semaphoreSlim = new (1);
-        private HashSet<Guid>? seenNotificationsSet;
-        private LinkedList<Guid>? seenNotificationsList;
+        private SlidingSet<Guid>? seenNotifications;
 
         public async Task<HashSet<Guid>> GetSeenNotificationsAsync()
         {
             await semaphoreSlim.WaitAsync();
             try
             {
-                await LoadSeenNotificationsAsync();
+                var set = await LoadSeenNotificationsAsync();
 
-                return seenNotificationsSet.ToHashSet();
+                return set.ToHashSet();
             }
             catch (Exception ex)
             {
@@ -53,24 +53,16 @@ namespace Notifo.SDK.NotifoMobilePush
             await semaphoreSlim.WaitAsync();
             try
             {
-                await LoadSeenNotificationsAsync();
+                var set = await LoadSeenNotificationsAsync();
 
                 await seenNotificationsStore.AddSeenNotificationIdsAsync(Capacity, ids);
 
-                while (seenNotificationsSet!.Count > Capacity - ids.Length)
-                {
-                    var first = seenNotificationsList!.First.Value;
-
-                    seenNotificationsList.RemoveFirst();
-                    seenNotificationsSet.Remove(first);
-                }
-
                 foreach (var id in ids)
                 {
-                    Add(id);
+                    set.Add(id, Capacity);
                 }
 
-                await commandQueue.Run(new TrackSeenCommand { Ids = ids.ToHashSet(), Token = token });
+                commandQueue.Run(new TrackSeenCommand { Ids = ids.ToHashSet(), Token = token });
             }
             catch (Exception ex)
             {
@@ -82,28 +74,14 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
-        private async Task LoadSeenNotificationsAsync()
+        private async Task<SlidingSet<Guid>> LoadSeenNotificationsAsync()
         {
-            if (seenNotificationsSet == null)
+            if (seenNotifications == null)
             {
-                var loaded = await seenNotificationsStore.GetSeenNotificationIdsAsync();
-
-                seenNotificationsSet = new HashSet<Guid>();
-                seenNotificationsList = new LinkedList<Guid>();
-
-                foreach (var id in loaded)
-                {
-                    Add(id);
-                }
+                seenNotifications = await seenNotificationsStore.GetSeenNotificationIdsAsync();
             }
-        }
 
-        private void Add(Guid id)
-        {
-            if (seenNotificationsSet!.Add(id))
-            {
-                seenNotificationsList!.AddLast(id);
-            }
+            return seenNotifications;
         }
     }
 }

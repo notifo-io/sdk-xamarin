@@ -1,0 +1,17 @@
+## Diskutieren
+
+* API Key, warum soviele (https://console.cloud.google.com/apis/credentials?referrer=search&authuser=1&hl=en&project=easierlife-521b0)
+* API Credentials in Repository
+
+## Änderungen
+
+* Command Queue
+* Token bei jedem start gepusht
+* Token durch Command Queue
+* Seen events durch Command Queue
+* Besseres Async
+* Image resize auf dem Server
+* Error event
+* EventArgs vereinfacht
+* Namespaces
+* 
