@@ -39,11 +39,6 @@ namespace Notifo.SDK.CommandQueue
             this.maxRetries = maxRetries;
             this.timeout = timeout;
 
-            foreach (var trigger in commandTriggers)
-            {
-                trigger.Start(this);
-            }
-
             task = Task.Run(RunAsync);
         }
 
@@ -118,12 +113,15 @@ namespace Notifo.SDK.CommandQueue
                 {
                     retryQueue.Enqueue(command);
                 }
-
-                Trigger();
             }
             catch (Exception ex)
             {
                 OnError?.Invoke(this, new NotificationErrorEventArgs(Strings.CommandError, ex, this));
+            }
+
+            foreach (var trigger in commandTriggers)
+            {
+                trigger.Start(this);
             }
 
             try
