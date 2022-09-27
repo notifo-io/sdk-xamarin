@@ -70,8 +70,7 @@ namespace Notifo.SDK.NotifoMobilePush
                         new NotificationCompat
                             .BigPictureStyle()
                             .BigPicture(bigPicture)
-                            .SetSummaryText(notification.Body)
-                    );
+                            .SetSummaryText(notification.Body));
                 }
             }
 
