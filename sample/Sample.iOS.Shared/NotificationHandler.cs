@@ -12,7 +12,7 @@ namespace Sample.iOS.Shared
 {
     public class NotificationHandler : INotificationHandler
     {
-        public void OnBuildNotification(UNMutableNotificationContent content, NotificationDto notification)
+        public void OnBuildNotification(UNMutableNotificationContent content, UserNotificationDto notification)
         {
             content.Sound = UNNotificationSound.GetSound("announcement.caf");
         }

@@ -4,7 +4,6 @@
 //  Copyright (c) Sebastian Stehle
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
-
 using System;
 using System.Net.Http;
 using Notifo.SDK.CommandQueue;
@@ -58,6 +57,24 @@ namespace Notifo.SDK.NotifoMobilePush
 
         /// <inheritdoc/>
         public IUsersClient Users => clientProvider.Client.Users;
+
+        /// <inheritdoc/>
+        public IEmailTemplatesClient EmailTemplates => clientProvider.Client.EmailTemplates;
+
+        /// <inheritdoc/>
+        public IMessagingTemplatesClient MessagingTemplates => clientProvider.Client.MessagingTemplates;
+
+        /// <inheritdoc/>
+        public IPingClient Ping => clientProvider.Client.Ping;
+
+        /// <inheritdoc/>
+        public ISmsTemplatesClient SmsTemplates => clientProvider.Client.SmsTemplates;
+
+        /// <inheritdoc/>
+        public ISystemUsersClient SystemUsers => clientProvider.Client.SystemUsers;
+
+        /// <inheritdoc/>
+        public IUserClient User => clientProvider.Client.User;
 
         public NotifoMobilePushImplementation(Func<HttpClient> httpClientFactory, ISeenNotificationsStore seenNotificationsStore, ICommandQueue commandQueue)
         {

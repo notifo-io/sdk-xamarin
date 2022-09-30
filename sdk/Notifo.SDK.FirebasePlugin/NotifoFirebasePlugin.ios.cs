@@ -11,6 +11,7 @@ using Foundation;
 using Notifo.SDK.Resources;
 using Plugin.FirebasePushNotification;
 using Serilog;
+using Notifo.SDK;
 using UserNotifications;
 
 namespace Notifo.SDK.FirebasePlugin

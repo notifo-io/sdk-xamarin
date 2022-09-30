@@ -8,6 +8,7 @@
 using Android.App;
 using Android.Content;
 using Plugin.FirebasePushNotification;
+using Notifo.SDK;
 
 namespace Notifo.SDK.FirebasePlugin
 {

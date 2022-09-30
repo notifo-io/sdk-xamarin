@@ -1,61 +1,67 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;xamarinios10;monoandroid12.0;</TargetFrameworks>
-    <LangVersion>8.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyName>Notifo.Xamarin.FirebasePlugin</AssemblyName>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.1;xamarinios10;monoandroid12.0;</TargetFrameworks>
+		<LangVersion>8.0</LangVersion>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<AssemblyName>Notifo.Xamarin.FirebasePlugin</AssemblyName>
+		<RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+		<RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="logo-squared.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="logo-squared.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="**\*.netstandard.cs" />
-    <Compile Remove="**\*.android.cs" />
-    <Compile Remove="**\*.ios.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="**\*.netstandard.cs" />
+		<Compile Remove="**\*.android.cs" />
+		<Compile Remove="**\*.ios.cs" />
+	</ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <Compile Include="**\*.netstandard.cs" />
-  </ItemGroup>
+	<ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
+		<None Include="**\*.netstandard.cs" />
+		<Compile Include="**\*.android.cs" />
+		<None Include="**\*.ios.cs" />
+	</ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarinios')) ">
-    <Compile Include="**\*.ios.cs" />
-    <PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging" Version="8.10.0" />
-    <PackageReference Include="Xamarin.Firebase.iOS.Installations" Version="8.10.0" />
-    <PackageReference Include="Xamarin.Firebase.iOS.Core" Version="8.10.0" />
-    <PackageReference Include="Xamarin.Firebase.iOS.InstanceID" Version="4.8.0" />
-  </ItemGroup>
+	<ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+		<Compile Include="**\*.netstandard.cs" />
+		<None Include="**\*.android.cs" />
+		<None Include="**\*.ios.cs" />
+	</ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
-    <Compile Include="**\*.android.cs" />
-  </ItemGroup>
+	<ItemGroup Condition=" $(TargetFramework.StartsWith('xamarinios')) ">
+		<None Include="**\*.netstandard.cs" />
+		<None Include="**\*.android.cs" />
+		<Compile Include="**\*.ios.cs" />
+		<PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging" Version="8.10.0" />
+		<PackageReference Include="Xamarin.Firebase.iOS.Installations" Version="8.10.0" />
+		<PackageReference Include="Xamarin.Firebase.iOS.Core" Version="8.10.0" />
+		<PackageReference Include="Xamarin.Firebase.iOS.InstanceID" Version="4.8.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Notifo.SDK" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
-    <PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging" Version="8.10.0.1" />
-    <PackageReference Include="Xamarin.Firebase.iOS.Core" Version="8.10.0.1" />
-    <PackageReference Include="Xamarin.Firebase.iOS.Installations" Version="8.10.0.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Notifo.SDK" Version="1.2.0" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
+		<PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging" Version="8.10.0.1" />
+		<PackageReference Include="Xamarin.Firebase.iOS.Core" Version="8.10.0.1" />
+		<PackageReference Include="Xamarin.Firebase.iOS.Installations" Version="8.10.0.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Notifo.SDK\Notifo.SDK.Core.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Notifo.SDK\Notifo.SDK.Core.csproj" />
+	</ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'monoandroid12.0'">
-    <PackageReference Include="Xamarin.Firebase.Common">
-      <Version>120.0.0.5</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Firebase.Messaging">
-      <Version>122.0.0.5</Version>
-    </PackageReference>
-  </ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'monoandroid12.0'">
+		<PackageReference Include="Xamarin.Firebase.Common">
+			<Version>120.0.0.5</Version>
+		</PackageReference>
+		<PackageReference Include="Xamarin.Firebase.Messaging">
+			<Version>122.0.0.5</Version>
+		</PackageReference>
+	</ItemGroup>
 </Project>

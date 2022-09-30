@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using Notifo.SDK;
 using Notifo.SDK.Extensions;
 using Notifo.SDK.PushEventProvider;
 using Plugin.FirebasePushNotification;
@@ -17,9 +16,9 @@ namespace Notifo.SDK.FirebasePlugin
     internal class PluginEventsProvider : IPushEventsProvider
     {
         public event EventHandler<TokenRefreshEventArgs>? OnTokenRefresh;
-        public event EventHandler<NotificationEventArgs>? OnNotificationReceived;
-        public event EventHandler<NotificationEventArgs>? OnNotificationOpened;
-        public event EventHandler<NotificationErrorEventArgs> OnError;
+        public event EventHandler<Notifo.SDK.NotificationEventArgs>? OnNotificationReceived;
+        public event EventHandler<Notifo.SDK.NotificationEventArgs>? OnNotificationOpened;
+        public event EventHandler<Notifo.SDK.NotificationErrorEventArgs> OnError;
 
         public PluginEventsProvider()
         {
@@ -62,7 +61,7 @@ namespace Notifo.SDK.FirebasePlugin
                 return;
             }
 
-            var args = 
+            var args =
                 new NotificationEventArgs(
                     new UserNotificationDto().FromDictionary(new Dictionary<string, object>(e.Data)));
 
