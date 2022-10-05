@@ -81,19 +81,29 @@ namespace Notifo.SDK.NotifoMobilePush
             await TrackNotificationsAsync(notifications.ToArray());
         }
 
-        private async Task<IEnumerable<UserNotificationDto>> GetPendingNotificationsAsync(int take, TimeSpan period)
+        private async Task<IEnumerable<UserNotificationDto>> GetPendingNotificationsAsync(int take, TimeSpan maxAge)
         {
             try
             {
                 var notificationPending = await Notifications.GetMyNotificationsAsync(take: take);
-                var notificationSeen = await GetSeenNotificationsAsync();
 
-                var utcNow = DateTimeOffset.UtcNow;
+                if (notificationPending.Items.Count == 0)
+                {
+                    return Enumerable.Empty<UserNotificationDto>();
+                }
 
-                var pendingNotifications = notificationPending
-                    .Items
-                    .Where(x => !notificationSeen.Contains(x.Id))
-                    .Where(x => (utcNow - x.Created.UtcDateTime) <= period)
+                var currentSeen = await GetSeenNotificationsAsync();
+                var currentTime = DateTimeOffset.UtcNow;
+
+                bool IsRecent(DateTimeOffset date)
+                {
+                    return (currentTime - date.UtcDateTime) <= maxAge;
+                }
+
+                var pendingNotifications = notificationPending.Items
+                    .Where(n => !n.IsSeen)
+                    .Where(n => !currentSeen.Contains(n.Id))
+                    .Where(n => IsRecent(n.Created))
                     .OrderBy(x => x.Created)
                     .ToArray();
 
