@@ -28,7 +28,7 @@ namespace Notifo.SDK.FirebasePlugin
         /// <param name="notifoStartup">The <see cref="INotifoStartup"/> implementation.</param>
         /// <param name="notificationHandler">The <see cref="INotificationHandler"/> implementation.</param>
         /// <param name="autoRegistration">Automatically register for push notifications.</param>
-        public static void Initialize(NSDictionary options, INotifoStartup notifoStartup, INotificationHandler? notificationHandler = null, bool autoRegistration = true)
+        public static void Initialize(NSDictionary options, INotifoStartup notifoStartup, INotificationHandler notificationHandler = null, bool autoRegistration = true)
         {
             FirebasePushNotificationManager.Initialize(options, autoRegistration);
 

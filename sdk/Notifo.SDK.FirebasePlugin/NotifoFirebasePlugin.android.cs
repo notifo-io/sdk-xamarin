@@ -25,7 +25,7 @@ namespace Notifo.SDK.FirebasePlugin
         /// <param name="notificationHandler">The <see cref="INotificationHandler"/> implementation.</param>
         /// <param name="resetToken">Set to <see langword="true"/> while debugging.</param>
         /// <param name="autoRegistration">Automatically register for push notifications.</param>
-        public static void Initialize(Context context, INotifoStartup notifoStartup, INotificationHandler? notificationHandler = null, bool resetToken = false, bool autoRegistration = true)
+        public static void Initialize(Context context, INotifoStartup notifoStartup, INotificationHandler notificationHandler = null, bool resetToken = false, bool autoRegistration = true)
         {
             FirebasePushNotificationManager.Initialize(context, new NotifoPushNotificationHandler(), resetToken, createDefaultNotificationChannel: true, autoRegistration);
 

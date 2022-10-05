@@ -15,9 +15,9 @@ namespace Notifo.SDK.FirebasePlugin
 {
     internal class PluginEventsProvider : IPushEventsProvider
     {
-        public event EventHandler<TokenRefreshEventArgs>? OnTokenRefresh;
-        public event EventHandler<Notifo.SDK.NotificationEventArgs>? OnNotificationReceived;
-        public event EventHandler<Notifo.SDK.NotificationEventArgs>? OnNotificationOpened;
+        public event EventHandler<TokenRefreshEventArgs> OnTokenRefresh;
+        public event EventHandler<Notifo.SDK.NotificationEventArgs> OnNotificationReceived;
+        public event EventHandler<Notifo.SDK.NotificationEventArgs> OnNotificationOpened;
         public event EventHandler<Notifo.SDK.NotificationErrorEventArgs> OnError;
 
         public PluginEventsProvider()
