@@ -5,7 +5,6 @@ We use [Github Actions](https://docs.github.com/en/actions) to release NuGet pac
 
 * Navigate to the main page of the repository.
 * Under the repository name, click **Releases**.
-![Releases tab](https://help.github.com/assets/images/help/releases/release-link.png)
 * Click **Draft a new release**.
 
 ![Releases draft button](https://help.github.com/assets/images/help/releases/draft_release_button.png)
