@@ -15,9 +15,7 @@ We use [Github Actions](https://docs.github.com/en/actions) to release NuGet pac
 * Type a title and description for your release.
 ![Releases description](https://docs.github.com/assets/cb-15127/images/help/releases/releases_description_auto.png)
 * To notify users that the release is not ready for production and may be unstable, select **This is a pre-release**.
-![Checkbox to mark a release as prerelease](https://help.github.com/assets/images/help/releases/prerelease_checkbox.png)
 * Click **Publish release**. It will trigger the workflow in [publish.yml](https://github.com/notifo-io/sdk-xamarin/blob/master/.github/workflows/publish.yml) and after a few minutes, the new release should be available in [nuget.org](https://www.nuget.org/packages?q=Notifo).
-![Publish release and Draft release buttons](https://help.github.com/assets/images/help/releases/release_buttons.png)
 
 
 
