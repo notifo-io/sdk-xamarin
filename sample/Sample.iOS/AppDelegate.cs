@@ -55,7 +55,9 @@ namespace Sample.iOS
             NotifoFirebasePlugin.DidReceiveNotificationResponse(center, response, completionHandler);
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
+#pragma warning disable IDE1006 // Naming Styles
         public class iOSInitializer : IPlatformInitializer
+#pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore SA1300 // Element should begin with upper-case letter
         {
             public void RegisterTypes(IContainerRegistry containerRegistry)

@@ -27,7 +27,9 @@ namespace Notifo.SDK.FirebasePlugin
         /// The <see cref="INotifoMobilePush"/> instance.
         /// </param>
         /// <returns>The current instance.</returns>
-        public static INotifoMobilePush UseFirebasePluginEventsProvider(this INotifoMobilePush notifoMobilePush) =>
-            notifoMobilePush.SetPushEventsProvider(CurrentPluginEventsProvider.Value);
+        public static INotifoMobilePush UseFirebasePluginEventsProvider(this INotifoMobilePush notifoMobilePush)
+        {
+            return notifoMobilePush.SetPushEventsProvider(CurrentPluginEventsProvider.Value);
+        }
     }
 }

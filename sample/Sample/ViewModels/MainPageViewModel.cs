@@ -9,8 +9,6 @@ using System;
 using System.Diagnostics;
 using MvvmHelpers;
 using Notifo.SDK;
-using Notifo.SDK.NotifoMobilePush;
-using Notifo.SDK.PushEventProvider;
 using Prism.AppModel;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -20,7 +18,7 @@ namespace Sample.ViewModels
 {
     public class MainPageViewModel : BindableBase, IPageLifecycleAware
     {
-        public ObservableRangeCollection<NotificationDto> Notifications { get; private set; } = new ObservableRangeCollection<NotificationDto>() { };
+        public ObservableRangeCollection<UserNotificationDto> Notifications { get; private set; } = new ObservableRangeCollection<UserNotificationDto>() { };
 
         private bool isRefreshing;
         public bool IsRefreshing
@@ -70,7 +68,7 @@ namespace Sample.ViewModels
             {
                 try
                 {
-                    var notifications = await notifoService.Notifications.GetNotificationsAsync();
+                    var notifications = await notifoService.Notifications.GetMyNotificationsAsync();
                     Notifications.ReplaceRange(notifications.Items);
                 }
                 catch (Exception ex)

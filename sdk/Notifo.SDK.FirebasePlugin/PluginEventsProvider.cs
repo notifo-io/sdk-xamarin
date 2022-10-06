@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using Notifo.SDK.Extensions;
 using Notifo.SDK.PushEventProvider;
 using Plugin.FirebasePushNotification;
 
@@ -14,27 +15,30 @@ namespace Notifo.SDK.FirebasePlugin
 {
     internal class PluginEventsProvider : IPushEventsProvider
     {
-        public event EventHandler<TokenRefreshEventArgs>? OnTokenRefresh;
-        public event EventHandler<NotificationEventArgs>? OnNotificationReceived;
-        public event EventHandler<NotificationEventArgs>? OnNotificationOpened;
+        public event EventHandler<TokenRefreshEventArgs> OnTokenRefresh;
+        public event EventHandler<Notifo.SDK.NotificationEventArgs> OnNotificationReceived;
+        public event EventHandler<Notifo.SDK.NotificationEventArgs> OnNotificationOpened;
+        public event EventHandler<Notifo.SDK.NotificationErrorEventArgs> OnError;
 
         public PluginEventsProvider()
         {
             CrossFirebasePushNotification.Current.OnTokenRefresh += FirebasePushNotification_OnTokenRefresh;
             CrossFirebasePushNotification.Current.OnNotificationReceived += FirebasePushNotification_OnNotificationReceived;
             CrossFirebasePushNotification.Current.OnNotificationOpened += FirebasePushNotification_OnNotificationOpened;
+            CrossFirebasePushNotification.Current.OnNotificationError += Current_OnNotificationError;
         }
 
         public string Token => CrossFirebasePushNotification.Current.Token;
 
         private void FirebasePushNotification_OnTokenRefresh(object source, FirebasePushNotificationTokenEventArgs e)
         {
-            var args = new TokenRefreshEventArgs(e.Token);
-            OnRefreshTokenEvent(args);
+            OnTokenRefresh?.Invoke(this, new TokenRefreshEventArgs(e.Token));
         }
 
-        protected virtual void OnRefreshTokenEvent(TokenRefreshEventArgs args) =>
-            OnTokenRefresh?.Invoke(this, args);
+        private void Current_OnNotificationError(object source, FirebasePushNotificationErrorEventArgs e)
+        {
+            OnError?.Invoke(this, new NotificationErrorEventArgs(e.Message, null, source));
+        }
 
         private void FirebasePushNotification_OnNotificationReceived(object source, FirebasePushNotificationDataEventArgs e)
         {
@@ -43,12 +47,12 @@ namespace Notifo.SDK.FirebasePlugin
                 return;
             }
 
-            var args = new NotificationEventArgs(new Dictionary<string, object>(e.Data));
-            OnNotificationReceivedEvent(args);
-        }
+            var args =
+                new NotificationEventArgs(
+                    new UserNotificationDto().FromDictionary(new Dictionary<string, object>(e.Data)));
 
-        protected virtual void OnNotificationReceivedEvent(NotificationEventArgs args) =>
             OnNotificationReceived?.Invoke(this, args);
+        }
 
         private void FirebasePushNotification_OnNotificationOpened(object source, FirebasePushNotificationResponseEventArgs e)
         {
@@ -57,12 +61,12 @@ namespace Notifo.SDK.FirebasePlugin
                 return;
             }
 
-            var args = new NotificationEventArgs(new Dictionary<string, object>(e.Data));
-            OnNotificationOpenedEvent(args);
-        }
+            var args =
+                new NotificationEventArgs(
+                    new UserNotificationDto().FromDictionary(new Dictionary<string, object>(e.Data)));
 
-        protected virtual void OnNotificationOpenedEvent(NotificationEventArgs args) =>
             OnNotificationOpened?.Invoke(this, args);
+        }
 
         private bool IsNotificationData(IDictionary<string, object> data)
         {

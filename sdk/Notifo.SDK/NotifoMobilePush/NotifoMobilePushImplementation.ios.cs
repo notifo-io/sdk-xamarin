@@ -9,11 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Foundation;
 using Microsoft.Extensions.Caching.Memory;
 using Notifo.SDK.Extensions;
-using Notifo.SDK.PushEventProvider;
 using Notifo.SDK.Resources;
 using Serilog;
 using UserNotifications;
@@ -23,7 +23,15 @@ namespace Notifo.SDK.NotifoMobilePush
 {
     internal partial class NotifoMobilePushImplementation : NSObject
     {
+        private readonly IMemoryCache imageCache = new MemoryCache(new MemoryCacheOptions());
+        private HttpClient httpClient;
         private INotificationHandler? notificationHandler;
+
+        partial void SetupPlatform()
+        {
+            httpClient = clientProvider.CreateHttpClient();
+        }
+
         public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
         {
             this.notificationHandler = notificationHandler;
@@ -31,18 +39,15 @@ namespace Notifo.SDK.NotifoMobilePush
             return this;
         }
 
-        private readonly IMemoryCache imageCache = new MemoryCache(new MemoryCacheOptions());
-
         public async Task DidReceiveNotificationRequestAsync(UNNotificationRequest request, UNMutableNotificationContent bestAttemptContent)
         {
             Log.Debug(Strings.ReceivedNotification, request.Content.UserInfo);
 
-            var userInfo = request.Content.UserInfo.ToDictionary();
-            var notification = new NotificationDto().FromDictionary(userInfo);
+            var notification = new UserNotificationDto().FromDictionary(request.Content.UserInfo.ToDictionary());
 
-            if (!string.IsNullOrWhiteSpace(notification.TrackingUrl))
+            if (!string.IsNullOrWhiteSpace(notification.TrackSeenUrl))
             {
-                await TrackNotificationAsync(notification.Id, notification.TrackingUrl);
+                await TrackNotificationsAsync(notification);
             }
 
             await EnrichNotificationContentAsync(bestAttemptContent, notification);
@@ -73,26 +78,61 @@ namespace Notifo.SDK.NotifoMobilePush
                 }
             }
 
-            await TrackNotificationsAsync(notifications);
+            await TrackNotificationsAsync(notifications.ToArray());
+        }
+
+        private async Task<IEnumerable<UserNotificationDto>> GetPendingNotificationsAsync(int take, TimeSpan maxAge)
+        {
+            try
+            {
+                var notificationPending = await Notifications.GetMyNotificationsAsync(take: take);
+
+                if (notificationPending.Items.Count == 0)
+                {
+                    return Enumerable.Empty<UserNotificationDto>();
+                }
+
+                var currentSeen = await GetSeenNotificationsAsync();
+                var currentTime = DateTimeOffset.UtcNow;
+
+                bool IsRecent(DateTimeOffset date)
+                {
+                    return (currentTime - date.UtcDateTime) <= maxAge;
+                }
+
+                var pendingNotifications = notificationPending.Items
+                    .Where(n => !n.IsSeen)
+                    .Where(n => !currentSeen.Contains(n.Id))
+                    .Where(n => IsRecent(n.Created))
+                    .OrderBy(x => x.Created)
+                    .ToArray();
+
+                Log.Debug(Strings.PendingNotificationsCount, pendingNotifications.Length);
+
+                return pendingNotifications;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(Strings.NotificationsRetrieveException, ex);
+            }
+
+            return Array.Empty<UserNotificationDto>();
         }
 
         private void OnReceived(NotificationEventArgs eventArgs)
         {
-            foreach (var handler in receivedNotificationEvents)
-            {
-                handler.Invoke(this, eventArgs);
-            }
+            OnNotificationReceived?.Invoke(this, eventArgs);
         }
 
-        private async Task ShowLocalNotificationAsync(NotificationDto notification)
+        private async Task ShowLocalNotificationAsync(UserNotificationDto notification)
         {
             var content = new UNMutableNotificationContent();
 
             content = await EnrichNotificationContentAsync(content, notification);
-
             content.UserInfo = notification.ToDictionary().ToNSDictionary();
 
             var request = UNNotificationRequest.FromIdentifier(notification.Id.ToString(), content, trigger: null);
+
             UNUserNotificationCenter.Current.AddNotificationRequest(request, (error) =>
             {
                 if (error != null)
@@ -102,7 +142,7 @@ namespace Notifo.SDK.NotifoMobilePush
             });
         }
 
-        private async Task<UNMutableNotificationContent> EnrichNotificationContentAsync(UNMutableNotificationContent content, NotificationDto notification)
+        private async Task<UNMutableNotificationContent> EnrichNotificationContentAsync(UNMutableNotificationContent content, UserNotificationDto notification)
         {
             if (!string.IsNullOrWhiteSpace(notification.Subject))
             {
@@ -119,12 +159,14 @@ namespace Notifo.SDK.NotifoMobilePush
             if (!string.IsNullOrWhiteSpace(image))
             {
                 var imagePath = await GetImageAsync(image);
+
                 if (!string.IsNullOrWhiteSpace(imagePath))
                 {
                     var uniqueName = $"{Guid.NewGuid()}{Path.GetExtension(imagePath)}";
                     var attachementUrl = new NSUrl(uniqueName, NSFileManager.DefaultManager.GetTemporaryDirectory());
 
                     NSFileManager.DefaultManager.Copy(NSUrl.FromFilename(imagePath), attachementUrl, out var error);
+
                     if (error != null)
                     {
                         Log.Error(error.LocalizedDescription);
@@ -185,7 +227,6 @@ namespace Notifo.SDK.NotifoMobilePush
                 var categories = new List<UNNotificationCategory>();
 
                 var allCategories = await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
-
                 if (allCategories != null)
                 {
                     foreach (UNNotificationCategory category in allCategories)
@@ -221,11 +262,12 @@ namespace Notifo.SDK.NotifoMobilePush
             return content;
         }
 
-        public void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
+        public void DidReceiveNotificationResponse(UNNotificationResponse response)
         {
             var userInfo = response.Notification.Request.Content.UserInfo.ToDictionary();
 
             object? value = default;
+
             switch (response.ActionIdentifier)
             {
                 case Constants.ConfirmAction:
@@ -237,6 +279,7 @@ namespace Notifo.SDK.NotifoMobilePush
             }
 
             var url = value?.ToString();
+
             if (!string.IsNullOrWhiteSpace(url))
             {
                 Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
@@ -247,16 +290,23 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             try
             {
+                // Not really sure if the dictionary provides any value at all.
                 if (imageCache.TryGetValue(imageUrl, out string imagePath) && File.Exists(imagePath))
                 {
                     return imagePath;
                 }
 
-                var uri = new Uri(imageUrl);
-                var imageByteArray = await httpClient.GetByteArrayAsync(uri);
+                // Use the base64 value of the URL.
+                imagePath = Path.Combine(FileSystem.CacheDirectory, imageUrl.ToBase64());
 
-                imagePath = Path.Combine(FileSystem.CacheDirectory, uri.Segments.Last());
-                File.WriteAllBytes(imagePath, imageByteArray);
+                // Copy directly from the web stream to the image stream to reduce memory allocations.
+                using (var fileStream = new FileStream(imagePath, FileMode.Open))
+                {
+                    using (var imageStream = await httpClient.GetStreamAsync(imageUrl))
+                    {
+                        await imageStream.CopyToAsync(fileStream);
+                    }
+                }
 
                 imageCache.Set(imageUrl, imagePath);
 

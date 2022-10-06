@@ -10,11 +10,14 @@ using System.Net.Http;
 
 namespace Notifo.SDK.NotifoMobilePush
 {
-    internal class NotifoClientProvider : INotifoClient
+    internal sealed class NotifoClientProvider
     {
-        private bool rebuild;
-
+        private readonly Func<HttpClient> httpClientFactory;
+        private readonly NotifoClientBuilder clientBuilder = NotifoClientBuilder.Create();
         private string? apiKey;
+        private string apiUrl = "https://app.notifo.io";
+        private INotifoClient? clientInstance;
+
         public string? ApiKey
         {
             get => apiKey;
@@ -23,14 +26,13 @@ namespace Notifo.SDK.NotifoMobilePush
                 if (apiKey != value)
                 {
                     apiKey = value;
-                    clientBuilder.SetApiKey(apiKey);
 
-                    rebuild = true;
+                    clientBuilder.SetApiKey(apiKey);
+                    clientInstance = null;
                 }
             }
         }
 
-        private string apiUrl = "https://app.notifo.io";
         public string ApiUrl
         {
             get => apiUrl;
@@ -41,52 +43,35 @@ namespace Notifo.SDK.NotifoMobilePush
                 if (apiUrl != value)
                 {
                     apiUrl = value;
-                    clientBuilder.SetApiUrl(apiUrl);
 
-                    rebuild = true;
+                    clientBuilder.SetApiUrl(apiUrl);
+                    clientInstance = null;
                 }
             }
         }
 
-        private INotifoClient? client;
-        private INotifoClient Client
+        public INotifoClient Client
         {
             get
             {
-                if (client == null || rebuild)
+                if (clientInstance == null)
                 {
-                    rebuild = false;
-
-                    var httpClient = httpClientFactory();
-                    clientBuilder.SetClient(httpClient);
-
-                    client = clientBuilder.Build();
+                    clientBuilder.SetClient(CreateHttpClient());
+                    clientInstance = clientBuilder.Build();
                 }
 
-                return client;
+                return clientInstance;
             }
         }
 
-        public IAppsClient Apps => Client.Apps;
-        public IConfigsClient Configs => Client.Configs;
-        public IEventsClient Events => Client.Events;
-        public ILogsClient Logs => Client.Logs;
-        public IMediaClient Media => Client.Media;
-        public IMobilePushClient MobilePush => Client.MobilePush;
-        public INotificationsClient Notifications => Client.Notifications;
-        public ITemplatesClient Templates => Client.Templates;
-        public ITopicsClient Topics => Client.Topics;
-        public IUsersClient Users => Client.Users;
-
-        private readonly Func<HttpClient> httpClientFactory;
-        private readonly NotifoClientBuilder clientBuilder;
+        public HttpClient CreateHttpClient()
+        {
+            return httpClientFactory();
+        }
 
         public NotifoClientProvider(Func<HttpClient> httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory;
-
-            clientBuilder = NotifoClientBuilder
-                .Create();
         }
     }
 }

@@ -19,6 +19,6 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="notificationBuilder">The notification builder.</param>
         /// <param name="notification">The notification.</param>
-        void OnBuildNotification(NotificationCompat.Builder notificationBuilder, NotificationDto notification);
+        void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification);
     }
 }

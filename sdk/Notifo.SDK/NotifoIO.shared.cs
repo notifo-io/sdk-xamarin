@@ -7,11 +7,12 @@
 
 using System;
 using System.Net.Http;
-using System.Threading;
+using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Extensions;
 using Notifo.SDK.Helpers;
 using Notifo.SDK.NotifoMobilePush;
 using Notifo.SDK.Services;
+using Plugin.Connectivity;
 using Serilog;
 
 namespace Notifo.SDK
@@ -21,12 +22,10 @@ namespace Notifo.SDK
     /// </summary>
     public static partial class NotifoIO
     {
-        private static readonly Lazy<INotifoMobilePush> Instance = new Lazy<INotifoMobilePush>(() => SetupNotifoMobilePush(), LazyThreadSafetyMode.PublicationOnly);
-
         /// <summary>
         /// Current service implementation to use.
         /// </summary>
-        public static INotifoMobilePush Current => Instance.Value;
+        public static INotifoMobilePush Current { get; } = SetupNotifoMobilePush();
 
         private static INotifoMobilePush SetupNotifoMobilePush()
         {
@@ -34,7 +33,17 @@ namespace Notifo.SDK
 
             var settings = new Settings();
 
-            return new NotifoMobilePushImplementation(HttpClientFactory, settings);
+            var commandQueue = new DefaultCommandQueue(
+                settings,
+                new ICommandTrigger[]
+                {
+                    new TriggerOnStart(TimeSpan.FromSeconds(10)),
+                    new TriggerPeriodically(TimeSpan.FromMinutes(10), CrossConnectivity.Current),
+                    new TriggerWhenConnected(CrossConnectivity.Current)
+                },
+                10, TimeSpan.FromSeconds(5));
+
+            return new NotifoMobilePushImplementation(HttpClientFactory, settings, commandQueue);
         }
 
         private static ILogger ConfigureLogger()
@@ -49,6 +58,9 @@ namespace Notifo.SDK
                 .CreateLogger();
         }
 
-        private static HttpClient HttpClientFactory() => new HttpClient(new NotifoHttpMessageHandler());
+        private static HttpClient HttpClientFactory()
+        {
+            return new HttpClient(new NotifoHttpMessageHandler());
+        }
     }
 }

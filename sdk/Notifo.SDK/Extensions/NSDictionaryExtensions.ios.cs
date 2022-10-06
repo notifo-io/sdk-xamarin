@@ -16,7 +16,8 @@ namespace Notifo.SDK.Extensions
         public static Dictionary<string, object> ToDictionary(this NSDictionary nsDictionary)
         {
             return nsDictionary.ToDictionary<KeyValuePair<NSObject, NSObject>, string, object>(
-                item => item.Key as NSString, item => item.Value
+                item => item.Key as NSString,
+                item => item.Value
             );
         }
 

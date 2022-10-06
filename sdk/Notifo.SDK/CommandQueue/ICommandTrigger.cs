@@ -5,12 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Sample
+namespace Notifo.SDK.CommandQueue
 {
-    public static class Constants
+    internal interface ICommandTrigger
     {
-        public const string ApiUrl = "https://notifo.easierlife.com";
-
-        public const string UserApiKey = "mbgen4xlv2b9tgmxivtei8jxxa67qfa1zq0kumqpemyx";
+        void Start(ICommandQueue queue);
     }
 }

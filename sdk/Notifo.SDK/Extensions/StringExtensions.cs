@@ -1,20 +1,20 @@
-﻿// ==========================================================================
+// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Serilog;
-using Serilog.Configuration;
+using System;
+using System.Text;
 
 namespace Notifo.SDK.Extensions
 {
-    internal static class LoggerExtensions
+    internal static class StringExtensions
     {
-        public static LoggerConfiguration PlatformSink(this LoggerSinkConfiguration configuration)
+        public static string ToBase64(this string value)
         {
-            return configuration.NSLog();
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
         }
     }
 }

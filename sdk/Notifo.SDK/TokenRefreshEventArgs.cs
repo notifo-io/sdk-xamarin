@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Notifo.SDK.PushEventProvider
+namespace Notifo.SDK
 {
     /// <summary>
     /// Event arguments containing a device token.

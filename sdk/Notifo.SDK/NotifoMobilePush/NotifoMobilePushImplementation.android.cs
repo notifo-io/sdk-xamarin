@@ -19,7 +19,22 @@ namespace Notifo.SDK.NotifoMobilePush
 {
     internal partial class NotifoMobilePushImplementation
     {
+        private readonly IMemoryCache bitmapCache = new MemoryCache(new MemoryCacheOptions());
         private INotificationHandler? notificationHandler;
+
+        partial void SetupPlatform()
+        {
+            OnNotificationReceived += PushEventsProvider_OnNotificationReceivedAndroid;
+        }
+
+        private void PushEventsProvider_OnNotificationReceivedAndroid(object sender, NotificationEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(e.Notification.TrackSeenUrl))
+            {
+                _ = TrackNotificationsAsync(e.Notification);
+            }
+        }
+
         public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
         {
             this.notificationHandler = notificationHandler;
@@ -27,9 +42,7 @@ namespace Notifo.SDK.NotifoMobilePush
             return this;
         }
 
-        private readonly IMemoryCache bitmapCache = new MemoryCache(new MemoryCacheOptions());
-
-        internal void OnBuildNotification(NotificationCompat.Builder notificationBuilder, NotificationDto notification)
+        internal void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification)
         {
             if (!string.IsNullOrWhiteSpace(notification.Subject))
             {
@@ -38,10 +51,10 @@ namespace Notifo.SDK.NotifoMobilePush
 
             if (!string.IsNullOrWhiteSpace(notification.ImageSmall))
             {
-                int width = GetDimension(Resource.Dimension.notification_large_icon_width);
-                int height = GetDimension(Resource.Dimension.notification_large_icon_height);
+                var smallWidth = GetDimension(Resource.Dimension.notification_large_icon_width);
+                var smallHeight = GetDimension(Resource.Dimension.notification_large_icon_height);
 
-                var largeIcon = GetBitmap(notification.ImageSmall, width, height);
+                var largeIcon = GetBitmap(notification.ImageSmall, smallWidth, smallHeight);
                 if (largeIcon != null)
                 {
                     notificationBuilder.SetLargeIcon(largeIcon);
@@ -57,8 +70,7 @@ namespace Notifo.SDK.NotifoMobilePush
                         new NotificationCompat
                             .BigPictureStyle()
                             .BigPicture(bigPicture)
-                            .SetSummaryText(notification.Body)
-                    );
+                            .SetSummaryText(notification.Body));
                 }
             }
 
@@ -84,13 +96,9 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             try
             {
-                bool shouldResize = requestWidth > 0 && requestHeight > 0;
-                bool resizeHandled = false;
-
-                if (shouldResize && bitmapUrl.StartsWith(clientProvider.ApiUrl, StringComparison.InvariantCultureIgnoreCase))
+                if (requestWidth > 0 && requestHeight > 0)
                 {
                     bitmapUrl = $"{bitmapUrl}?width={requestWidth}&height={requestHeight}";
-                    resizeHandled = true;
                 }
 
                 if (bitmapCache.TryGetValue(bitmapUrl, out Bitmap cachedBitmap))
@@ -106,11 +114,6 @@ namespace Notifo.SDK.NotifoMobilePush
                     bitmapCache.Set(bitmapUrl, bitmap);
                 }
 
-                if (!resizeHandled && shouldResize)
-                {
-                    bitmap = ResizeBitmap(bitmap, requestWidth, requestHeight);
-                }
-
                 return bitmap;
             }
             catch (Exception ex)
@@ -121,52 +124,23 @@ namespace Notifo.SDK.NotifoMobilePush
             return null;
         }
 
-        private Bitmap? ResizeBitmap(Bitmap? bitmap, int requestWidth, int requestHeight)
-        {
-            if (bitmap == null)
-            {
-                return null;
-            }
-
-            try
-            {
-                if (bitmap.Width > requestWidth || bitmap.Height > requestHeight)
-                {
-                    int newWidth = requestWidth;
-                    int newHeight = requestHeight;
-
-                    if (bitmap.Height > bitmap.Width)
-                    {
-                        float ratio = (float)bitmap.Width / bitmap.Height;
-                        newWidth = (int)(newHeight * ratio);
-                    }
-                    else if (bitmap.Width > bitmap.Height)
-                    {
-                        float ratio = (float)bitmap.Height / bitmap.Width;
-                        newHeight = (int)(newWidth * ratio);
-                    }
-
-                    return Bitmap.CreateScaledBitmap(bitmap, newWidth, newHeight, true);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(Strings.ResizeImageError, ex);
-            }
-
-            return bitmap;
-        }
-
         private void AddAction(NotificationCompat.Builder notificationBuilder, string title, string url)
         {
             var notificationIntent = new Intent(Intent.ActionView);
+
+            // Set the URL to open when the button is clicked.
             notificationIntent.SetData(Android.Net.Uri.Parse(url));
-            var buttonIntent = PendingIntent.GetActivity(Application.Context, 0, notificationIntent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
+
+            var buttonIntent = PendingIntent.GetActivity(Application.Context, 0, notificationIntent,
+                PendingIntentFlags.UpdateCurrent |
+                PendingIntentFlags.Immutable);
 
             notificationBuilder.AddAction(0, title, buttonIntent);
         }
 
-        private int GetDimension(int resourceId) =>
-            Application.Context?.Resources?.GetDimensionPixelSize(resourceId) ?? -1;
+        private int GetDimension(int resourceId)
+        {
+            return Application.Context?.Resources?.GetDimensionPixelSize(resourceId) ?? -1;
+        }
     }
 }

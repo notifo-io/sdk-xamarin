@@ -8,7 +8,7 @@
 using System;
 using Notifo.SDK.PushEventProvider;
 
-namespace Notifo.SDK.NotifoMobilePush
+namespace Notifo.SDK
 {
     /// <summary>
     /// Notifo mobile push service interface.
@@ -24,6 +24,11 @@ namespace Notifo.SDK.NotifoMobilePush
         /// Event triggered when a notification is opened.
         /// </summary>
         event EventHandler<NotificationEventArgs> OnNotificationOpened;
+
+        /// <summary>
+        /// Event triggered when an error happened.
+        /// </summary>
+        event EventHandler<NotificationErrorEventArgs> OnError;
 
         /// <summary>
         /// Sets the api key to use.

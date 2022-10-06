@@ -10,9 +10,9 @@ using System.Collections.Generic;
 
 namespace Notifo.SDK.Extensions
 {
-    internal static class NotificationDtoExtensions
+    internal static class UserNotificationDtoExtensions
     {
-        public static Dictionary<string, string> ToDictionary(this NotificationDto notification)
+        public static Dictionary<string, string> ToDictionary(this UserNotificationDto notification)
         {
             var data = new Dictionary<string, string>
             {
@@ -63,9 +63,9 @@ namespace Notifo.SDK.Extensions
 
             data[Constants.SilentKey] = notification.Silent.ToString();
 
-            if (!string.IsNullOrWhiteSpace(notification.TrackingUrl))
+            if (!string.IsNullOrWhiteSpace(notification.TrackSeenUrl))
             {
-                data[Constants.TrackingUrlKey] = notification.TrackingUrl;
+                data[Constants.TrackingUrlKey] = notification.TrackSeenUrl;
             }
 
             if (!string.IsNullOrWhiteSpace(notification.Data))
@@ -76,7 +76,7 @@ namespace Notifo.SDK.Extensions
             return data;
         }
 
-        public static NotificationDto FromDictionary(this NotificationDto notification, Dictionary<string, object> data)
+        public static UserNotificationDto FromDictionary(this UserNotificationDto notification, Dictionary<string, object> data)
         {
             if (data.TryGetValue(Constants.IdKey, out var id) && Guid.TryParse(id.ToString(), out var guid))
             {
@@ -143,7 +143,7 @@ namespace Notifo.SDK.Extensions
 
             if (data.TryGetValue(Constants.TrackingUrlKey, out var trackingUrl))
             {
-                notification.TrackingUrl = trackingUrl.ToString();
+                notification.TrackSeenUrl = trackingUrl.ToString();
             }
 
             if (data.TryGetValue(Constants.DataKey, out var notificationData))

@@ -19,6 +19,6 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="content">The notification content.</param>
         /// <param name="notification">The notification.</param>
-        void OnBuildNotification(UNMutableNotificationContent content, NotificationDto notification);
+        void OnBuildNotification(UNMutableNotificationContent content, UserNotificationDto notification);
     }
 }

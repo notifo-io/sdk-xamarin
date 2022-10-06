@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.SDK.NotifoMobilePush;
-
 namespace Notifo.SDK
 {
     /// <summary>

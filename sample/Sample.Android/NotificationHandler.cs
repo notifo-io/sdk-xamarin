@@ -15,7 +15,7 @@ namespace Sample.Droid
 {
     public class NotificationHandler : INotificationHandler
     {
-        public void OnBuildNotification(NotificationCompat.Builder notificationBuilder, NotificationDto notification)
+        public void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification)
         {
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {

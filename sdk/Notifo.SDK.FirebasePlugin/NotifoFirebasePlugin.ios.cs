@@ -11,6 +11,7 @@ using Foundation;
 using Notifo.SDK.Resources;
 using Plugin.FirebasePushNotification;
 using Serilog;
+using Notifo.SDK;
 using UserNotifications;
 
 namespace Notifo.SDK.FirebasePlugin
@@ -27,7 +28,7 @@ namespace Notifo.SDK.FirebasePlugin
         /// <param name="notifoStartup">The <see cref="INotifoStartup"/> implementation.</param>
         /// <param name="notificationHandler">The <see cref="INotificationHandler"/> implementation.</param>
         /// <param name="autoRegistration">Automatically register for push notifications.</param>
-        public static void Initialize(NSDictionary options, INotifoStartup notifoStartup, INotificationHandler? notificationHandler = null, bool autoRegistration = true)
+        public static void Initialize(NSDictionary options, INotifoStartup notifoStartup, INotificationHandler notificationHandler = null, bool autoRegistration = true)
         {
             FirebasePushNotificationManager.Initialize(options, autoRegistration);
 
@@ -56,15 +57,19 @@ namespace Notifo.SDK.FirebasePlugin
         /// Indicates that a call to <see cref="UIKit.UIApplication.RegisterForRemoteNotifications"/> succeeded.
         /// </summary>
         /// <param name="deviceToken">The device token.</param>
-        public static void DidRegisterRemoteNotifications(NSData deviceToken) =>
+        public static void DidRegisterRemoteNotifications(NSData deviceToken)
+        {
             FirebasePushNotificationManager.DidRegisterRemoteNotifications(deviceToken);
+        }
 
         /// <summary>
         /// Indicates that a call to <see cref="UIKit.UIApplication.RegisterForRemoteNotifications"/> failed.
         /// </summary>
         /// <param name="error">The error.</param>
-        public static void RemoteNotificationRegistrationFailed(NSError error) =>
+        public static void RemoteNotificationRegistrationFailed(NSError error)
+        {
             FirebasePushNotificationManager.RemoteNotificationRegistrationFailed(error);
+        }
 
         /// <summary>
         /// Method for processing the user's response to a delivered notification.

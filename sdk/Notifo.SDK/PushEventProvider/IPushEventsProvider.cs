@@ -30,6 +30,11 @@ namespace Notifo.SDK.PushEventProvider
         event EventHandler<NotificationEventArgs> OnNotificationOpened;
 
         /// <summary>
+        /// Event triggered when an error happened.
+        /// </summary>
+        event EventHandler<NotificationErrorEventArgs> OnError;
+
+        /// <summary>
         /// Push notification token.
         /// </summary>
         public string Token { get; }

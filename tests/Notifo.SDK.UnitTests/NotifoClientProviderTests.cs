@@ -6,12 +6,7 @@
 // ==========================================================================
 
 using System;
-using System.Net;
 using System.Net.Http;
-using FluentAssertions;
-using Moq;
-using Moq.AutoMock;
-using Moq.Contrib.HttpClient;
 using Notifo.SDK.NotifoMobilePush;
 using Xunit;
 
@@ -20,102 +15,81 @@ namespace Notifo.SDK.UnitTests
     public class NotifoClientProviderTests
     {
         [Fact]
-        public void PostTokenAsync_ShouldThrow_IfApiKeyOrApiUrlNotSupplied()
+        public void Client_ShouldThrow_IfApiKeyOrApiUrlNotSupplied()
         {
-            var handler = new Mock<HttpMessageHandler>();
-            handler.SetupAnyRequest()
-                .ReturnsResponse(HttpStatusCode.NoContent);
+            var provider = new NotifoClientProvider(() => new HttpClient());
 
-            var client = handler.CreateClient();
-
-            var mocker = new AutoMocker();
-            mocker.Use(client);
-
-            var notifoMobilePush = mocker.CreateInstance<NotifoClientProvider>();
-
-            Action action = () => notifoMobilePush.MobilePush.PostTokenAsync(new RegisterMobileTokenDto());
-
-            action.Should().Throw<InvalidOperationException>();
+            Assert.Throws<InvalidOperationException>(() => provider.Client);
         }
 
         [Fact]
-        public void MobileClient_ShouldUseSameClient_IfApiKeyOrApiUrlNotChanged()
+        public void Client_ShouldUseSameClient_IfApiKeyOrApiUrlNotChanged()
         {
-            var handler = new Mock<HttpMessageHandler>();
-            handler.SetupAnyRequest()
-                .ReturnsResponse(HttpStatusCode.NoContent);
+            var provider = new NotifoClientProvider(() => new HttpClient())
+            {
+                ApiKey = "test api key",
+                ApiUrl = "https://url1.com/"
+            };
 
-            var client = handler.CreateClient();
+            var client1 = provider.Client;
+            var client2 = provider.Client;
 
-            var mocker = new AutoMocker();
-            mocker.Use(client);
-
-            var notifoMobilePush = mocker.CreateInstance<NotifoClientProvider>();
-            notifoMobilePush.ApiKey = "test api key";
-            notifoMobilePush.ApiUrl = "https://test.com/";
-
-            var mobilePush1 = notifoMobilePush.MobilePush;
-            var mobilePush2 = notifoMobilePush.MobilePush;
-
-            mobilePush1.Should().BeSameAs(mobilePush2);
+            Assert.Same(client1, client2);
         }
 
         [Fact]
-        public void MobileClient_ShouldNotRebuildClient_IfApiKeyOrApiUrlNotChanged()
+        public void Client_ShouldNotRebuildClient_IfApiKeyOrApiUrlNotChanged()
         {
-            var handler = new Mock<HttpMessageHandler>();
-            handler.SetupAnyRequest()
-                .ReturnsResponse(HttpStatusCode.NoContent);
+            var provider = new NotifoClientProvider(() => new HttpClient())
+            {
+                ApiKey = "key1",
+                ApiUrl = "https://url1.com/"
+            };
 
-            var client = handler.CreateClient();
+            var client1 = provider.Client;
 
-            var mocker = new AutoMocker();
-            mocker.Use(client);
+            provider.ApiKey = "key1";
+            provider.ApiUrl = "https://url1.com";
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoClientProvider>();
-            notifoMobilePush.ApiKey = "test api key";
-            notifoMobilePush.ApiUrl = "https://test.com/";
+            var client2 = provider.Client;
 
-            var mobilePush1 = notifoMobilePush.MobilePush;
-            var mobilePush2 = notifoMobilePush.MobilePush;
-
-            mobilePush1.Should().BeSameAs(mobilePush2);
-
-            notifoMobilePush.ApiKey = "test api key";
-            notifoMobilePush.ApiUrl = "https://test.com/";
-
-            mobilePush2 = notifoMobilePush.MobilePush;
-
-            mobilePush1.Should().BeSameAs(mobilePush2);
+            Assert.Same(client1, client2);
         }
 
         [Fact]
-        public void MobileClient_ShouldRebuildClient_IfApiKeyOrApiUrlChanged()
+        public void Client_ShouldRebuildClient_IfApiKeyChanged()
         {
-            var handler = new Mock<HttpMessageHandler>();
-            handler.SetupAnyRequest()
-                .ReturnsResponse(HttpStatusCode.NoContent);
+            var provider = new NotifoClientProvider(() => new HttpClient())
+            {
+                ApiKey = "key1",
+                ApiUrl = "https://url1.com/"
+            };
 
-            var client = handler.CreateClient();
+            var client1 = provider.Client;
 
-            var mocker = new AutoMocker();
-            mocker.Use(client);
+            provider.ApiKey = "key2";
 
-            var notifoMobilePush = mocker.CreateInstance<NotifoClientProvider>();
-            notifoMobilePush.ApiKey = "test api key";
-            notifoMobilePush.ApiUrl = "https://test.com/";
+            var client2 = provider.Client;
 
-            var mobilePush1 = notifoMobilePush.MobilePush;
+            Assert.NotSame(client1, client2);
+        }
 
-            notifoMobilePush.ApiKey = "test api key1";
-            var mobilePush2 = notifoMobilePush.MobilePush;
+        [Fact]
+        public void Client_ShouldRebuildClient_IfApiUrlChanged()
+        {
+            var provider = new NotifoClientProvider(() => new HttpClient())
+            {
+                ApiKey = "key1",
+                ApiUrl = "https://url1.com/"
+            };
 
-            notifoMobilePush.ApiUrl = "https://test1.com/";
-            var mobilePush3 = notifoMobilePush.MobilePush;
+            var client1 = provider.Client;
 
-            mobilePush1.Should().NotBeSameAs(mobilePush2);
-            mobilePush1.Should().NotBeSameAs(mobilePush3);
-            mobilePush2.Should().NotBeSameAs(mobilePush3);
+            provider.ApiUrl = "https://url2.com/";
+
+            var client2 = provider.Client;
+
+            Assert.NotSame(client1, client2);
         }
     }
 }

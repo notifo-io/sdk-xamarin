@@ -8,22 +8,15 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Notifo.SDK.Helpers;
 
-namespace Notifo.SDK.Services
+namespace Notifo.SDK.CommandQueue
 {
-    internal interface ISettings
+    internal interface ICommandStore
     {
-        string Token { get; set; }
+        ValueTask<List<QueuedCommand>> GetCommandsAsync();
 
-        bool IsTokenRefreshed { get; set; }
+        ValueTask StoreAsync(QueuedCommand command);
 
-        Task TrackNotificationAsync(Guid id);
-
-        Task TrackNotificationsAsync(IEnumerable<Guid> ids);
-
-        SlidingSet<Guid> GetSeenNotifications();
-
-        void Clear();
+        ValueTask RemoveAsync(Guid id);
     }
 }

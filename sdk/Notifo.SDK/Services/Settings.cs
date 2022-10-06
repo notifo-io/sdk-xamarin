@@ -7,76 +7,129 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Helpers;
+using Notifo.SDK.NotifoMobilePush;
 using Xamarin.Essentials;
 
 namespace Notifo.SDK.Services
 {
-    internal class Settings : ISettings
+    internal sealed class Settings : ISeenNotificationsStore, ICommandStore
     {
+        private const string KeyCommand = "CommandV2";
+        private const string KeySeenNotifications = "SeenNotificationsV2";
         private static readonly string PrimaryPackageName = Regex.Replace(AppInfo.PackageName, @"\.([^.]*)ServiceExtension$", string.Empty);
         private static readonly string SharedName = $"group.{PrimaryPackageName}.notifo";
-        private static readonly string SeenNotificationsKey = "SeenNotifications";
 
-        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
-
-        public string Token
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
-            get => Preferences.Get(nameof(Token), string.Empty, SharedName);
-            set => Preferences.Set(nameof(Token), value, SharedName);
+            TypeNameHandling = TypeNameHandling.Auto
+        };
+
+        public async ValueTask AddSeenNotificationIdsAsync(int maxCapacity, params Guid[] ids)
+        {
+            await Task.Run(() =>
+            {
+                lock (this)
+                {
+                    var seenNotifications = GetSeenNotificationsCore();
+
+                    foreach (var id in ids)
+                    {
+                        seenNotifications.Add(id, maxCapacity);
+                    }
+
+                    StoreSeenNotificationsCore(seenNotifications);
+                }
+            });
         }
 
-        public bool IsTokenRefreshed
+        public async ValueTask<SlidingSet<Guid>> GetSeenNotificationIdsAsync()
         {
-            get => Preferences.Get(nameof(IsTokenRefreshed), false, SharedName);
-            set => Preferences.Set(nameof(IsTokenRefreshed), value, SharedName);
+            return await Task.Run(() =>
+            {
+                return GetSeenNotificationsCore();
+            });
         }
 
-        public SlidingSet<Guid> GetSeenNotifications()
+        public async ValueTask<List<QueuedCommand>> GetCommandsAsync()
         {
-            var seenNotifications = new SlidingSet<Guid>(capacity: 500);
+            return await Task.Run(() =>
+            {
+                return GetCommandsCore().Values.ToList();
+            });
+        }
 
-            var serialized = Preferences.Get(SeenNotificationsKey, string.Empty, SharedName);
+        public async ValueTask RemoveAsync(Guid id)
+        {
+            await Task.Run(() =>
+            {
+                lock (this)
+                {
+                    var commands = GetCommandsCore();
+
+                    commands.Remove(id);
+
+                    StoreCommandsCore(commands);
+                }
+            });
+        }
+
+        public async ValueTask StoreAsync(QueuedCommand command)
+        {
+            await Task.Run(() =>
+            {
+                lock (this)
+                {
+                    var commands = GetCommandsCore();
+
+                    commands[command.CommandId] = command;
+
+                    StoreCommandsCore(commands);
+                }
+            });
+        }
+
+        private SlidingSet<Guid> GetSeenNotificationsCore()
+        {
+            var serialized = Preferences.Get(KeySeenNotifications, string.Empty, SharedName);
+
             if (!string.IsNullOrWhiteSpace(serialized))
             {
-                seenNotifications = JsonConvert.DeserializeObject<SlidingSet<Guid>>(serialized) ?? seenNotifications;
+                return JsonConvert.DeserializeObject<SlidingSet<Guid>>(serialized, SerializerSettings)!;
             }
 
-            return seenNotifications;
+            return new SlidingSet<Guid>();
         }
 
-        private void SetSeenNotifications(SlidingSet<Guid> seenNotifications)
+        private void StoreSeenNotificationsCore(SlidingSet<Guid> value)
         {
-            var serialized = JsonConvert.SerializeObject(seenNotifications);
-            Preferences.Set(SeenNotificationsKey, serialized, SharedName);
+            var json = JsonConvert.SerializeObject(value, SerializerSettings);
+
+            Preferences.Set(KeySeenNotifications, json, SharedName);
         }
 
-        public Task TrackNotificationAsync(Guid id) => TrackNotificationsAsync(new Guid[] { id });
-
-        public async Task TrackNotificationsAsync(IEnumerable<Guid> ids)
+        private Dictionary<Guid, QueuedCommand> GetCommandsCore()
         {
-            await Semaphore.WaitAsync();
-            try
-            {
-                var seenNotifications = GetSeenNotifications();
+            var serialized = Preferences.Get(KeyCommand, string.Empty, SharedName);
 
-                foreach (var id in ids)
-                {
-                    seenNotifications.Add(id);
-                }
-
-                await Task.Run(() => SetSeenNotifications(seenNotifications));
-            }
-            finally
+            if (!string.IsNullOrWhiteSpace(serialized))
             {
-                Semaphore.Release();
+                return JsonConvert.DeserializeObject<Dictionary<Guid, QueuedCommand>>(serialized, SerializerSettings)!;
             }
+
+            return new Dictionary<Guid, QueuedCommand>();
         }
 
-        public void Clear() => Preferences.Clear(SharedName);
+        private void StoreCommandsCore(Dictionary<Guid, QueuedCommand> value)
+        {
+            var json = JsonConvert.SerializeObject(value, SerializerSettings);
+
+            Preferences.Set(KeyCommand, json, SharedName);
+        }
     }
 }
