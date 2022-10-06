@@ -7,7 +7,6 @@ We use [Github Actions](https://docs.github.com/en/actions) to release NuGet pac
 * Under the repository name, click **Releases**.
 * Click **Draft a new release**.
 
-![Releases draft button](https://help.github.com/assets/images/help/releases/draft_release_button.png)
 * Type a version number for your release. Versions are based on [Git tags](https://git-scm.com/book/en/Git-Basics-Tagging).  Examples: 
     * v1.0.0
     * v0.0.1-alpha1
