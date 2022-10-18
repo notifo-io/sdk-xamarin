@@ -7,8 +7,6 @@
 
 using Notifo.SDK;
 using Notifo.SDK.FirebasePlugin;
-using Notifo.SDK.NotifoMobilePush;
-using Notifo.SDK.PushEventProvider;
 using Xamarin.Forms;
 
 namespace Sample
