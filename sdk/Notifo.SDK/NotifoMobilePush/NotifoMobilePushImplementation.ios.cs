@@ -170,6 +170,7 @@ namespace Notifo.SDK.NotifoMobilePush
 
                     if (error != null)
                     {
+                        // TODO: Expose via error event.
                         Log.Error(error.LocalizedDescription);
                     }
 
@@ -185,6 +186,7 @@ namespace Notifo.SDK.NotifoMobilePush
                     }
                     else
                     {
+                        // TODO: Expose via error event.
                         Log.Error(error.LocalizedDescription);
                     }
                 }
