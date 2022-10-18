@@ -154,7 +154,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 content.Body = notification.Body;
             }
 
-            string image = string.IsNullOrWhiteSpace(notification.ImageLarge) ? notification.ImageSmall : notification.ImageLarge;
+            var image = string.IsNullOrWhiteSpace(notification.ImageLarge) ? notification.ImageSmall : notification.ImageLarge;
 
             if (!string.IsNullOrWhiteSpace(image))
             {
@@ -162,10 +162,11 @@ namespace Notifo.SDK.NotifoMobilePush
 
                 if (!string.IsNullOrWhiteSpace(imagePath))
                 {
-                    var uniqueName = $"{Guid.NewGuid()}{Path.GetExtension(imagePath)}";
-                    var attachementUrl = new NSUrl(uniqueName, NSFileManager.DefaultManager.GetTemporaryDirectory());
+                    var attachmentName = $"{Guid.NewGuid()}{Path.GetExtension(imagePath)}";
+                    var attachmentUrl = new NSUrl(attachmentName, NSFileManager.DefaultManager.GetTemporaryDirectory());
 
-                    NSFileManager.DefaultManager.Copy(NSUrl.FromFilename(imagePath), attachementUrl, out var error);
+                    // TODO: We copy the image twice. Really weird.
+                    NSFileManager.DefaultManager.Copy(NSUrl.FromFilename(imagePath), attachmentUrl, out var error);
 
                     if (error != null)
                     {
@@ -174,7 +175,7 @@ namespace Notifo.SDK.NotifoMobilePush
 
                     var attachement = UNNotificationAttachment.FromIdentifier(
                         Constants.ImageLargeKey,
-                        attachementUrl,
+                        attachmentUrl,
                         new UNNotificationAttachmentOptions(),
                         out error);
 
@@ -290,7 +291,7 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             try
             {
-                // Not really sure if the dictionary provides any value at all.
+                // TODO: Not really sure if the dictionary provides any value at all.
                 if (imageCache.TryGetValue(imageUrl, out string imagePath) && File.Exists(imagePath))
                 {
                     return imagePath;
