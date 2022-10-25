@@ -58,6 +58,14 @@ namespace Notifo.SDK
         INotifoMobilePush SetPushEventsProvider(IPushEventsProvider pushEventsProvider);
 
         /// <summary>
+        /// Raises an error.
+        /// </summary>
+        /// <param name="error">The error message.</param>
+        /// <param name="exception">The exception.</param>
+        /// <param name="source">The source of the error.</param>
+        void RaiseError(string error, Exception? exception, object? source);
+
+        /// <summary>
         /// Register for notifications on demand.
         /// </summary>
         void Register();

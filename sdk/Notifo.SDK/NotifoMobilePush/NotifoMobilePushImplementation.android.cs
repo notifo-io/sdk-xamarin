@@ -13,7 +13,6 @@ using AndroidX.Core.App;
 using Java.Net;
 using Microsoft.Extensions.Caching.Memory;
 using Notifo.SDK.Resources;
-using Serilog;
 
 namespace Notifo.SDK.NotifoMobilePush
 {
@@ -118,7 +117,7 @@ namespace Notifo.SDK.NotifoMobilePush
             }
             catch (Exception ex)
             {
-                Log.Error(Strings.DownloadImageError, ex);
+                NotifoIO.Current.RaiseError(Strings.DownloadImageError, ex, this);
             }
 
             return null;

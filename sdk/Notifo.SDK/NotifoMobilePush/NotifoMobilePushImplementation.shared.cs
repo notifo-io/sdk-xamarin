@@ -8,6 +8,7 @@ using System;
 using System.Net.Http;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.PushEventProvider;
+using Serilog;
 
 namespace Notifo.SDK.NotifoMobilePush
 {
@@ -84,22 +85,30 @@ namespace Notifo.SDK.NotifoMobilePush
             this.clientProvider = new NotifoClientProvider(httpClientFactory);
 
             SetupPlatform();
+
+            OnError += (sender, args) =>
+            {
+                Log.Error(args.Error, args.Exception);
+            };
         }
 
         partial void SetupPlatform();
 
+        /// <inheritdoc/>
         public INotifoMobilePush SetApiKey(string apiKey)
         {
             clientProvider.ApiKey = apiKey;
             return this;
         }
 
+        /// <inheritdoc/>
         public INotifoMobilePush SetBaseUrl(string baseUrl)
         {
             clientProvider.ApiUrl = baseUrl;
             return this;
         }
 
+        /// <inheritdoc/>
         public INotifoMobilePush SetPushEventsProvider(IPushEventsProvider pushEventsProvider)
         {
             if (this.pushEventsProvider == pushEventsProvider)
@@ -130,6 +139,13 @@ namespace Notifo.SDK.NotifoMobilePush
             return this;
         }
 
+        /// <inheritdoc/>
+        public void RaiseError(string error, Exception? exception, object? source)
+        {
+            OnError?.Invoke(this, new NotificationErrorEventArgs(error, exception, source));
+        }
+
+        /// <inheritdoc/>
         public void Register()
         {
             if (string.IsNullOrEmpty(token))
@@ -140,6 +156,7 @@ namespace Notifo.SDK.NotifoMobilePush
             commandQueue.Run(new TokenRegisterCommand { Token = token });
         }
 
+        /// <inheritdoc/>
         public void Unregister()
         {
             if (string.IsNullOrEmpty(token))
@@ -187,11 +204,6 @@ namespace Notifo.SDK.NotifoMobilePush
 
                 Register();
             }
-        }
-
-        public void RaiseError(string error, Exception? exception, object? source)
-        {
-            OnError?.Invoke(this, new NotificationErrorEventArgs(error, exception, source));
         }
     }
 }

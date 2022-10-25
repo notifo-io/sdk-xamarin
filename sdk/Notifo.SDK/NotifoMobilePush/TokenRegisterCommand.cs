@@ -51,9 +51,7 @@ namespace Notifo.SDK.NotifoMobilePush
             }
             catch (Exception ex)
             {
-                ((NotifoMobilePushImplementation)NotifoIO.Current).RaiseError(ex.Message, ex, this);
-
-                Log.Error(ex, Strings.TokenRefreshFailException);
+                NotifoIO.Current.RaiseError(Strings.TokenRefreshFailException, ex, this);
                 throw ex;
             }
             finally

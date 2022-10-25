@@ -25,7 +25,7 @@ namespace Notifo.SDK.NotifoMobilePush
             }
             catch (Exception ex)
             {
-                ((NotifoMobilePushImplementation)NotifoIO.Current).RaiseError(ex.Message, ex, this);
+                NotifoIO.Current.RaiseError(ex.Message, ex, this);
                 throw ex;
             }
         }
