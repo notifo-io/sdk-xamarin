@@ -9,9 +9,9 @@ using System;
 using System.Threading.Tasks;
 using Foundation;
 using Notifo.SDK.Resources;
+using Notifo.SDK;
 using Plugin.FirebasePushNotification;
 using Serilog;
-using Notifo.SDK;
 using UserNotifications;
 
 namespace Notifo.SDK.FirebasePlugin

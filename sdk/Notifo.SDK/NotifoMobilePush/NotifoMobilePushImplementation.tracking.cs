@@ -34,7 +34,6 @@ namespace Notifo.SDK.NotifoMobilePush
             catch (Exception ex)
             {
                 Log.Error(Strings.TrackingException, ex);
-
                 return new HashSet<Guid>();
             }
             finally

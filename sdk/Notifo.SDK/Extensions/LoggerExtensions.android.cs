@@ -14,8 +14,7 @@ namespace Notifo.SDK.Extensions
     {
         public static LoggerConfiguration PlatformSink(this LoggerSinkConfiguration configuration)
         {
-            return configuration.AndroidLog()
-.Enrich.WithProperty(Serilog.Core.Constants.SourceContextPropertyName, "Notifo");
+            return configuration.AndroidLog().Enrich.WithProperty(Serilog.Core.Constants.SourceContextPropertyName, "Notifo");
         }
     }
 }
