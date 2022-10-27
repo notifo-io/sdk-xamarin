@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Notifo.SDK.Helpers;
 using Notifo.SDK.Resources;
-using Serilog;
 
 namespace Notifo.SDK.NotifoMobilePush
 {
@@ -33,7 +32,7 @@ namespace Notifo.SDK.NotifoMobilePush
             }
             catch (Exception ex)
             {
-                Log.Error(Strings.TrackingException, ex);
+                NotifoIO.Current.RaiseError(Strings.TrackingException, ex, this);
                 return new HashSet<Guid>();
             }
             finally
@@ -65,7 +64,8 @@ namespace Notifo.SDK.NotifoMobilePush
             }
             catch (Exception ex)
             {
-                Log.Error(Strings.TrackingException, ex);
+                NotifoIO.Current.RaiseError(Strings.TrackingException, ex, this);
+                return;
             }
             finally
             {

@@ -12,7 +12,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Foundation;
-using Microsoft.Extensions.Caching.Memory;
 using Notifo.SDK.Extensions;
 using Notifo.SDK.Resources;
 using Serilog;
@@ -23,7 +22,6 @@ namespace Notifo.SDK.NotifoMobilePush
 {
     internal partial class NotifoMobilePushImplementation : NSObject
     {
-        private readonly IMemoryCache imageCache = new MemoryCache(new MemoryCacheOptions());
         private HttpClient httpClient;
         private INotificationHandler? notificationHandler;
 
@@ -113,7 +111,7 @@ namespace Notifo.SDK.NotifoMobilePush
             }
             catch (Exception ex)
             {
-                Log.Error(Strings.NotificationsRetrieveException, ex);
+                NotifoIO.Current.RaiseError(Strings.NotificationsRetrieveException, ex, this);
             }
 
             return Array.Empty<UserNotificationDto>();
@@ -137,7 +135,7 @@ namespace Notifo.SDK.NotifoMobilePush
             {
                 if (error != null)
                 {
-                    Log.Debug(error.LocalizedDescription);
+                    NotifoIO.Current.RaiseError(error.LocalizedDescription, null, this);
                 }
             });
         }
@@ -154,43 +152,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 content.Body = notification.Body;
             }
 
-            var image = string.IsNullOrWhiteSpace(notification.ImageLarge) ? notification.ImageSmall : notification.ImageLarge;
-
-            if (!string.IsNullOrWhiteSpace(image))
-            {
-                var imagePath = await GetImageAsync(image);
-
-                if (!string.IsNullOrWhiteSpace(imagePath))
-                {
-                    var attachmentName = $"{Guid.NewGuid()}{Path.GetExtension(imagePath)}";
-                    var attachmentUrl = new NSUrl(attachmentName, NSFileManager.DefaultManager.GetTemporaryDirectory());
-
-                    // TODO: We copy the image twice. Really weird.
-                    NSFileManager.DefaultManager.Copy(NSUrl.FromFilename(imagePath), attachmentUrl, out var error);
-
-                    if (error != null)
-                    {
-                        // TODO: Expose via error event.
-                        Log.Error(error.LocalizedDescription);
-                    }
-
-                    var attachement = UNNotificationAttachment.FromIdentifier(
-                        Constants.ImageLargeKey,
-                        attachmentUrl,
-                        new UNNotificationAttachmentOptions(),
-                        out error);
-
-                    if (error == null)
-                    {
-                        content.Attachments = new UNNotificationAttachment[] { attachement };
-                    }
-                    else
-                    {
-                        // TODO: Expose via error event.
-                        Log.Error(error.LocalizedDescription);
-                    }
-                }
-            }
+            await AddImageAsync(content, notification);
 
             var actions = new List<UNNotificationAction>();
 
@@ -265,6 +227,49 @@ namespace Notifo.SDK.NotifoMobilePush
             return content;
         }
 
+        private async Task AddImageAsync(UNMutableNotificationContent content, UserNotificationDto notification)
+        {
+            var image = string.IsNullOrWhiteSpace(notification.ImageLarge) ? notification.ImageSmall : notification.ImageLarge;
+
+            if (string.IsNullOrWhiteSpace(image))
+            {
+                return;
+            }
+
+            var imagePath = await GetImageAsync(image);
+
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                return;
+            }
+
+            var attachmentName = $"{Guid.NewGuid()}{Path.GetExtension(imagePath)}";
+            var attachmentUrl = new NSUrl(attachmentName, NSFileManager.DefaultManager.GetTemporaryDirectory());
+
+            // TODO: We copy the image twice. Really weird.
+            NSFileManager.DefaultManager.Copy(NSUrl.FromFilename(imagePath), attachmentUrl, out var error);
+
+            if (error != null)
+            {
+                NotifoIO.Current.RaiseError(error.LocalizedDescription, null, this);
+                return;
+            }
+
+            var attachement = UNNotificationAttachment.FromIdentifier(
+                Constants.ImageLargeKey,
+                attachmentUrl,
+                new UNNotificationAttachmentOptions(),
+                out error);
+
+            if (error != null)
+            {
+                NotifoIO.Current.RaiseError(error.LocalizedDescription, null, this);
+                return;
+            }
+
+            content.Attachments = new UNNotificationAttachment[] { attachement };
+        }
+
         public void DidReceiveNotificationResponse(UNNotificationResponse response)
         {
             var userInfo = response.Notification.Request.Content.UserInfo.ToDictionary();
@@ -289,18 +294,17 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
-        private async Task<string> GetImageAsync(string imageUrl)
+        private async Task<string?> GetImageAsync(string imageUrl)
         {
             try
             {
-                // TODO: Not really sure if the dictionary provides any value at all.
-                if (imageCache.TryGetValue(imageUrl, out string imagePath) && File.Exists(imagePath))
+                // Use the base64 value of the URL.
+                var imagePath = Path.Combine(FileSystem.CacheDirectory, imageUrl.ToBase64());
+
+                if (File.Exists(imagePath))
                 {
                     return imagePath;
                 }
-
-                // Use the base64 value of the URL.
-                imagePath = Path.Combine(FileSystem.CacheDirectory, imageUrl.ToBase64());
 
                 // Copy directly from the web stream to the image stream to reduce memory allocations.
                 using (var fileStream = new FileStream(imagePath, FileMode.Open))
@@ -311,15 +315,14 @@ namespace Notifo.SDK.NotifoMobilePush
                     }
                 }
 
-                imageCache.Set(imageUrl, imagePath);
-
                 return imagePath;
             }
             catch (Exception ex)
             {
-                Log.Error(Strings.DownloadImageError, ex);
-                return string.Empty;
+                NotifoIO.Current.RaiseError(Strings.DownloadImageError, ex, this);
             }
+
+            return null;
         }
     }
 }
