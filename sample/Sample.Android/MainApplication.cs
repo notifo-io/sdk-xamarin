@@ -31,7 +31,6 @@ namespace Sample.Droid
                 FirebasePushNotificationManager.DefaultNotificationChannelId = "FirebasePushNotificationChannel";
                 FirebasePushNotificationManager.DefaultNotificationChannelName = "General";
             }
-
 #if DEBUG
             NotifoFirebasePlugin.Initialize(this, new NotifoStartup(), new NotificationHandler(), resetToken: true);
 #else

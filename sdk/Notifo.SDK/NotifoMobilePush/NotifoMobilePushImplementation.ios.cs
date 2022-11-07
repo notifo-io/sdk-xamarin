@@ -239,11 +239,11 @@ namespace Notifo.SDK.NotifoMobilePush
                 return;
             }
 
-            var attachmentName = $"{Guid.NewGuid()}{Path.GetExtension(imagePath)}";
+            var attachmentName = Guid.NewGuid().ToString();
             var attachmentUrl = new NSUrl(attachmentName, NSFileManager.DefaultManager.GetTemporaryDirectory());
 
-            // TODO: We copy the image twice. Really weird.
-            NSFileManager.DefaultManager.Copy(NSUrl.FromFilename(attachmentName), attachmentUrl, out var error);
+            // The cache directory cannot be used.
+            NSFileManager.DefaultManager.Copy(NSUrl.FromFilename(imagePath!), attachmentUrl, out var error);
 
             if (error != null)
             {
@@ -303,7 +303,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 }
 
                 // Copy directly from the web stream to the image stream to reduce memory allocations.
-                using (var fileStream = new FileStream(imagePath, FileMode.Open))
+                using (var fileStream = new FileStream(imagePath, FileMode.Create))
                 {
                     using (var imageStream = await httpClient.GetStreamAsync(imageUrl))
                     {

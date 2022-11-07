@@ -11,6 +11,6 @@ namespace Sample
     {
         public const string ApiUrl = "https://notifo.easierlife.com";
 
-        public const string UserApiKey = "mbgen4xlv2b9tgmxivtei8jxxa67qfa1zq0kumqpemyx";
+        public const string UserApiKey = "y2giqssxfvun1mnkrweql9pt5hay1xzuv6dmasba9jax";
     }
 }
