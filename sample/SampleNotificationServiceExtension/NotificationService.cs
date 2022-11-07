@@ -1,4 +1,11 @@
-﻿using System;
+﻿// ==========================================================================
+//  Notifo.io
+// ==========================================================================
+//  Copyright (c) Sebastian Stehle
+//  All rights reserved. Licensed under the MIT license.
+// ==========================================================================
+
+using System;
 using Foundation;
 using Notifo.SDK;
 using Sample.iOS.Shared;
@@ -9,23 +16,28 @@ namespace SampleNotificationServiceExtension
 	[Register("NotificationService")]
 	public class NotificationService : UNNotificationServiceExtension
 	{
-		Action<UNNotificationContent> ContentHandler { get; set; }
-		UNMutableNotificationContent BestAttemptContent { get; set; }
+		public Action<UNNotificationContent> ContentHandler { get; set; }
 
-		protected NotificationService(IntPtr handle) : base(handle)
+		public UNMutableNotificationContent BestAttemptContent { get; set; }
+
+		protected NotificationService(IntPtr handle)
+			: base(handle)
 		{
-			// Note: this .ctor should not contain any initialization logic.
+			// Note: this constructor should not contain any initialization logic.
 		}
 
 		public override async void DidReceiveNotificationRequest(UNNotificationRequest request, Action<UNNotificationContent> contentHandler)
 		{
 			ContentHandler = contentHandler;
+
+			//Save the notification and create a mutable copy
 			BestAttemptContent = (UNMutableNotificationContent)request.Content.MutableCopy();
 
 			NotifoIO.Current.SetNotificationHandler(new NotificationHandler());
 
 			await NotifoIO.DidReceiveNotificationRequestAsync(request, BestAttemptContent);
 
+			// Display the notification.
 			ContentHandler(BestAttemptContent);
 		}
 
@@ -33,7 +45,6 @@ namespace SampleNotificationServiceExtension
 		{
 			// Called just before the extension will be terminated by the system.
 			// Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-
 			ContentHandler(BestAttemptContent);
 		}
 	}

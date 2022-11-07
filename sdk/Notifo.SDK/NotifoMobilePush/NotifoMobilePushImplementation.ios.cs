@@ -33,7 +33,6 @@ namespace Notifo.SDK.NotifoMobilePush
         public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
         {
             this.notificationHandler = notificationHandler;
-
             return this;
         }
 
@@ -194,7 +193,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 var allCategories = await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
                 if (allCategories != null)
                 {
-                    foreach (UNNotificationCategory category in allCategories)
+                    foreach (var category in allCategories.OfType<UNNotificationCategory>())
                     {
                         if (category.Identifier != categoryId)
                         {
@@ -211,16 +210,13 @@ namespace Notifo.SDK.NotifoMobilePush
 
                 UNUserNotificationCenter.Current.SetNotificationCategories(new NSSet<UNNotificationCategory>(categories.ToArray()));
 
-                // without this call action buttons won't be added or updated
+                // Without this call action buttons will not be added or updated
                 _ = await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
 
                 content.CategoryIdentifier = categoryId;
             }
 
-            if (content.Sound == null)
-            {
-                content.Sound = UNNotificationSound.Default;
-            }
+            content.Sound ??= UNNotificationSound.Default;
 
             notificationHandler?.OnBuildNotification(content, notification);
 
@@ -247,7 +243,7 @@ namespace Notifo.SDK.NotifoMobilePush
             var attachmentUrl = new NSUrl(attachmentName, NSFileManager.DefaultManager.GetTemporaryDirectory());
 
             // TODO: We copy the image twice. Really weird.
-            NSFileManager.DefaultManager.Copy(NSUrl.FromFilename(imagePath), attachmentUrl, out var error);
+            NSFileManager.DefaultManager.Copy(NSUrl.FromFilename(attachmentName), attachmentUrl, out var error);
 
             if (error != null)
             {
@@ -261,9 +257,9 @@ namespace Notifo.SDK.NotifoMobilePush
                 new UNNotificationAttachmentOptions(),
                 out error);
 
-            if (error != null)
+            if (error != null || attachement == null)
             {
-                NotifoIO.Current.RaiseError(error.LocalizedDescription, null, this);
+                NotifoIO.Current.RaiseError(error?.LocalizedDescription ?? "Unknown Error", null, this);
                 return;
             }
 

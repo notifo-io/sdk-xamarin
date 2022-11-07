@@ -34,14 +34,14 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarinios')) ">
+    <Compile Include="**\*.ios.cs" />
     <None Include="**\*.netstandard.cs" />
     <None Include="**\*.android.cs" />
-    <Compile Include="**\*.ios.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
-    <None Include="**\*.netstandard.cs" />
     <Compile Include="**\*.android.cs" />
+    <None Include="**\*.netstandard.cs" />
     <None Include="**\*.ios.cs" />
   </ItemGroup>
 
@@ -65,15 +65,11 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'xamarinios10'">
-    <PackageReference Include="Serilog.Sinks.Xamarin">
-      <Version>0.2.0.64</Version>
-    </PackageReference>
+    <PackageReference Include="Serilog.Sinks.Xamarin" Version="0.2.0.64" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'monoandroid12.0'">
-    <PackageReference Include="Serilog.Sinks.Xamarin">
-      <Version>0.2.0.64</Version>
-    </PackageReference>
+    <PackageReference Include="Serilog.Sinks.Xamarin" Version="0.2.0.64" />
   </ItemGroup>
 
   <ItemGroup>

@@ -22,46 +22,42 @@
     <Compile Remove="**\*.ios.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
-    <None Include="**\*.netstandard.cs" />
-    <Compile Include="**\*.android.cs" />
-    <None Include="**\*.ios.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
     <Compile Include="**\*.netstandard.cs" />
     <None Include="**\*.android.cs" />
     <None Include="**\*.ios.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarinios')) ">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('monoandroid'))">
+    <Compile Include="**\*.android.cs" />
+    <None Include="**\*.netstandard.cs" />
+    <None Include="**\*.ios.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework.StartsWith('xamarinios'))">
+    <Compile Include="**\*.ios.cs" />
     <None Include="**\*.netstandard.cs" />
     <None Include="**\*.android.cs" />
-    <Compile Include="**\*.ios.cs" />
-    <PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging" Version="8.10.0" />
-    <PackageReference Include="Xamarin.Firebase.iOS.Installations" Version="8.10.0" />
-    <PackageReference Include="Xamarin.Firebase.iOS.Core" Version="8.10.0" />
-    <PackageReference Include="Xamarin.Firebase.iOS.InstanceID" Version="4.8.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework.StartsWith('xamarinios'))">
+	<PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging" Version="8.10.0.1" />
+	<PackageReference Include="Xamarin.Firebase.iOS.Installations" Version="8.10.0.1" />
+	<PackageReference Include="Xamarin.Firebase.iOS.Core" Version="8.10.0.1" />
+	<PackageReference Include="Xamarin.Firebase.iOS.InstanceID" Version="4.8.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework.StartsWith('monoandroid'))">
+    <PackageReference Include="Xamarin.Firebase.Common" Version="120.0.0.5" />
+    <PackageReference Include="Xamarin.Firebase.Messaging" Version="122.0.0.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Notifo.SDK" Version="1.3.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
-    <PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging" Version="8.10.0.1" />
-    <PackageReference Include="Xamarin.Firebase.iOS.Core" Version="8.10.0.1" />
-    <PackageReference Include="Xamarin.Firebase.iOS.Installations" Version="8.10.0.1" />
+	<PackageReference Include="Notifo.SDK" Version="1.3.0" />
+	<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Notifo.SDK\Notifo.SDK.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'monoandroid12.0'">
-    <PackageReference Include="Xamarin.Firebase.Common">
-      <Version>120.0.0.5</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Firebase.Messaging">
-      <Version>122.0.0.5</Version>
-    </PackageReference>
   </ItemGroup>
 </Project>
