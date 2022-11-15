@@ -29,8 +29,12 @@ namespace Notifo.SDK.NotifoMobilePush
                 var trackUserNotificationDto = new TrackNotificationDto
                 {
                     DeviceIdentifier = Token,
+
                     // Track all notifications at once.
                     Seen = Ids.Select(x => x.ToString()).ToList(),
+
+                    // Track individual channels.
+                    Channel = "mobilepush"
                 };
 
                 await NotifoIO.Current.Notifications.ConfirmMeAsync(trackUserNotificationDto, ct);
