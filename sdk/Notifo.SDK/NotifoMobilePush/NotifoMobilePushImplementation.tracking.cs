@@ -53,6 +53,7 @@ namespace Notifo.SDK.NotifoMobilePush
             {
                 var set = await LoadSeenNotificationsAsync();
 
+                // Store the seen notifications immediately as a cache, if the actual command to the server fails.
                 await seenNotificationsStore.AddSeenNotificationIdsAsync(Capacity, ids);
 
                 foreach (var id in ids)
@@ -60,6 +61,7 @@ namespace Notifo.SDK.NotifoMobilePush
                     set.Add(id, Capacity);
                 }
 
+                // Track all notifications with one HTTP request.
                 commandQueue.Run(new TrackSeenCommand { Ids = ids.ToHashSet(), Token = token });
             }
             catch (Exception ex)
@@ -75,12 +77,8 @@ namespace Notifo.SDK.NotifoMobilePush
 
         private async Task<SlidingSet<Guid>> LoadSeenNotificationsAsync()
         {
-            if (seenNotifications == null)
-            {
-                seenNotifications = await seenNotificationsStore.GetSeenNotificationIdsAsync();
-            }
-
-            return seenNotifications;
+            // Only query the notifications once and then hold everything in-memory.
+            return seenNotifications ??= await seenNotificationsStore.GetSeenNotificationIdsAsync();
         }
     }
 }

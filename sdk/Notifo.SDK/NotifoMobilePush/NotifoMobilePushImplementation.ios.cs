@@ -52,6 +52,7 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             options ??= new PullRefreshOptions();
 
+            // iOS does not maintain a queue of undelivered notifications, therefore we have to query here.
             var notifications = await GetPendingNotificationsAsync(options.Take, options.Period);
 
             foreach (var notification in notifications)
@@ -89,6 +90,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 var currentSeen = await GetSeenNotificationsAsync();
                 var currentTime = DateTimeOffset.UtcNow;
 
+                // Only take the recent notifications into account (default: 3 days).
                 bool IsRecent(DateTimeOffset date)
                 {
                     return (currentTime - date.UtcDateTime) <= maxAge;
