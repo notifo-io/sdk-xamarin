@@ -239,7 +239,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 return;
             }
 
-            var attachmentName = Guid.NewGuid().ToString();
+            var attachmentName = $"{Guid.NewGuid()}.png";
             var attachmentUrl = new NSUrl(attachmentName, NSFileManager.DefaultManager.GetTemporaryDirectory());
 
             // The cache directory cannot be used.
