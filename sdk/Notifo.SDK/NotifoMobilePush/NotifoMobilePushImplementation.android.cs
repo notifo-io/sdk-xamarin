@@ -12,6 +12,7 @@ using Android.Graphics;
 using AndroidX.Core.App;
 using Java.Net;
 using Microsoft.Extensions.Caching.Memory;
+using Notifo.SDK.Extensions;
 using Notifo.SDK.Resources;
 
 namespace Notifo.SDK.NotifoMobilePush
@@ -91,14 +92,12 @@ namespace Notifo.SDK.NotifoMobilePush
             notificationHandler?.OnBuildNotification(notificationBuilder, notification);
         }
 
-        private Bitmap? GetBitmap(string bitmapUrl, int requestWidth = -1, int requestHeight = -1)
+        private Bitmap? GetBitmap(string bitmapUrl, int width = -1, int height = -1)
         {
             try
             {
-                if (requestWidth > 0 && requestHeight > 0)
-                {
-                    bitmapUrl = $"{bitmapUrl}?width={requestWidth}&height={requestHeight}";
-                }
+                // Let the server resize the image to the perfect format.
+                bitmapUrl = bitmapUrl.AppendQueries("width", width, "height", height);
 
                 if (bitmapCache.TryGetValue(bitmapUrl, out Bitmap cachedBitmap))
                 {

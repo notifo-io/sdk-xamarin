@@ -42,12 +42,10 @@ namespace Notifo.SDK.NotifoMobilePush
 
             var notification = new UserNotificationDto().FromDictionary(request.Content.UserInfo.ToDictionary());
 
-            if (!string.IsNullOrWhiteSpace(notification.TrackSeenUrl))
-            {
-                await TrackNotificationsAsync(notification);
-            }
-
             await EnrichNotificationContentAsync(bestAttemptContent, notification);
+
+            // Always track our notifications as seen.
+            await TrackNotificationsAsync(notification);
         }
 
         public async Task DidReceivePullRefreshRequestAsync(PullRefreshOptions? options = null)
@@ -60,8 +58,7 @@ namespace Notifo.SDK.NotifoMobilePush
             {
                 if (options.RaiseEvent)
                 {
-                    var eventArgs = new NotificationEventArgs(notification);
-                    OnReceived(eventArgs);
+                    OnReceived(new NotificationEventArgs(notification));
                 }
 
                 if (notification.Silent)
@@ -239,6 +236,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 return;
             }
 
+            // The system needs a file extension here, but it actually does not matter if the extension matchs to the actual format.
             var attachmentName = $"{Guid.NewGuid()}.png";
             var attachmentUrl = new NSUrl(attachmentName, NSFileManager.DefaultManager.GetTemporaryDirectory());
 
@@ -294,13 +292,16 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             try
             {
-                // Use the base64 value of the URL.
-                var imagePath = Path.Combine(FileSystem.CacheDirectory, imageUrl.ToBase64());
+                // Convert the hash of the url to create short files names. Base64 will create longer file names.
+                var imagePath = Path.Combine(FileSystem.CacheDirectory, imageUrl.Sha256());
 
                 if (File.Exists(imagePath))
                 {
                     return imagePath;
                 }
+
+                // Let the server decide how the image should be delivered.
+                imageUrl = imageUrl.AppendQueries("preset", "MobileIOS");
 
                 // Copy directly from the web stream to the image stream to reduce memory allocations.
                 using (var fileStream = new FileStream(imagePath, FileMode.Create))
