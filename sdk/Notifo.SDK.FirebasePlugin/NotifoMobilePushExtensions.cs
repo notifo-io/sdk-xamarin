@@ -23,9 +23,7 @@ namespace Notifo.SDK.FirebasePlugin
         /// <summary>
         /// Use the firebase plugin as the push events provider.
         /// </summary>
-        /// <param name="notifoMobilePush">
-        /// The <see cref="INotifoMobilePush"/> instance.
-        /// </param>
+        /// <param name="notifoMobilePush">The <see cref="INotifoMobilePush"/> instance.</param>
         /// <returns>The current instance.</returns>
         public static INotifoMobilePush UseFirebasePluginEventsProvider(this INotifoMobilePush notifoMobilePush)
         {

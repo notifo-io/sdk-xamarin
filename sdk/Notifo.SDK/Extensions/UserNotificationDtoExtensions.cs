@@ -63,9 +63,14 @@ namespace Notifo.SDK.Extensions
 
             data[Constants.SilentKey] = notification.Silent.ToString();
 
+            if (!string.IsNullOrWhiteSpace(notification.TrackingToken))
+            {
+                data[Constants.TrackingTokenKey] = notification.TrackingToken;
+            }
+
             if (!string.IsNullOrWhiteSpace(notification.TrackSeenUrl))
             {
-                data[Constants.TrackingUrlKey] = notification.TrackSeenUrl;
+                data[Constants.TrackSeenUrlKey] = notification.TrackSeenUrl;
             }
 
             if (!string.IsNullOrWhiteSpace(notification.Data))
@@ -141,7 +146,12 @@ namespace Notifo.SDK.Extensions
                 notification.Silent = Convert.ToBoolean(silent.ToString());
             }
 
-            if (data.TryGetValue(Constants.TrackingUrlKey, out var trackingUrl))
+            if (data.TryGetValue(Constants.TrackingTokenKey, out var trackingToken))
+            {
+                notification.TrackingToken = trackingToken.ToString();
+            }
+
+            if (data.TryGetValue(Constants.TrackSeenUrlKey, out var trackingUrl))
             {
                 notification.TrackSeenUrl = trackingUrl.ToString();
             }

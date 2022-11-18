@@ -31,29 +31,37 @@ namespace Notifo.SDK
         event EventHandler<NotificationErrorEventArgs> OnError;
 
         /// <summary>
-        /// Sets the api key to use.
+        /// The used API version.
+        /// </summary>
+        ApiVersion ApiVersion { get; }
+
+        /// <summary>
+        /// Sets the API key to use.
         /// </summary>
         /// <param name="apiKey">
-        /// The api key.
+        /// The API key.
         /// </param>
         /// <returns>The current instance.</returns>
         INotifoMobilePush SetApiKey(string apiKey);
 
         /// <summary>
+        /// Sets the API version to use.
+        /// </summary>
+        /// <param name="apiVersion">The API version.</param>
+        /// <returns>The current instance.</returns>
+        INotifoMobilePush SetApiVersion(ApiVersion apiVersion);
+
+        /// <summary>
         /// Sets the api URL to use.
         /// </summary>
-        /// <param name="baseUrl">
-        /// The api URL. Default: https://app.notifo.io.
-        /// </param>
+        /// <param name="baseUrl">The api URL. Default: https://app.notifo.io.</param>
         /// <returns>The current instance.</returns>
         INotifoMobilePush SetBaseUrl(string baseUrl);
 
         /// <summary>
         /// Sets the push events provider.
         /// </summary>
-        /// <param name="pushEventsProvider">
-        /// The <see cref="IPushEventsProvider"/> implementation.
-        /// </param>
+        /// <param name="pushEventsProvider">The <see cref="IPushEventsProvider"/> implementation. </param>
         /// <returns>The current instance.</returns>
         INotifoMobilePush SetPushEventsProvider(IPushEventsProvider pushEventsProvider);
 

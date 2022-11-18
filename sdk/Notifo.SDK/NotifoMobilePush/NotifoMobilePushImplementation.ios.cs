@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Foundation;
 using Notifo.SDK.Extensions;
@@ -53,7 +54,7 @@ namespace Notifo.SDK.NotifoMobilePush
             options ??= new PullRefreshOptions();
 
             // iOS does not maintain a queue of undelivered notifications, therefore we have to query here.
-            var notifications = await GetPendingNotificationsAsync(options.Take, options.Period);
+            var notifications = await GetPendingNotificationsAsync(options.Take, options.Period, default);
 
             foreach (var notification in notifications)
             {
@@ -76,36 +77,42 @@ namespace Notifo.SDK.NotifoMobilePush
             await TrackNotificationsAsync(notifications.ToArray());
         }
 
-        private async Task<IEnumerable<UserNotificationDto>> GetPendingNotificationsAsync(int take, TimeSpan maxAge)
+        private async Task<IEnumerable<UserNotificationDto>> GetPendingNotificationsAsync(int take, TimeSpan maxAge,
+            CancellationToken ct)
         {
             try
             {
-                var notificationPending = await Notifications.GetMyNotificationsAsync(take: take);
+                var after = DateTime.UtcNow.Subtract(maxAge);
 
-                if (notificationPending.Items.Count == 0)
+                List<UserNotificationDto> notifications;
+
+                if (ApiVersion == ApiVersion.Version_1_0)
+                {
+                    notifications = await GetPendingNotifications1_0Async(take, after, ct);
+                }
+                else
+                {
+                    try
+                    {
+                        notifications = await GetPendingNotifications1_4Async(take, after, ct);
+                    }
+                    catch (NotifoException ex) when (ex.StatusCode == 404)
+                    {
+                        notifications = await GetPendingNotifications1_0Async(take, after, ct);
+                    }
+                }
+
+                if (notifications.Count == 0)
                 {
                     return Enumerable.Empty<UserNotificationDto>();
                 }
 
-                var currentSeen = await GetSeenNotificationsAsync();
-                var currentTime = DateTimeOffset.UtcNow;
+                var notificationsSeen = await GetSeenNotificationsAsync();
+                var notificationsPending = notifications.Where(n => !notificationsSeen.Contains(n.Id)).OrderBy(x => x.Created).ToArray();
 
-                // Only take the recent notifications into account (default: 3 days).
-                bool IsRecent(DateTimeOffset date)
-                {
-                    return (currentTime - date.UtcDateTime) <= maxAge;
-                }
+                Log.Debug(Strings.PendingNotificationsCount, notificationsPending.Length);
 
-                var pendingNotifications = notificationPending.Items
-                    .Where(n => !n.IsSeen)
-                    .Where(n => !currentSeen.Contains(n.Id))
-                    .Where(n => IsRecent(n.Created))
-                    .OrderBy(x => x.Created)
-                    .ToArray();
-
-                Log.Debug(Strings.PendingNotificationsCount, pendingNotifications.Length);
-
-                return pendingNotifications;
+                return notificationsPending;
             }
             catch (Exception ex)
             {
@@ -113,6 +120,22 @@ namespace Notifo.SDK.NotifoMobilePush
             }
 
             return Array.Empty<UserNotificationDto>();
+        }
+
+        private async Task<List<UserNotificationDto>> GetPendingNotifications1_0Async(int take, DateTime after,
+            CancellationToken ct)
+        {
+            var result = await Notifications.GetMyNotificationsAsync(take: take, cancellationToken: ct);
+
+            return result.Items.Where(x => x.Created >= after).ToList();
+        }
+
+        private async Task<List<UserNotificationDto>> GetPendingNotifications1_4Async(int take, DateTime after,
+            CancellationToken ct)
+        {
+            var result = await Notifications.GetMyDeviceNotificationsAsync(token, after, true, take * 2, ct);
+
+            return result.Items;
         }
 
         private void OnReceived(NotificationEventArgs eventArgs)
@@ -209,7 +232,7 @@ namespace Notifo.SDK.NotifoMobilePush
 
                 UNUserNotificationCenter.Current.SetNotificationCategories(new NSSet<UNNotificationCategory>(categories.ToArray()));
 
-                // Without this call action buttons will not be added or updated
+                // Without this call action buttons will not be added or updated.
                 _ = await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
 
                 content.CategoryIdentifier = categoryId;

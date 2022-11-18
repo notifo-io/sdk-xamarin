@@ -28,6 +28,7 @@ namespace Notifo.SDK.UnitTests
             var linkUrl = "https://app.notifo.io";
             var silent = true;
             var subject = "subject1";
+            var trackingToken = "tracking/token";
             var trackingUrl = "https://track.notifo.com/seen";
 
             var notification = new UserNotificationDto
@@ -43,23 +44,25 @@ namespace Notifo.SDK.UnitTests
                 LinkUrl = linkUrl,
                 Silent = silent,
                 Subject = subject,
+                TrackingToken = trackingToken,
                 TrackSeenUrl = trackingUrl
             };
 
             var dictionary = notification.ToDictionary();
 
-            Assert.Equal(dictionary[nameof(id)], id.ToString());
-            Assert.Equal(dictionary[nameof(body)], body);
-            Assert.Equal(dictionary[nameof(confirmText)], confirmText);
-            Assert.Equal(dictionary[nameof(confirmUrl)], confirmUrl);
-            Assert.Equal(dictionary[nameof(imageLarge)], imageLarge);
-            Assert.Equal(dictionary[nameof(imageSmall)], imageSmall);
-            Assert.Equal(dictionary[nameof(isConfirmed)], isConfirmed.ToString());
-            Assert.Equal(dictionary[nameof(linkText)], linkText);
-            Assert.Equal(dictionary[nameof(linkUrl)], linkUrl);
-            Assert.Equal(dictionary[nameof(silent)], silent.ToString());
-            Assert.Equal(dictionary[nameof(subject)], subject);
-            Assert.Equal(dictionary[nameof(trackingUrl)], trackingUrl);
+            Assert.Equal(id.ToString(), dictionary[nameof(id)]);
+            Assert.Equal(body, dictionary[nameof(body)]);
+            Assert.Equal(confirmText, dictionary[nameof(confirmText)]);
+            Assert.Equal(confirmUrl, dictionary[nameof(confirmUrl)]);
+            Assert.Equal(imageLarge, dictionary[nameof(imageLarge)]);
+            Assert.Equal(imageSmall, dictionary[nameof(imageSmall)]);
+            Assert.Equal(isConfirmed.ToString(), dictionary[nameof(isConfirmed)]);
+            Assert.Equal(linkText, dictionary[nameof(linkText)]);
+            Assert.Equal(linkUrl, dictionary[nameof(linkUrl)]);
+            Assert.Equal(silent.ToString(), dictionary[nameof(silent)]);
+            Assert.Equal(subject, dictionary[nameof(subject)]);
+            Assert.Equal(trackingToken, dictionary[nameof(trackingToken)]);
+            Assert.Equal(trackingUrl, dictionary[nameof(trackingUrl)]);
         }
 
         [Fact]
@@ -76,6 +79,7 @@ namespace Notifo.SDK.UnitTests
             var linkUrl = "https://app.notifo.io";
             var silent = true;
             var subject = "subject1";
+            var trackingToken = "tracking/token";
             var trackingUrl = "https://track.notifo.com/seen";
 
             var dictionary = new Dictionary<string, object>
@@ -84,30 +88,32 @@ namespace Notifo.SDK.UnitTests
                 [nameof(body)] = body,
                 [nameof(confirmText)] = confirmText,
                 [nameof(confirmUrl)] = confirmUrl,
-                [nameof(isConfirmed)] = isConfirmed.ToString(),
-                [nameof(imageSmall)] = imageSmall,
                 [nameof(imageLarge)] = imageLarge,
+                [nameof(imageSmall)] = imageSmall,
+                [nameof(isConfirmed)] = isConfirmed.ToString(),
                 [nameof(linkText)] = linkText,
                 [nameof(linkUrl)] = linkUrl,
-                [nameof(trackingUrl)] = trackingUrl,
+                [nameof(silent)] = silent,
                 [nameof(subject)] = subject,
-                [nameof(silent)] = silent
+                [nameof(trackingToken)] = trackingToken,
+                [nameof(trackingUrl)] = trackingUrl
             };
 
             var notification = new UserNotificationDto().FromDictionary(dictionary);
 
-            Assert.Equal(notification.Id, id);
-            Assert.Equal(notification.Body, body);
-            Assert.Equal(notification.ConfirmText, confirmText);
-            Assert.Equal(notification.ConfirmUrl, confirmUrl);
-            Assert.Equal(notification.ImageLarge, imageLarge);
-            Assert.Equal(notification.ImageSmall, imageSmall);
-            Assert.Equal(notification.IsConfirmed, isConfirmed);
-            Assert.Equal(notification.LinkText, linkText);
-            Assert.Equal(notification.LinkUrl, linkUrl);
-            Assert.Equal(notification.Silent, silent);
-            Assert.Equal(notification.Subject, subject);
-            Assert.Equal(notification.TrackSeenUrl, trackingUrl);
+            Assert.Equal(id, notification.Id);
+            Assert.Equal(body, notification.Body);
+            Assert.Equal(confirmText, notification.ConfirmText);
+            Assert.Equal(confirmUrl, notification.ConfirmUrl);
+            Assert.Equal(imageLarge, notification.ImageLarge);
+            Assert.Equal(imageSmall, notification.ImageSmall);
+            Assert.Equal(isConfirmed, notification.IsConfirmed);
+            Assert.Equal(linkText, notification.LinkText);
+            Assert.Equal(linkUrl, notification.LinkUrl);
+            Assert.Equal(silent, notification.Silent);
+            Assert.Equal(subject, notification.Subject);
+            Assert.Equal(trackingToken, notification.TrackingToken);
+            Assert.Equal(trackingUrl, notification.TrackSeenUrl);
         }
     }
 }

@@ -26,18 +26,20 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             try
             {
-                var trackUserNotificationDto = new TrackNotificationDto
-                {
-                    DeviceIdentifier = Token,
+                var seenIds = Ids.Select(x => x.ToString()).ToList();
 
+                var trackRequest = new TrackNotificationDto
+                {
                     // Track all notifications at once.
-                    Seen = Ids.Select(x => x.ToString()).ToList(),
+                    Seen = seenIds,
 
                     // Track individual channels.
-                    Channel = "mobilepush"
+                    Channel = Providers.MobilePush
                 };
 
-                await NotifoIO.Current.Notifications.ConfirmMeAsync(trackUserNotificationDto, ct);
+                // Track twice to support backwards compatibility with older Notifo versions.
+                await TrackByTokenAsync(trackRequest, ct);
+                await TrackByIdentifierAsync(trackRequest, ct);
             }
             catch (Exception ex)
             {
@@ -46,16 +48,32 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
+        private async Task TrackByTokenAsync(TrackNotificationDto trackRequest,
+            CancellationToken ct)
+        {
+            trackRequest.DeviceIdentifier = Token;
+
+            await NotifoIO.Current.Notifications.ConfirmMeAsync(trackRequest, ct);
+        }
+
+        private async Task TrackByIdentifierAsync(TrackNotificationDto trackRequest,
+            CancellationToken ct)
+        {
+            trackRequest.DeviceIdentifier = Device.DeviceIdentifier;
+
+            await NotifoIO.Current.Notifications.ConfirmMeAsync(trackRequest, ct);
+        }
+
         public bool Merge(ICommand other)
         {
-            if (other is TrackSeenCommand trackSeen)
+            // Do not merge commands with different mobile tokens.
+            if (other is TrackSeenCommand trackSeen && string.Equals(Token, trackSeen.Token))
             {
                 foreach (var id in trackSeen.Ids)
                 {
                     Ids.Add(id);
                 }
 
-                Token = trackSeen.Token;
                 return true;
             }
 

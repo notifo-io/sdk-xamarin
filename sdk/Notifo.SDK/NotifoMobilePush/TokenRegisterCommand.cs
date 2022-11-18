@@ -32,20 +32,10 @@ namespace Notifo.SDK.NotifoMobilePush
 
                 var request = new RegisterMobileTokenDto
                 {
+                    DeviceIdentifier = Device.DeviceIdentifier,
+                    DeviceType = GetDeviceType(),
                     Token = Token
                 };
-
-                var platform = DeviceInfo.Platform;
-
-                if (platform == DevicePlatform.Android)
-                {
-                    request.DeviceType = MobileDeviceType.Android;
-                }
-
-                if (platform == DevicePlatform.iOS)
-                {
-                    request.DeviceType = MobileDeviceType.IOS;
-                }
 
                 await NotifoIO.Current.MobilePush.PostMyTokenAsync(request, ct);
             }
@@ -57,6 +47,24 @@ namespace Notifo.SDK.NotifoMobilePush
             finally
             {
                 Log.Debug(Strings.TokenRefreshEndExecutingCount, refreshCount);
+            }
+        }
+
+        private static MobileDeviceType GetDeviceType()
+        {
+            var platform = DeviceInfo.Platform;
+
+            if (platform == DevicePlatform.Android)
+            {
+                return MobileDeviceType.Android;
+            }
+            else if (platform == DevicePlatform.iOS)
+            {
+                return MobileDeviceType.IOS;
+            }
+            else
+            {
+                return MobileDeviceType.Unknown;
             }
         }
 

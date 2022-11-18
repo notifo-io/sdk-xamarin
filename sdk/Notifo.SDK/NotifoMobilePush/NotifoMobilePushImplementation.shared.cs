@@ -31,6 +31,9 @@ namespace Notifo.SDK.NotifoMobilePush
         public event EventHandler<NotificationErrorEventArgs> OnError;
 
         /// <inheritdoc/>
+        public ApiVersion ApiVersion { get; private set; }
+
+        /// <inheritdoc/>
         public IAppsClient Apps => clientProvider.Client.Apps;
 
         /// <inheritdoc/>
@@ -78,7 +81,8 @@ namespace Notifo.SDK.NotifoMobilePush
         /// <inheritdoc/>
         public IUserClient User => clientProvider.Client.User;
 
-        public NotifoMobilePushImplementation(Func<HttpClient> httpClientFactory, ISeenNotificationsStore seenNotificationsStore, ICommandQueue commandQueue)
+        public NotifoMobilePushImplementation(Func<HttpClient> httpClientFactory,
+            ISeenNotificationsStore seenNotificationsStore, ICommandQueue commandQueue)
         {
             this.seenNotificationsStore = seenNotificationsStore;
             this.commandQueue = commandQueue;
@@ -106,6 +110,13 @@ namespace Notifo.SDK.NotifoMobilePush
         public INotifoMobilePush SetBaseUrl(string baseUrl)
         {
             clientProvider.ApiUrl = baseUrl;
+            return this;
+        }
+
+        /// <inheritdoc/>
+        public INotifoMobilePush SetApiVersion(ApiVersion apiVersion)
+        {
+            ApiVersion = apiVersion;
             return this;
         }
 

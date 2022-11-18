@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Foundation;
 using UIKit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter

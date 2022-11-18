@@ -47,6 +47,8 @@ namespace Notifo.SDK
 
         public const string SubjectKey = "subject";
 
-        public const string TrackingUrlKey = "trackingUrl";
+        public const string TrackingTokenKey = "trackingToken";
+
+        public const string TrackSeenUrlKey = "trackingUrl";
     }
 }
