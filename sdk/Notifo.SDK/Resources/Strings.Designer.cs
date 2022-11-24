@@ -70,6 +70,15 @@ namespace Notifo.SDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not decode image..
+        /// </summary>
+        internal static string DecodingImageError {
+            get {
+                return ResourceManager.GetString("DecodingImageError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not download image..
         /// </summary>
         internal static string DownloadImageError {

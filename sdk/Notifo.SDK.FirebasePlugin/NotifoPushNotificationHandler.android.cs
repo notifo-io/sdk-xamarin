@@ -40,6 +40,7 @@ namespace Notifo.SDK.FirebasePlugin
             if (parameters.TryGetValue(IdKey, out var id))
             {
                 var notificationId = Math.Abs(id.GetHashCode());
+
                 parameters[IdKey] = notificationId;
             }
 

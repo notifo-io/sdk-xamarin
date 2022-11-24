@@ -92,12 +92,15 @@ namespace Notifo.SDK.NotifoMobilePush
             notificationHandler?.OnBuildNotification(notificationBuilder, notification);
         }
 
-        private Bitmap? GetBitmap(string bitmapUrl, int width = -1, int height = -1)
+        private Bitmap? GetBitmap(string bitmapUrl, int? width = null, int? height = null)
         {
             try
             {
                 // Let the server resize the image to the perfect format.
-                bitmapUrl = bitmapUrl.AppendQueries("width", width, "height", height);
+                if (width != null && height != null)
+                {
+                    bitmapUrl = bitmapUrl.AppendQueries("width", width, "height", height);
+                }
 
                 if (bitmapCache.TryGetValue(bitmapUrl, out Bitmap cachedBitmap))
                 {
@@ -105,14 +108,18 @@ namespace Notifo.SDK.NotifoMobilePush
                 }
 
                 var bitmapStream = new URL(bitmapUrl)?.OpenConnection()?.InputStream;
+                var bitmapImage = BitmapFactory.DecodeStream(bitmapStream);
 
-                var bitmap = BitmapFactory.DecodeStream(bitmapStream);
-                if (bitmap != null)
+                if (bitmapImage != null)
                 {
-                    bitmapCache.Set(bitmapUrl, bitmap);
+                    bitmapCache.Set(bitmapUrl, bitmapImage);
+                }
+                else
+                {
+                    NotifoIO.Current.RaiseError(Strings.DecodingImageError, null, this);
                 }
 
-                return bitmap;
+                return bitmapImage;
             }
             catch (Exception ex)
             {

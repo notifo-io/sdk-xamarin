@@ -120,6 +120,9 @@
   <data name="CommandError" xml:space="preserve">
     <value>Command queue has thrown an error.</value>
   </data>
+  <data name="DecodingImageError" xml:space="preserve">
+    <value>Could not decode image.</value>
+  </data>
   <data name="DownloadImageError" xml:space="preserve">
     <value>Could not download image.</value>
   </data>
