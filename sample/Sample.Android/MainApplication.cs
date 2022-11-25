@@ -14,7 +14,7 @@ using Plugin.FirebasePushNotification;
 
 namespace Sample.Droid
 {
-    [Application]
+    [Application(UsesCleartextTraffic = true)]
     public class MainApplication : Application
     {
         public MainApplication(IntPtr handle, JniHandleOwnership transer)
