@@ -172,6 +172,5 @@ namespace Plugin.FirebasePushNotification
         void RemoveNotification(string tag, int id);
 
         Task<string> GetTokenAsync();
-
     }
 }

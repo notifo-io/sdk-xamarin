@@ -167,18 +167,37 @@ namespace Notifo.SDK.NotifoMobilePush
         /// <inheritdoc/>
         public void Register()
         {
-            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(clientProvider.ApiKey))
+            async Task RegisterAsync()
+            {
+                if (pushEventsProvider == null)
+                {
+                    return;
+                }
+
+                // Always fetch the token to avoid any consistency issues.
+                var tokenToRegister = await pushEventsProvider.GetTokenAsync();
+
+                Register(tokenToRegister);
+            }
+
+            _ = RegisterAsync();
+        }
+
+        /// <inheritdoc/>
+        public void Register(string? tokenToRegister)
+        {
+            if (string.IsNullOrEmpty(tokenToRegister))
             {
                 return;
             }
 
-            commandQueue.Run(new TokenRegisterCommand { Token = token });
+            commandQueue.Run(new TokenRegisterCommand { Token = tokenToRegister });
         }
 
         /// <inheritdoc/>
         public void Unregister()
         {
-            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(clientProvider.ApiKey))
+            if (string.IsNullOrEmpty(token))
             {
                 return;
             }
@@ -221,7 +240,12 @@ namespace Notifo.SDK.NotifoMobilePush
             {
                 token = newToken;
 
-                Register();
+                // Only register the token if the client is already configured to avoid warning logs.
+                if (!string.IsNullOrEmpty(clientProvider.ApiKey) &&
+                    !string.IsNullOrEmpty(clientProvider.ApiUrl))
+                {
+                    Register(newToken);
+                }
             }
         }
     }

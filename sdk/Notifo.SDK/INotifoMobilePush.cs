@@ -79,6 +79,12 @@ namespace Notifo.SDK
         void Register();
 
         /// <summary>
+        /// Register for notifications on demand.
+        /// </summary>
+        /// <param name="tokenToRegister">The token to register.</param>
+        void Register(string? tokenToRegister);
+
+        /// <summary>
         /// Unregister notifications on demand.
         /// </summary>
         void Unregister();
