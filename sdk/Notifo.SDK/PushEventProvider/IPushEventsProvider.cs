@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Threading.Tasks;
 
 namespace Notifo.SDK.PushEventProvider
 {
@@ -35,8 +36,9 @@ namespace Notifo.SDK.PushEventProvider
         event EventHandler<NotificationErrorEventArgs> OnError;
 
         /// <summary>
-        /// Push notification token.
+        /// Gets the current token.
         /// </summary>
-        public string Token { get; }
+        /// <returns>The token.</returns>
+        public Task<string?> GetTokenAsync();
     }
 }

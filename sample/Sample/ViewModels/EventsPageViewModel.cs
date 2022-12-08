@@ -16,23 +16,23 @@ using Prism.Services;
 
 namespace Sample.ViewModels
 {
-    public class MainPageViewModel : BindableBase, IPageLifecycleAware
+    public class EventsPageViewModel : BindableBase, IPageLifecycleAware
     {
-        public ObservableRangeCollection<UserNotificationDto> Notifications { get; private set; } = new ObservableRangeCollection<UserNotificationDto>() { };
-
-        private bool isRefreshing;
-        public bool IsRefreshing
-        {
-            get { return isRefreshing; }
-            set { SetProperty(ref isRefreshing, value); }
-        }
-
-        public DelegateCommand RefreshCommand { get; set; }
-
         private readonly INotifoMobilePush notifoService;
         private readonly IDeviceService deviceService;
+        private bool isRefreshing;
 
-        public MainPageViewModel(INotifoMobilePush notifoService, IDeviceService deviceService)
+        public ObservableRangeCollection<UserNotificationDto> Notifications { get; } = new ObservableRangeCollection<UserNotificationDto>();
+
+        public bool IsRefreshing
+        {
+            get => isRefreshing;
+            set => SetProperty(ref isRefreshing, value);
+        }
+
+        public DelegateCommand RefreshCommand { get; }
+
+        public EventsPageViewModel(INotifoMobilePush notifoService, IDeviceService deviceService)
         {
             this.notifoService = notifoService;
             this.deviceService = deviceService;
@@ -43,7 +43,6 @@ namespace Sample.ViewModels
         public void OnAppearing()
         {
             notifoService.OnNotificationReceived += Current_OnNotificationReceived;
-
             RefreshEventsAsync();
         }
 
@@ -69,6 +68,7 @@ namespace Sample.ViewModels
                 try
                 {
                     var notifications = await notifoService.Notifications.GetMyNotificationsAsync();
+
                     Notifications.ReplaceRange(notifications.Items);
                 }
                 catch (Exception ex)

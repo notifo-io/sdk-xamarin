@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Notifo.SDK.Extensions;
 using Notifo.SDK.PushEventProvider;
 using Plugin.FirebasePushNotification;
@@ -27,8 +28,6 @@ namespace Notifo.SDK.FirebasePlugin
             CrossFirebasePushNotification.Current.OnNotificationOpened += FirebasePushNotification_OnNotificationOpened;
             CrossFirebasePushNotification.Current.OnNotificationError += Current_OnNotificationError;
         }
-
-        public string Token => CrossFirebasePushNotification.Current.Token;
 
         private void FirebasePushNotification_OnTokenRefresh(object source, FirebasePushNotificationTokenEventArgs e)
         {
@@ -76,6 +75,11 @@ namespace Notifo.SDK.FirebasePlugin
             }
 
             return data.ContainsKey(Constants.SubjectKey) || data.ContainsKey(Constants.ApsAlertTitleKey);
+        }
+
+        public Task<string> GetTokenAsync()
+        {
+            return CrossFirebasePushNotification.Current.GetTokenAsync();    
         }
     }
 }

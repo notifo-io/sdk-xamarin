@@ -7,6 +7,7 @@
 
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.PushEventProvider;
 using Serilog;
@@ -19,7 +20,7 @@ namespace Notifo.SDK.NotifoMobilePush
         private readonly ICommandQueue commandQueue;
         private readonly NotifoClientProvider clientProvider;
         private IPushEventsProvider? pushEventsProvider;
-        private string token;
+        private string? token;
 
         /// <inheritdoc/>
         public event EventHandler<NotificationEventArgs> OnNotificationReceived;
@@ -146,7 +147,13 @@ namespace Notifo.SDK.NotifoMobilePush
                 this.pushEventsProvider.OnError += PushEventsProvider_OnError;
             }
 
-            UpdateToken(pushEventsProvider.Token);
+            pushEventsProvider.GetTokenAsync().ContinueWith(tokenTask =>
+            {
+                if (tokenTask.Status == TaskStatus.RanToCompletion)
+                {
+                    UpdateToken(tokenTask.Result);
+                }
+            });
 
             return this;
         }
@@ -160,7 +167,7 @@ namespace Notifo.SDK.NotifoMobilePush
         /// <inheritdoc/>
         public void Register()
         {
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(clientProvider.ApiKey))
             {
                 return;
             }
@@ -171,7 +178,7 @@ namespace Notifo.SDK.NotifoMobilePush
         /// <inheritdoc/>
         public void Unregister()
         {
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(clientProvider.ApiKey))
             {
                 return;
             }
@@ -208,7 +215,7 @@ namespace Notifo.SDK.NotifoMobilePush
             UpdateToken(e.Token);
         }
 
-        private void UpdateToken(string newToken)
+        private void UpdateToken(string? newToken)
         {
             if (!string.Equals(newToken, token))
             {

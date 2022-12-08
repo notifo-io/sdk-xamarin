@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Sample.Views.LoginPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:prism="http://prismlibrary.com"
+    prism:ViewModelLocator.AutowireViewModel="True"
+    Title="Login">
+
+    <ContentPage.Content>
+        <StackLayout Spacing="20" Padding="20">
+            <Label 
+                FontAttributes="None"
+                FontSize="Title"
+                Text="Login"
+                HorizontalOptions="CenterAndExpand" />
+            
+            <Label
+                FontAttributes="None"
+                FontSize="Default"
+                Text="Enter API Key"
+                HorizontalOptions="CenterAndExpand" />
+
+            <Entry Text="{Binding ApiKey, Mode=TwoWay}" />
+
+            <Button Command="{Binding LoginCommand}" Text="Login" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

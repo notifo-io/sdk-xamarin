@@ -6,12 +6,14 @@
 // ==========================================================================
 
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 namespace Sample.Views
 {
-    public partial class MainPage : TabbedPage
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class EventsPage : ContentPage
     {
-        public MainPage()
+        public EventsPage()
         {
             InitializeComponent();
         }

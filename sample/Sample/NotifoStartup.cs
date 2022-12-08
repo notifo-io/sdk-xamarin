@@ -17,9 +17,7 @@ namespace Sample
         {
             notifo
                 .SetBaseUrl(Constants.ApiUrl)
-                .SetApiKey(Constants.UserApiKey)
-                .UseFirebasePluginEventsProvider()
-                .Register();
+                .UseFirebasePluginEventsProvider();
 
             notifo.OnNotificationOpened += Current_OnNotificationOpened;
         }

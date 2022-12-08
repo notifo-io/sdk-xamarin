@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage   
+    x:Class="Sample.Views.EventsPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:prism="http://prismlibrary.com"
+    prism:ViewModelLocator.AutowireViewModel="True"
+    BackgroundColor="White"
+    Title="Events">
+
+    <ContentPage.Content>
+        <StackLayout>
+            <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing}">
+                <CollectionView Margin="0,8,0,0" HorizontalOptions="FillAndExpand" ItemsSource="{Binding Notifications}" VerticalOptions="FillAndExpand">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout>
+                                <Label
+                                    Margin="8,0"
+                                    FontAttributes="Bold"
+                                    FontSize="18"
+                                    Text="{Binding Subject}"
+                                    TextColor="Black" />
+                                
+                                <Label
+                                    Margin="8,0"
+                                    FontAttributes="None"
+                                    FontSize="14"
+                                    Text="{Binding Body}"
+                                    TextColor="Black" />
+                                
+                                <Label
+                                    Margin="8,0"
+                                    FontAttributes="None"
+                                    FontSize="14"
+                                    HorizontalTextAlignment="End"
+                                    Text="{Binding Created, StringFormat='{0:dd MMM, HH:mm}'}"
+                                    TextColor="Gray" />
+                                
+                                <BoxView BackgroundColor="LightGray" HeightRequest="1" />
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <StackLayout>
+                            <Label
+                                Margin="0,20,0,0"
+                                FontAttributes="None"
+                                FontSize="20"
+                                HorizontalOptions="Center"
+                                Text="Loading events..."
+                                TextColor="Gray"
+                                VerticalOptions="Center" />
+                        </StackLayout>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </RefreshView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,60 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
+<TabbedPage
     x:Class="Sample.Views.MainPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
-    xmlns:prism="http://prismlibrary.com"
-    ios:Page.UseSafeArea="true"
-    prism:ViewModelLocator.AutowireViewModel="True"
+    xmlns:local="clr-namespace:Sample.Views"
     BackgroundColor="White">
 
-    <StackLayout>
-        <RefreshView
-            x:Name="RefreshView"
-            Command="{Binding RefreshCommand}"
-            IsRefreshing="{Binding IsRefreshing}">
-            <CollectionView
-                Margin="0,8,0,0"
-                HorizontalOptions="FillAndExpand"
-                ItemsSource="{Binding Notifications}"
-                VerticalOptions="FillAndExpand">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <StackLayout>
-                            <Label
-                                Margin="8,0"
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                Text="{Binding Subject}"
-                                TextColor="Black" />
-                            <Label
-                                Margin="8,0"
-                                FontSize="14"
-                                Text="{Binding Body}"
-                                TextColor="Black" />
-                            <Label
-                                Margin="8,0"
-                                FontSize="14"
-                                HorizontalTextAlignment="End"
-                                Text="{Binding Created, StringFormat='{0:dd MMM, HH:mm}'}"
-                                TextColor="Gray" />
-                            <BoxView BackgroundColor="LightGray" HeightRequest="1" />
-                        </StackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-                <CollectionView.EmptyView>
-                    <StackLayout>
-                        <Label
-                            Margin="0,20,0,0"
-                            FontSize="20"
-                            HorizontalOptions="Center"
-                            Text="Loading events..."
-                            TextColor="Gray"
-                            VerticalOptions="Center" />
-                    </StackLayout>
-                </CollectionView.EmptyView>
-            </CollectionView>
-        </RefreshView>
-    </StackLayout>
-</ContentPage>
+    <local:LoginPage />
+    <local:EventsPage />
+</TabbedPage>
