@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Net.Http;
 using Notifo.SDK.PushEventProvider;
 
 namespace Notifo.SDK
@@ -34,6 +35,11 @@ namespace Notifo.SDK
         /// The used API version.
         /// </summary>
         ApiVersion ApiVersion { get; }
+
+        /// <summary>
+        /// Indicates whether the client is configured.
+        /// </summary>
+        bool IsConfigured { get; }
 
         /// <summary>
         /// Sets the API key to use.
@@ -72,6 +78,12 @@ namespace Notifo.SDK
         /// <param name="exception">The exception.</param>
         /// <param name="source">The source of the error.</param>
         void RaiseError(string error, Exception? exception, object? source);
+
+        /// <summary>
+        /// Creates a HTTP client.
+        /// </summary>
+        /// <returns>The HTTP client.</returns>
+        HttpClient CreateHttpClient();
 
         /// <summary>
         /// Register for notifications on demand.

@@ -30,7 +30,7 @@ namespace Notifo.SDK.Services
             TypeNameHandling = TypeNameHandling.Auto
         };
 
-        public async ValueTask AddSeenNotificationIdsAsync(int maxCapacity, params Guid[] ids)
+        public async ValueTask AddSeenNotificationIdsAsync(int maxCapacity, IEnumerable<Guid> ids)
         {
             await Task.Run(() =>
             {

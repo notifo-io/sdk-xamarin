@@ -18,6 +18,11 @@ namespace Notifo.SDK.NotifoMobilePush
         private string apiUrl = "https://app.notifo.io";
         private INotifoClient? clientInstance;
 
+        public bool IsConfigured
+        {
+            get => !string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(apiUrl);
+        }
+
         public string? ApiKey
         {
             get => apiKey;

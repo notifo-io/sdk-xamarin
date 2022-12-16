@@ -28,7 +28,7 @@ namespace Notifo.SDK.NotifoMobilePush
 
         partial void SetupPlatform()
         {
-            httpClient = clientProvider.CreateHttpClient();
+            httpClient = CreateHttpClient();
         }
 
         public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)

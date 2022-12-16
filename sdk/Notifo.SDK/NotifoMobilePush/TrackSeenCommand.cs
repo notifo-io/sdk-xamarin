@@ -17,7 +17,13 @@ namespace Notifo.SDK.NotifoMobilePush
 {
     internal sealed class TrackSeenCommand : ICommand
     {
-        public HashSet<Guid> Ids { get; set; }
+        [Obsolete]
+        public HashSet<Guid> Ids
+        {
+            set => IdsAndUrls = value.ToDictionary(x => x, x => (string?)null);
+        }
+
+        public Dictionary<Guid, string?> IdsAndUrls { get; set; }
 
         public string? Token { get; set; }
 
@@ -26,26 +32,64 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             try
             {
-                var seenIds = Ids.Select(x => x.ToString()).ToList();
-
-                var trackRequest = new TrackNotificationDto
+                if (!NotifoIO.Current.IsConfigured)
                 {
-                    // Track all notifications at once.
-                    Seen = seenIds,
-
-                    // Track individual channels.
-                    Channel = Providers.MobilePush
-                };
-
-                // Track twice to support backwards compatibility with older Notifo versions.
-                await TrackByTokenAsync(trackRequest, ct);
-                await TrackByIdentifierAsync(trackRequest, ct);
+                    await TrackWithUrlsAsync(ct);
+                }
+                else
+                {
+                    await TrackWithIdsAsync(ct);
+                }
             }
             catch (Exception ex)
             {
                 NotifoIO.Current.RaiseError(Strings.TrackingException, ex, this);
                 return;
             }
+        }
+
+        private async Task TrackWithUrlsAsync(
+            CancellationToken ct)
+        {
+            var urls = IdsAndUrls.Values.Where(x => x != null).ToList();
+
+            if (urls.Count < IdsAndUrls.Count)
+            {
+                NotifoIO.Current.RaiseError(Strings.TrackingURLMissing, null, this);
+            }
+
+            if (!urls.Any())
+            {
+                return;
+            }
+
+            var httpClient = NotifoIO.Current.CreateHttpClient();
+
+            foreach (var url in urls)
+            {
+                var response = await httpClient.GetAsync(url, ct);
+
+                response.EnsureSuccessStatusCode();
+            }
+        }
+
+        private async Task TrackWithIdsAsync(
+            CancellationToken ct)
+        {
+            var seenIds = IdsAndUrls.Select(x => x.Key.ToString()).ToList();
+
+            var trackRequest = new TrackNotificationDto
+            {
+                // Track all notifications at once.
+                Seen = seenIds,
+
+                // Track individual channels.
+                Channel = Providers.MobilePush
+            };
+
+            // Track twice to support backwards compatibility with older Notifo versions.
+            await TrackByTokenAsync(trackRequest, ct);
+            await TrackByIdentifierAsync(trackRequest, ct);
         }
 
         private async Task TrackByTokenAsync(TrackNotificationDto trackRequest,
@@ -69,9 +113,10 @@ namespace Notifo.SDK.NotifoMobilePush
             // Do not merge commands with different mobile tokens.
             if (other is TrackSeenCommand trackSeen && string.Equals(Token, trackSeen.Token))
             {
-                foreach (var id in trackSeen.Ids)
+                foreach (var (id, url) in trackSeen.IdsAndUrls)
                 {
-                    Ids.Add(id);
+                    // Ensure that we do not override the URL with null.
+                    IdsAndUrls[id] = url ?? IdsAndUrls.GetValueOrDefault(id);
                 }
 
                 return true;

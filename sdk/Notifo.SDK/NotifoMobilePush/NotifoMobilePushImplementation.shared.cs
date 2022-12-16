@@ -82,6 +82,9 @@ namespace Notifo.SDK.NotifoMobilePush
         /// <inheritdoc/>
         public IUserClient User => clientProvider.Client.User;
 
+        /// <inheritdoc/>
+        public bool IsConfigured => clientProvider.IsConfigured;
+
         public NotifoMobilePushImplementation(Func<HttpClient> httpClientFactory,
             ISeenNotificationsStore seenNotificationsStore, ICommandQueue commandQueue)
         {
@@ -119,6 +122,12 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             ApiVersion = apiVersion;
             return this;
+        }
+
+        /// <inheritdoc/>
+        public HttpClient CreateHttpClient()
+        {
+            return clientProvider.CreateHttpClient();
         }
 
         /// <inheritdoc/>

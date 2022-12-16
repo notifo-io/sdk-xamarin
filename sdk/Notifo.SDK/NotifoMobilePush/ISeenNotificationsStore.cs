@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Notifo.SDK.Helpers;
 
@@ -13,7 +14,7 @@ namespace Notifo.SDK.NotifoMobilePush
 {
     internal interface ISeenNotificationsStore
     {
-        ValueTask AddSeenNotificationIdsAsync(int maxCapacity, params Guid[] ids);
+        ValueTask AddSeenNotificationIdsAsync(int maxCapacity, IEnumerable<Guid> ids);
 
         ValueTask<SlidingSet<Guid>> GetSeenNotificationIdsAsync();
     }
