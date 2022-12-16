@@ -20,6 +20,7 @@ namespace Notifo.SDK.NotifoMobilePush
         [Obsolete]
         public HashSet<Guid> Ids
         {
+            // Convert the old IDs to the new dictionary, so that we can read old commands from the disk.
             set => IdsAndUrls = value.ToDictionary(x => x, x => (string?)null);
         }
 
@@ -32,8 +33,10 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             try
             {
+                // The notifo based app might receive notifications even though the API key is not configured.
                 if (!NotifoIO.Current.IsConfigured)
                 {
+                    // Then we have to fallback to URLs.
                     await TrackWithUrlsAsync(ct);
                 }
                 else
@@ -53,6 +56,7 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             var urls = IdsAndUrls.Values.Where(x => x != null).ToList();
 
+            // If some IDs do not have an URL, we create an error, because this should only happen for old commands.
             if (urls.Count < IdsAndUrls.Count)
             {
                 NotifoIO.Current.RaiseError(Strings.TrackingURLMissing, null, this);
@@ -63,7 +67,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 return;
             }
 
-            var httpClient = NotifoIO.Current.CreateHttpClient();
+            using var httpClient = NotifoIO.Current.CreateHttpClient();
 
             foreach (var url in urls)
             {
