@@ -19,7 +19,7 @@ namespace Notifo.SDK.NotifoMobilePush
     {
         public HashSet<Guid> Ids { get; set; }
 
-        public string Token { get; set; }
+        public string? Token { get; set; }
 
         public async ValueTask ExecuteAsync(
             CancellationToken ct)

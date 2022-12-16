@@ -19,16 +19,16 @@ namespace Notifo.SDK.NotifoMobilePush
     {
         private const int Capacity = 500;
         private readonly SemaphoreSlim semaphoreSlim = new (1);
-        private SlidingSet<Guid>? seenNotifications;
 
         public async Task<HashSet<Guid>> GetSeenNotificationsAsync()
         {
             await semaphoreSlim.WaitAsync();
             try
             {
-                var set = await LoadSeenNotificationsAsync();
+                // Always load the notifications from the preferences, because they could have been modified by the service extension.
+                var loaded = await seenNotificationsStore.GetSeenNotificationIdsAsync();
 
-                return set.ToHashSet();
+                return loaded.ToHashSet();
             }
             catch (Exception ex)
             {
@@ -51,14 +51,15 @@ namespace Notifo.SDK.NotifoMobilePush
             await semaphoreSlim.WaitAsync();
             try
             {
-                var set = await LoadSeenNotificationsAsync();
+                // Always load the notifications from the preferences, because they could have been modified by the service extension.
+                var loaded = await seenNotificationsStore.GetSeenNotificationIdsAsync();
 
                 // Store the seen notifications immediately as a cache, if the actual command to the server fails.
                 await seenNotificationsStore.AddSeenNotificationIdsAsync(Capacity, ids);
 
                 foreach (var id in ids)
                 {
-                    set.Add(id, Capacity);
+                    loaded.Add(id, Capacity);
                 }
 
                 // Track all notifications with one HTTP request.
@@ -73,12 +74,6 @@ namespace Notifo.SDK.NotifoMobilePush
             {
                 semaphoreSlim.Release();
             }
-        }
-
-        private async Task<SlidingSet<Guid>> LoadSeenNotificationsAsync()
-        {
-            // Only query the notifications once and then hold everything in-memory.
-            return seenNotifications ??= await seenNotificationsStore.GetSeenNotificationIdsAsync();
         }
     }
 }
