@@ -5,18 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Notifo.SDK.Helpers;
-
 namespace Notifo.SDK.NotifoMobilePush
 {
-    internal interface ISeenNotificationsStore
+    internal interface ICredentialsStore
     {
-        ValueTask AddSeenNotificationIdsAsync(int maxCapacity, IEnumerable<Guid> ids);
+        string? ApiKey { get; set; }
 
-        ValueTask<SlidingSet<Guid>> GetSeenNotificationIdsAsync();
+        string? ApiUrl { get; set; }
 
         void Clear();
     }

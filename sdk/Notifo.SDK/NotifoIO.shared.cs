@@ -43,7 +43,7 @@ namespace Notifo.SDK
                 },
                 10, TimeSpan.FromSeconds(5));
 
-            return new NotifoMobilePushImplementation(HttpClientFactory, settings, commandQueue);
+            return new NotifoMobilePushImplementation(HttpClientFactory, settings, commandQueue, settings, settings);
         }
 
         private static ILogger ConfigureLogger()

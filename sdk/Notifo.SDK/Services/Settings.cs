@@ -18,9 +18,11 @@ using Xamarin.Essentials;
 
 namespace Notifo.SDK.Services
 {
-    internal sealed class Settings : ISeenNotificationsStore, ICommandStore
+    internal sealed class Settings : ISeenNotificationsStore, ICommandStore, ICredentialsStore
     {
         private const string KeyCommand = "CommandV2";
+        private const string KeyApiKey = nameof(ApiKey);
+        private const string KeyApiUrl = nameof(ApiUrl);
         private const string KeySeenNotifications = "SeenNotificationsV2";
         private static readonly string PrimaryPackageName = Regex.Replace(AppInfo.PackageName, @"\.([^.]*)ServiceExtension$", string.Empty);
         private static readonly string SharedName = $"group.{PrimaryPackageName}.notifo";
@@ -29,6 +31,23 @@ namespace Notifo.SDK.Services
         {
             TypeNameHandling = TypeNameHandling.Auto
         };
+
+        public void Clear()
+        {
+            Preferences.Clear(SharedName);
+        }
+
+        public string? ApiKey
+        {
+            get => Preferences.Get(KeyApiKey, null, SharedName);
+            set => Preferences.Set(KeyApiKey, value);
+        }
+
+        public string? ApiUrl
+        {
+            get => Preferences.Get(KeyApiUrl, null, SharedName);
+            set => Preferences.Set(KeyApiUrl, value);
+        }
 
         public async ValueTask AddSeenNotificationIdsAsync(int maxCapacity, IEnumerable<Guid> ids)
         {

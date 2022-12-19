@@ -42,6 +42,11 @@ namespace Notifo.SDK
         bool IsConfigured { get; }
 
         /// <summary>
+        /// Clears all settings that are currently stored.
+        /// </summary>
+        void ClearAllSettings();
+
+        /// <summary>
         /// Sets the API key to use.
         /// </summary>
         /// <param name="apiKey">

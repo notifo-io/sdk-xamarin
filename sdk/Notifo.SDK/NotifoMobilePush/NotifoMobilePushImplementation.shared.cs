@@ -18,6 +18,8 @@ namespace Notifo.SDK.NotifoMobilePush
     {
         private readonly ISeenNotificationsStore seenNotificationsStore;
         private readonly ICommandQueue commandQueue;
+        private readonly ICommandStore commandStore;
+        private readonly ICredentialsStore credentialsStore;
         private readonly NotifoClientProvider clientProvider;
         private IPushEventsProvider? pushEventsProvider;
         private string? token;
@@ -85,13 +87,19 @@ namespace Notifo.SDK.NotifoMobilePush
         /// <inheritdoc/>
         public bool IsConfigured => clientProvider.IsConfigured;
 
-        public NotifoMobilePushImplementation(Func<HttpClient> httpClientFactory,
-            ISeenNotificationsStore seenNotificationsStore, ICommandQueue commandQueue)
+        public NotifoMobilePushImplementation(
+            Func<HttpClient> httpClientFactory,
+            ISeenNotificationsStore seenNotificationsStore,
+            ICommandQueue commandQueue,
+            ICommandStore commandStore,
+            ICredentialsStore credentialsStore)
         {
             this.seenNotificationsStore = seenNotificationsStore;
             this.commandQueue = commandQueue;
             this.commandQueue.OnError += CommandQueue_OnError;
-            this.clientProvider = new NotifoClientProvider(httpClientFactory);
+            this.commandStore = commandStore;
+            this.credentialsStore = credentialsStore;
+            this.clientProvider = new NotifoClientProvider(httpClientFactory, credentialsStore);
 
             SetupPlatform();
 
@@ -102,6 +110,14 @@ namespace Notifo.SDK.NotifoMobilePush
         }
 
         partial void SetupPlatform();
+
+        /// <inheritdoc/>
+        public void ClearAllSettings()
+        {
+            commandStore.Clear();
+            credentialsStore.Clear();
+            seenNotificationsStore.Clear();
+        }
 
         /// <inheritdoc/>
         public INotifoMobilePush SetApiKey(string apiKey)

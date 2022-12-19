@@ -12,10 +12,12 @@ namespace Notifo.SDK.NotifoMobilePush
 {
     internal sealed class NotifoClientProvider
     {
+        private const string CloudUrl = "https://app.notifo.io";
         private readonly Func<HttpClient> httpClientFactory;
+        private readonly ICredentialsStore store;
         private readonly NotifoClientBuilder clientBuilder = NotifoClientBuilder.Create();
         private string? apiKey;
-        private string apiUrl = "https://app.notifo.io";
+        private string apiUrl;
         private INotifoClient? clientInstance;
 
         public bool IsConfigured
@@ -32,8 +34,10 @@ namespace Notifo.SDK.NotifoMobilePush
                 {
                     apiKey = value;
 
-                    clientBuilder.SetApiKey(apiKey);
+                    clientBuilder.SetApiKey(value);
                     clientInstance = null;
+
+                    store.ApiKey = value;
                 }
             }
         }
@@ -49,8 +53,10 @@ namespace Notifo.SDK.NotifoMobilePush
                 {
                     apiUrl = value;
 
-                    clientBuilder.SetApiUrl(apiUrl);
+                    clientBuilder.SetApiUrl(value);
                     clientInstance = null;
+
+                    store.ApiUrl = value;
                 }
             }
         }
@@ -74,9 +80,14 @@ namespace Notifo.SDK.NotifoMobilePush
             return httpClientFactory();
         }
 
-        public NotifoClientProvider(Func<HttpClient> httpClientFactory)
+        public NotifoClientProvider(Func<HttpClient> httpClientFactory, ICredentialsStore store)
         {
             this.httpClientFactory = httpClientFactory;
+
+            apiKey = store.ApiKey;
+            apiUrl = store.ApiUrl ?? CloudUrl;
+
+            this.store = store;
         }
     }
 }
