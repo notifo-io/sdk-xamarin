@@ -7,6 +7,7 @@
 
 using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.PushEventProvider;
@@ -162,6 +163,12 @@ namespace Notifo.SDK.NotifoMobilePush
         public void RaiseError(string error, Exception? exception, object? source)
         {
             OnError?.Invoke(this, new NotificationErrorEventArgs(error, exception, source));
+        }
+
+        public Task WaitForBackgroundTasksAsync(
+            CancellationToken ct = default)
+        {
+            return commandQueue.CompleteAsync(ct);
         }
 
         /// <inheritdoc/>

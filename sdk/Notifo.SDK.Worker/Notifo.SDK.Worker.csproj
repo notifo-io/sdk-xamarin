@@ -2,15 +2,14 @@
 
   <PropertyGroup>
 	  <NoWarn>CS1591;CS0618</NoWarn>
-    <AssemblyName>Notifo.Xamarin.FirebasePlugin</AssemblyName>
+    <AssemblyName>Notifo.Xamarin.Worker</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
-    <PackageId>Notifo.Xamarin.Firebase</PackageId>
-    <RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>
+    <RootNamespace>Notifo.SDK</RootNamespace>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
-    <TargetFrameworks>netstandard2.1;xamarinios10;monoandroid12.0;</TargetFrameworks>
+    <TargetFrameworks>monoandroid12.0;</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,25 +39,14 @@
     <None Include="**\*.netstandard.cs" />
     <None Include="**\*.android.cs" />
   </ItemGroup>
-
-  <ItemGroup Condition="$(TargetFramework.StartsWith('xamarinios'))">
-	<PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging" Version="8.10.0.1" />
-	<PackageReference Include="Xamarin.Firebase.iOS.Installations" Version="8.10.0.1" />
-	<PackageReference Include="Xamarin.Firebase.iOS.Core" Version="8.10.0.1" />
-	<PackageReference Include="Xamarin.Firebase.iOS.InstanceID" Version="4.8.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$(TargetFramework.StartsWith('monoandroid'))">
-    <PackageReference Include="Xamarin.Firebase.Common" Version="120.0.0.5" />
-    <PackageReference Include="Xamarin.Firebase.Messaging" Version="122.0.0.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Notifo.SDK" Version="1.5.1" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
-  </ItemGroup>
-
+	
   <ItemGroup>
     <ProjectReference Include="..\Notifo.SDK\Notifo.SDK.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'monoandroid12.0'">
+    <PackageReference Include="Xamarin.Android.Arch.Work.Runtime">
+      <Version>1.0.0.3</Version>
+    </PackageReference>
   </ItemGroup>
 </Project>

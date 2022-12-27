@@ -6,6 +6,8 @@
 // ==========================================================================
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Notifo.SDK.CommandQueue
 {
@@ -16,5 +18,8 @@ namespace Notifo.SDK.CommandQueue
         void Run(ICommand command);
 
         void Trigger();
+
+        Task CompleteAsync(
+            CancellationToken ct);
     }
 }

@@ -1,11 +1,11 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;xamarinios10;monoandroid12.0;</TargetFrameworks>
-    <RootNamespace>Notifo.SDK</RootNamespace>
-    <LangVersion>9.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Notifo.SDK</RootNamespace>
+    <TargetFrameworks>netstandard2.1;xamarinios10;monoandroid12.0;</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
