@@ -230,5 +230,14 @@ namespace Notifo.SDK.Resources {
                 return ResourceManager.GetString("TrackingUrl", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tracking URL missing for at least one notification..
+        /// </summary>
+        internal static string TrackingURLMissing {
+            get {
+                return ResourceManager.GetString("TrackingURLMissing", resourceCulture);
+            }
+        }
     }
 }

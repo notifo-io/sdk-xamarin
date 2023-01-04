@@ -22,7 +22,7 @@ namespace Notifo.SDK.FirebasePlugin
 
         public event EventHandler<Notifo.SDK.NotificationEventArgs> OnNotificationOpened;
 
-        public event EventHandler<Notifo.SDK.NotificationErrorEventArgs> OnError;
+        public event EventHandler<Notifo.SDK.NotificationLogEventArgs> OnLog;
 
         public PluginEventsProvider()
         {
@@ -39,7 +39,7 @@ namespace Notifo.SDK.FirebasePlugin
 
         private void Current_OnNotificationError(object source, FirebasePushNotificationErrorEventArgs e)
         {
-            OnError?.Invoke(this, new NotificationErrorEventArgs(e.Message, null, source));
+            OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, source, e.Message, null, null));
         }
 
         private void FirebasePushNotification_OnNotificationReceived(object source, FirebasePushNotificationDataEventArgs e)

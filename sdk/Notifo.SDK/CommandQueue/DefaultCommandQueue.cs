@@ -27,7 +27,7 @@ namespace Notifo.SDK.CommandQueue
         private readonly BlockingCollection<QueuedCommand> queue = new BlockingCollection<QueuedCommand>();
         private readonly Queue<QueuedCommand> retryQueue = new Queue<QueuedCommand>();
 
-        public event EventHandler<NotificationErrorEventArgs> OnError;
+        public event EventHandler<NotificationLogEventArgs> OnLog;
 
         public DefaultCommandQueue(
             ICommandStore commandStore,
@@ -104,7 +104,7 @@ namespace Notifo.SDK.CommandQueue
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(this, new NotificationErrorEventArgs(Strings.CommandError, ex, this));
+                OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, this, Strings.CommandError, null, ex));
             }
         }
 
@@ -132,7 +132,7 @@ namespace Notifo.SDK.CommandQueue
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(this, new NotificationErrorEventArgs(Strings.CommandError, ex, this));
+                OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, this, Strings.CommandError, null, ex));
             }
 
             foreach (var trigger in commandTriggers)
@@ -165,7 +165,7 @@ namespace Notifo.SDK.CommandQueue
                         }
                         catch (Exception ex)
                         {
-                            OnError?.Invoke(this, new NotificationErrorEventArgs(Strings.CommandError, ex, this));
+                            OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, this, Strings.CommandError, null, ex));
                         }
 
                         // We have just completed a command, so it is very likely that the next one will be successful as well.

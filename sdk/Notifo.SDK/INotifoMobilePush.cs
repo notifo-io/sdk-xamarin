@@ -15,7 +15,7 @@ namespace Notifo.SDK
     /// <summary>
     /// Notifo mobile push service interface.
     /// </summary>
-    public partial interface INotifoMobilePush : INotifoClient
+    public partial interface INotifoMobilePush
     {
         /// <summary>
         /// Event triggered when a notification is received.
@@ -28,14 +28,29 @@ namespace Notifo.SDK
         event EventHandler<NotificationEventArgs> OnNotificationOpened;
 
         /// <summary>
-        /// Event triggered when an error happened.
+        /// Event triggered when an log event happened.
         /// </summary>
-        event EventHandler<NotificationErrorEventArgs> OnError;
+        event EventHandler<NotificationLogEventArgs> OnLog;
+
+        /// <summary>
+        /// Gets the notifo client.
+        /// </summary>
+        INotifoClient Client { get; }
 
         /// <summary>
         /// The used API version.
         /// </summary>
         ApiVersion ApiVersion { get; }
+
+        /// <summary>
+        /// Indicates whether the client is configured.
+        /// </summary>
+        bool IsConfigured { get; }
+
+        /// <summary>
+        /// Clears all settings that are currently stored.
+        /// </summary>
+        void ClearAllSettings();
 
         /// <summary>
         /// Sets the API key to use.
@@ -74,6 +89,14 @@ namespace Notifo.SDK
         /// <param name="exception">The exception.</param>
         /// <param name="source">The source of the error.</param>
         void RaiseError(string error, Exception? exception, object? source);
+
+        /// <summary>
+        /// Raises a debug message.
+        /// </summary>
+        /// <param name="message">The debug message.</param>
+        /// <param name="source">The source of the error.</param>
+        /// <param name="args">The message arguments.</param>
+        void RaiseDebug(string message, object? source, params object[] args);
 
         /// <summary>
         /// Register for notifications on demand.
