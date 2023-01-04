@@ -6,9 +6,9 @@
 // ==========================================================================
 
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
+using Notifo.SDK.Helpers;
 using Notifo.SDK.PushEventProvider;
 using Serilog;
 
@@ -20,9 +20,12 @@ namespace Notifo.SDK.NotifoMobilePush
         private readonly ICommandQueue commandQueue;
         private readonly ICommandStore commandStore;
         private readonly ICredentialsStore credentialsStore;
-        private readonly NotifoClientProvider clientProvider;
+        private readonly NotifoOptions options;
         private IPushEventsProvider? pushEventsProvider;
         private string? token;
+
+        /// <inheritdoc/>
+        public INotifoClient Client { get; }
 
         /// <inheritdoc/>
         public event EventHandler<NotificationEventArgs> OnNotificationReceived;
@@ -37,69 +40,21 @@ namespace Notifo.SDK.NotifoMobilePush
         public ApiVersion ApiVersion { get; private set; }
 
         /// <inheritdoc/>
-        public IAppsClient Apps => clientProvider.Client.Apps;
-
-        /// <inheritdoc/>
-        public IConfigsClient Configs => clientProvider.Client.Configs;
-
-        /// <inheritdoc/>
-        public IEventsClient Events => clientProvider.Client.Events;
-
-        /// <inheritdoc/>
-        public ILogsClient Logs => clientProvider.Client.Logs;
-
-        /// <inheritdoc/>
-        public IMediaClient Media => clientProvider.Client.Media;
-
-        /// <inheritdoc/>
-        public IMobilePushClient MobilePush => clientProvider.Client.MobilePush;
-
-        /// <inheritdoc/>
-        public INotificationsClient Notifications => clientProvider.Client.Notifications;
-
-        /// <inheritdoc/>
-        public ITemplatesClient Templates => clientProvider.Client.Templates;
-
-        /// <inheritdoc/>
-        public ITopicsClient Topics => clientProvider.Client.Topics;
-
-        /// <inheritdoc/>
-        public IUsersClient Users => clientProvider.Client.Users;
-
-        /// <inheritdoc/>
-        public IEmailTemplatesClient EmailTemplates => clientProvider.Client.EmailTemplates;
-
-        /// <inheritdoc/>
-        public IMessagingTemplatesClient MessagingTemplates => clientProvider.Client.MessagingTemplates;
-
-        /// <inheritdoc/>
-        public IPingClient Ping => clientProvider.Client.Ping;
-
-        /// <inheritdoc/>
-        public ISmsTemplatesClient SmsTemplates => clientProvider.Client.SmsTemplates;
-
-        /// <inheritdoc/>
-        public ISystemUsersClient SystemUsers => clientProvider.Client.SystemUsers;
-
-        /// <inheritdoc/>
-        public IUserClient User => clientProvider.Client.User;
-
-        /// <inheritdoc/>
-        public bool IsConfigured => clientProvider.IsConfigured;
+        public bool IsConfigured => options.IsConfigured;
 
         public NotifoMobilePushImplementation(
-            Func<HttpClient> httpClientFactory,
             ISeenNotificationsStore seenNotificationsStore,
             ICommandQueue commandQueue,
             ICommandStore commandStore,
             ICredentialsStore credentialsStore)
         {
+            this.options = new NotifoOptions(credentialsStore);
             this.seenNotificationsStore = seenNotificationsStore;
             this.commandQueue = commandQueue;
             this.commandQueue.OnError += CommandQueue_OnError;
             this.commandStore = commandStore;
             this.credentialsStore = credentialsStore;
-            this.clientProvider = new NotifoClientProvider(httpClientFactory, credentialsStore);
+            this.Client = NotifoClientBuilder.Create().SetHttpClientProvider(new NotifoHttpClientProvider(options)).Build();
 
             SetupPlatform();
 
@@ -122,14 +77,14 @@ namespace Notifo.SDK.NotifoMobilePush
         /// <inheritdoc/>
         public INotifoMobilePush SetApiKey(string apiKey)
         {
-            clientProvider.ApiKey = apiKey;
+            options.ApiKey = apiKey;
             return this;
         }
 
         /// <inheritdoc/>
         public INotifoMobilePush SetBaseUrl(string baseUrl)
         {
-            clientProvider.ApiUrl = baseUrl;
+            options.ApiUrl = baseUrl;
             return this;
         }
 
@@ -138,12 +93,6 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             ApiVersion = apiVersion;
             return this;
-        }
-
-        /// <inheritdoc/>
-        public HttpClient CreateHttpClient()
-        {
-            return clientProvider.CreateHttpClient();
         }
 
         /// <inheritdoc/>
@@ -216,7 +165,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 return;
             }
 
-            commandQueue.Run(new TokenRegisterCommand { Token = tokenToRegister });
+            commandQueue.Run(new TokenRegisterCommand { Token = tokenToRegister! });
         }
 
         /// <inheritdoc/>
@@ -227,7 +176,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 return;
             }
 
-            commandQueue.Run(new TokenUnregisterCommand { Token = token });
+            commandQueue.Run(new TokenUnregisterCommand { Token = token! });
         }
 
         private void PushEventsProvider_OnNotificationReceived(object sender, NotificationEventArgs e)
@@ -266,8 +215,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 token = newToken;
 
                 // Only register the token if the client is already configured to avoid warning logs.
-                if (!string.IsNullOrEmpty(clientProvider.ApiKey) &&
-                    !string.IsNullOrEmpty(clientProvider.ApiUrl))
+                if (IsConfigured)
                 {
                     Register(newToken);
                 }

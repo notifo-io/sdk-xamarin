@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System;
-using System.Net.Http;
 using Notifo.SDK.PushEventProvider;
 
 namespace Notifo.SDK
@@ -14,7 +13,7 @@ namespace Notifo.SDK
     /// <summary>
     /// Notifo mobile push service interface.
     /// </summary>
-    public partial interface INotifoMobilePush : INotifoClient
+    public partial interface INotifoMobilePush
     {
         /// <summary>
         /// Event triggered when a notification is received.
@@ -30,6 +29,11 @@ namespace Notifo.SDK
         /// Event triggered when an error happened.
         /// </summary>
         event EventHandler<NotificationErrorEventArgs> OnError;
+
+        /// <summary>
+        /// Gets the notifo client.
+        /// </summary>
+        INotifoClient Client { get; }
 
         /// <summary>
         /// The used API version.
@@ -83,12 +87,6 @@ namespace Notifo.SDK
         /// <param name="exception">The exception.</param>
         /// <param name="source">The source of the error.</param>
         void RaiseError(string error, Exception? exception, object? source);
-
-        /// <summary>
-        /// Creates a HTTP client.
-        /// </summary>
-        /// <returns>The HTTP client.</returns>
-        HttpClient CreateHttpClient();
 
         /// <summary>
         /// Register for notifications on demand.

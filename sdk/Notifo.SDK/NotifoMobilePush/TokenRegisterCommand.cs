@@ -37,7 +37,7 @@ namespace Notifo.SDK.NotifoMobilePush
                     Token = Token
                 };
 
-                await NotifoIO.Current.MobilePush.PostMyTokenAsync(request, ct);
+                await NotifoIO.Current.Client.MobilePush.PostMyTokenAsync(request, ct);
             }
             catch (Exception ex)
             {

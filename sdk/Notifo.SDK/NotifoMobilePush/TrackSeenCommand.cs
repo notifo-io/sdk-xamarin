@@ -67,13 +67,19 @@ namespace Notifo.SDK.NotifoMobilePush
                 return;
             }
 
-            using var httpClient = NotifoIO.Current.CreateHttpClient();
-
-            foreach (var url in urls)
+            var httpClient = NotifoIO.Current.Client.CreateHttpClient();
+            try
             {
-                var response = await httpClient.GetAsync(url, ct);
+                foreach (var url in urls)
+                {
+                    var response = await httpClient.GetAsync(url, ct);
 
-                response.EnsureSuccessStatusCode();
+                    response.EnsureSuccessStatusCode();
+                }
+            }
+            finally
+            {
+                NotifoIO.Current.Client.ReturnHttpClient(httpClient);
             }
         }
 
@@ -101,7 +107,7 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             trackRequest.DeviceIdentifier = Token;
 
-            await NotifoIO.Current.Notifications.ConfirmMeAsync(trackRequest, ct);
+            await NotifoIO.Current.Client.Notifications.ConfirmMeAsync(trackRequest, ct);
         }
 
         private async Task TrackByIdentifierAsync(TrackNotificationDto trackRequest,
@@ -109,7 +115,7 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             trackRequest.DeviceIdentifier = Device.DeviceIdentifier;
 
-            await NotifoIO.Current.Notifications.ConfirmMeAsync(trackRequest, ct);
+            await NotifoIO.Current.Client.Notifications.ConfirmMeAsync(trackRequest, ct);
         }
 
         public bool Merge(ICommand other)

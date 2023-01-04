@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Foundation;
@@ -23,13 +22,7 @@ namespace Notifo.SDK.NotifoMobilePush
 {
     internal partial class NotifoMobilePushImplementation : NSObject
     {
-        private HttpClient httpClient;
         private INotificationHandler? notificationHandler;
-
-        partial void SetupPlatform()
-        {
-            httpClient = CreateHttpClient();
-        }
 
         public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
         {
@@ -125,7 +118,7 @@ namespace Notifo.SDK.NotifoMobilePush
         private async Task<List<UserNotificationDto>> GetPendingNotifications1_0Async(int take, DateTime after,
             CancellationToken ct)
         {
-            var result = await Notifications.GetMyNotificationsAsync(take: take, cancellationToken: ct);
+            var result = await Client.Notifications.GetMyNotificationsAsync(take: take, cancellationToken: ct);
 
             return result.Items.Where(x => x.Created >= after).ToList();
         }
@@ -133,7 +126,7 @@ namespace Notifo.SDK.NotifoMobilePush
         private async Task<List<UserNotificationDto>> GetPendingNotifications1_4Async(int take, DateTime after,
             CancellationToken ct)
         {
-            var result = await Notifications.GetMyDeviceNotificationsAsync(token, after, true, take * 2, ct);
+            var result = await Client.Notifications.GetMyDeviceNotificationsAsync(token, after, true, take * 2, ct);
 
             return result.Items;
         }
@@ -331,9 +324,17 @@ namespace Notifo.SDK.NotifoMobilePush
                 // Copy directly from the web stream to the image stream to reduce memory allocations.
                 using (var fileStream = new FileStream(imagePath, FileMode.Create))
                 {
-                    using (var imageStream = await httpClient.GetStreamAsync(imageUrl))
+                    var httpClient = Client.CreateHttpClient();
+                    try
                     {
-                        await imageStream.CopyToAsync(fileStream);
+                        using (var imageStream = await httpClient.GetStreamAsync(imageUrl))
+                        {
+                            await imageStream.CopyToAsync(fileStream);
+                        }
+                    }
+                    finally
+                    {
+                        Client.ReturnHttpClient(httpClient);
                     }
                 }
 

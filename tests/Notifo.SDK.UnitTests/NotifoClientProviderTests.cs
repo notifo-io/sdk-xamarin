@@ -7,7 +7,6 @@
 
 using System;
 using System.Net.Http;
-using Notifo.SDK.NotifoMobilePush;
 using Xunit;
 
 namespace Notifo.SDK.UnitTests

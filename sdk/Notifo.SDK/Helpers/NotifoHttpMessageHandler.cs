@@ -14,11 +14,10 @@ using Polly.Retry;
 
 namespace Notifo.SDK.Helpers
 {
-    internal class NotifoHttpMessageHandler : PolicyHttpMessageHandler
+    internal sealed class NotifoHttpMessageHandler : PolicyHttpMessageHandler
     {
         private static readonly AsyncRetryPolicy<HttpResponseMessage> RetryPolicy =
-            HttpPolicyExtensions
-                .HandleTransientHttpError()
+            HttpPolicyExtensions.HandleTransientHttpError()
                 .WaitAndRetryAsync(retryCount: 3, sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(300));
 
         public NotifoHttpMessageHandler()

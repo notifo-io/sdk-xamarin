@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.SDK;
 using Prism;
 using Prism.DryIoc;
 using Prism.Ioc;
