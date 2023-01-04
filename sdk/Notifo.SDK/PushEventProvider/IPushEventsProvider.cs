@@ -31,9 +31,9 @@ namespace Notifo.SDK.PushEventProvider
         event EventHandler<NotificationEventArgs> OnNotificationOpened;
 
         /// <summary>
-        /// Event triggered when an error happened.
+        /// Event triggered when an log event happened.
         /// </summary>
-        event EventHandler<NotificationErrorEventArgs> OnError;
+        event EventHandler<NotificationLogEventArgs> OnLog;
 
         /// <summary>
         /// Gets the current token.

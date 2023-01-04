@@ -18,5 +18,7 @@ namespace Notifo.SDK.CommandQueue
         ValueTask StoreAsync(QueuedCommand command);
 
         ValueTask RemoveAsync(Guid id);
+
+        void Clear();
     }
 }

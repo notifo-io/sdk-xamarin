@@ -5,16 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Serilog;
-using Serilog.Configuration;
-
-namespace Notifo.SDK.Extensions
+namespace Notifo.SDK.NotifoMobilePush
 {
-    internal static class LoggerExtensions
+    internal interface ICredentialsStore
     {
-        public static LoggerConfiguration PlatformSink(this LoggerSinkConfiguration configuration)
-        {
-            return configuration.NSLog();
-        }
+        string? ApiKey { get; set; }
+
+        string? ApiUrl { get; set; }
+
+        void Clear();
     }
 }

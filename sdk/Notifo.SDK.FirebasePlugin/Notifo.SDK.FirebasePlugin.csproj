@@ -53,7 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="Notifo.SDK" Version="1.5.1" />
+	<PackageReference Include="Notifo.SDK" Version="1.6.4" />
 	<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
   </ItemGroup>
 

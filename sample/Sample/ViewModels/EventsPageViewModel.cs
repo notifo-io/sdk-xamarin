@@ -67,7 +67,7 @@ namespace Sample.ViewModels
             {
                 try
                 {
-                    var notifications = await notifoService.Notifications.GetMyNotificationsAsync();
+                    var notifications = await notifoService.Client.Notifications.GetMyNotificationsAsync();
 
                     Notifications.ReplaceRange(notifications.Items);
                 }

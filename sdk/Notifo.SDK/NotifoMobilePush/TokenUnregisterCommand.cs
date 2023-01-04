@@ -21,7 +21,7 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             try
             {
-                await NotifoIO.Current.MobilePush.DeleteMyTokenAsync(Token, ct);
+                await NotifoIO.Current.Client.MobilePush.DeleteMyTokenAsync(Token, ct);
             }
             catch (Exception ex)
             {

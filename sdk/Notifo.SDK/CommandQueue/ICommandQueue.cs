@@ -11,7 +11,7 @@ namespace Notifo.SDK.CommandQueue
 {
     internal interface ICommandQueue
     {
-        event EventHandler<NotificationErrorEventArgs> OnError;
+        event EventHandler<NotificationLogEventArgs> OnLog;
 
         void Run(ICommand command);
 

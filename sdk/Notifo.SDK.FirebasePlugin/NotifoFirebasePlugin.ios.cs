@@ -11,7 +11,6 @@ using Foundation;
 using Notifo.SDK.Resources;
 using Notifo.SDK;
 using Plugin.FirebasePushNotification;
-using Serilog;
 using UserNotifications;
 
 namespace Notifo.SDK.FirebasePlugin
@@ -43,7 +42,7 @@ namespace Notifo.SDK.FirebasePlugin
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         public static async Task DidReceiveMessageAsync(NSDictionary data)
         {
-            Log.Debug(Strings.ReceivedNotification, data);
+            NotifoIO.Current.RaiseDebug(Strings.ReceivedNotification, null, data);
 
             if (ContainsPullRefreshRequest(data))
             {

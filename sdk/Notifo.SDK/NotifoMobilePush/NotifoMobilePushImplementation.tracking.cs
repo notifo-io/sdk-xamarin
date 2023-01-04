@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Notifo.SDK.Helpers;
 using Notifo.SDK.Resources;
 
 namespace Notifo.SDK.NotifoMobilePush
@@ -19,16 +18,16 @@ namespace Notifo.SDK.NotifoMobilePush
     {
         private const int Capacity = 500;
         private readonly SemaphoreSlim semaphoreSlim = new (1);
-        private SlidingSet<Guid>? seenNotifications;
 
         public async Task<HashSet<Guid>> GetSeenNotificationsAsync()
         {
             await semaphoreSlim.WaitAsync();
             try
             {
-                var set = await LoadSeenNotificationsAsync();
+                // Always load the notifications from the preferences, because they could have been modified by the service extension.
+                var loaded = await seenNotificationsStore.GetSeenNotificationIdsAsync();
 
-                return set.ToHashSet();
+                return loaded.ToHashSet();
             }
             catch (Exception ex)
             {
@@ -41,28 +40,26 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
-        public Task TrackNotificationsAsync(params UserNotificationDto[] notifications)
-        {
-            return TrackNotificationsAsync(notifications.Select(x => x.Id).ToArray());
-        }
-
-        public async Task TrackNotificationsAsync(params Guid[] ids)
+        public async Task TrackNotificationsAsync(params UserNotificationDto[] notifications)
         {
             await semaphoreSlim.WaitAsync();
             try
             {
-                var set = await LoadSeenNotificationsAsync();
+                var idsAndUrls = notifications.ToDictionary(x => x.Id, x => (string?)x.TrackSeenUrl);
+
+                // Always load the notifications from the preferences, because they could have been modified by the service extension.
+                var loaded = await seenNotificationsStore.GetSeenNotificationIdsAsync();
 
                 // Store the seen notifications immediately as a cache, if the actual command to the server fails.
-                await seenNotificationsStore.AddSeenNotificationIdsAsync(Capacity, ids);
+                await seenNotificationsStore.AddSeenNotificationIdsAsync(Capacity, idsAndUrls.Keys);
 
-                foreach (var id in ids)
+                foreach (var id in idsAndUrls.Keys)
                 {
-                    set.Add(id, Capacity);
+                    loaded.Add(id, Capacity);
                 }
 
                 // Track all notifications with one HTTP request.
-                commandQueue.Run(new TrackSeenCommand { Ids = ids.ToHashSet(), Token = token });
+                commandQueue.Run(new TrackSeenCommand { IdsAndUrls = idsAndUrls, Token = token });
             }
             catch (Exception ex)
             {
@@ -73,12 +70,6 @@ namespace Notifo.SDK.NotifoMobilePush
             {
                 semaphoreSlim.Release();
             }
-        }
-
-        private async Task<SlidingSet<Guid>> LoadSeenNotificationsAsync()
-        {
-            // Only query the notifications once and then hold everything in-memory.
-            return seenNotifications ??= await seenNotificationsStore.GetSeenNotificationIdsAsync();
         }
     }
 }

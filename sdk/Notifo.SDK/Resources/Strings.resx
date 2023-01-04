@@ -174,4 +174,7 @@
   <data name="TrackingUrl" xml:space="preserve">
     <value>Tracking URL: {0}</value>
   </data>
+  <data name="TrackingURLMissing" xml:space="preserve">
+    <value>Tracking URL missing for at least one notification.</value>
+  </data>
 </root>
