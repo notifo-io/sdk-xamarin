@@ -6,6 +6,8 @@
 // ==========================================================================
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Notifo.SDK.PushEventProvider;
 
 namespace Notifo.SDK
@@ -111,5 +113,13 @@ namespace Notifo.SDK
         /// Unregister notifications on demand.
         /// </summary>
         void Unregister();
+
+        /// <summary>
+        /// Waits for all background tasks to be completed.
+        /// </summary>
+        /// <param name="ct">The cancellation token to abort waiting.</param>
+        /// <returns>The tasks.</returns>
+        Task WaitForBackgroundTasksAsync(
+            CancellationToken ct = default);
     }
 }

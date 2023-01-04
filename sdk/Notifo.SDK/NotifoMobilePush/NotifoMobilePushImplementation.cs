@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Helpers;
@@ -136,6 +137,13 @@ namespace Notifo.SDK.NotifoMobilePush
         public void RaiseDebug(string message, object? source, params object[] args)
         {
             OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Debug, source, message, args, null));
+        }
+
+        /// <inheritdoc/>
+        public Task WaitForBackgroundTasksAsync(
+            CancellationToken ct = default)
+        {
+            return commandQueue.CompleteAsync(ct);
         }
 
         /// <inheritdoc/>

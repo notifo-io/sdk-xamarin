@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Notifo.SDK.Extensions;
 using Notifo.SDK.Resources;
 
 namespace Notifo.SDK.CommandQueue
@@ -40,6 +41,21 @@ namespace Notifo.SDK.CommandQueue
             this.timeout = timeout;
 
             task = Task.Run(RunAsync);
+        }
+
+        public async Task CompleteAsync(
+            CancellationToken ct)
+        {
+            queue.CompleteAdding();
+
+            Trigger();
+
+            foreach (var trigger in commandTriggers.OfType<IDisposable>())
+            {
+                trigger.Dispose();
+            }
+
+            await task.WithCancellation(ct);
         }
 
         public void Dispose()

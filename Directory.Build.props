@@ -3,12 +3,11 @@
     <Authors>sebastianstehle</Authors>
     <Company>Squidex UG (haftungsbeschränkt)</Company>
     <Copyright>MIT</Copyright>
-    <Description>Notifo SDK for Xamarin</Description>
-    <PackageId>Notifo.Xamarin.Core</PackageId>
+    <Description>Notifo SDK for Xamarin.</Description>
     <PackageIcon>logo-squared.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://notifo.io</PackageProjectUrl>
-    <PackageTags>notifo xamarin</PackageTags>
+    <PackageTags>notifo xamarin firebase</PackageTags>
     <Version>0.0.9-beta</Version>
   </PropertyGroup>
 </Project>

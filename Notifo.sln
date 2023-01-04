@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleNotificationServiceEx
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.iOS.Shared", "sample\Sample.iOS.Shared\Sample.iOS.Shared.csproj", "{7D4A0E79-8075-42A6-ACC5-E5B666F75313}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo.SDK.Worker", "sdk\Notifo.SDK.Worker\Notifo.SDK.Worker.csproj", "{938B1A56-1C33-40CB-8569-8625997945C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -154,6 +156,18 @@ Global
 		{7D4A0E79-8075-42A6-ACC5-E5B666F75313}.Release|iPhone.Build.0 = Release|Any CPU
 		{7D4A0E79-8075-42A6-ACC5-E5B666F75313}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{7D4A0E79-8075-42A6-ACC5-E5B666F75313}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{938B1A56-1C33-40CB-8569-8625997945C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{938B1A56-1C33-40CB-8569-8625997945C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{938B1A56-1C33-40CB-8569-8625997945C8}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{938B1A56-1C33-40CB-8569-8625997945C8}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{938B1A56-1C33-40CB-8569-8625997945C8}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{938B1A56-1C33-40CB-8569-8625997945C8}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{938B1A56-1C33-40CB-8569-8625997945C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{938B1A56-1C33-40CB-8569-8625997945C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{938B1A56-1C33-40CB-8569-8625997945C8}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{938B1A56-1C33-40CB-8569-8625997945C8}.Release|iPhone.Build.0 = Release|Any CPU
+		{938B1A56-1C33-40CB-8569-8625997945C8}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{938B1A56-1C33-40CB-8569-8625997945C8}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -167,6 +181,7 @@ Global
 		{C4EF6311-9993-40BD-BEF8-3C495F571302} = {4270D4B1-5081-4E4F-8BDF-61ED888E936E}
 		{1B35BAEA-5666-408C-BED4-DB6114F3070E} = {4270D4B1-5081-4E4F-8BDF-61ED888E936E}
 		{7D4A0E79-8075-42A6-ACC5-E5B666F75313} = {4270D4B1-5081-4E4F-8BDF-61ED888E936E}
+		{938B1A56-1C33-40CB-8569-8625997945C8} = {4D2C377A-D9F6-4EF3-A342-1B5A84F391DB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87BCC08F-EAE5-4433-97FE-0DE5A56DBF78}
