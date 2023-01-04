@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using Foundation;
 using Notifo.SDK.Extensions;
 using Notifo.SDK.Resources;
-using Serilog;
 using UserNotifications;
 using Xamarin.Essentials;
 
@@ -32,7 +31,7 @@ namespace Notifo.SDK.NotifoMobilePush
 
         public async Task DidReceiveNotificationRequestAsync(UNNotificationRequest request, UNMutableNotificationContent bestAttemptContent)
         {
-            Log.Debug(Strings.ReceivedNotification, request.Content.UserInfo);
+            RaiseDebug(Strings.ReceivedNotification, this, request.Content.UserInfo);
 
             var notification = new UserNotificationDto().FromDictionary(request.Content.UserInfo.ToDictionary());
 
@@ -103,13 +102,13 @@ namespace Notifo.SDK.NotifoMobilePush
                 var notificationsSeen = await GetSeenNotificationsAsync();
                 var notificationsPending = notifications.Where(n => !notificationsSeen.Contains(n.Id)).OrderBy(x => x.Created).ToArray();
 
-                Log.Debug(Strings.PendingNotificationsCount, notificationsPending.Length);
+                RaiseDebug(Strings.PendingNotificationsCount, this, notificationsPending.Length);
 
                 return notificationsPending;
             }
             catch (Exception ex)
             {
-                NotifoIO.Current.RaiseError(Strings.NotificationsRetrieveException, ex, this);
+                RaiseError(Strings.NotificationsRetrieveException, ex, this);
             }
 
             return Array.Empty<UserNotificationDto>();

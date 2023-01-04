@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.SDK;
+using Notifo.SDK.FirebasePlugin;
 using Xamarin.Forms;
 
 namespace Sample

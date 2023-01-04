@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Resources;
-using Serilog;
 using Xamarin.Essentials;
 
 namespace Notifo.SDK.NotifoMobilePush
@@ -28,7 +27,7 @@ namespace Notifo.SDK.NotifoMobilePush
 
             try
             {
-                Log.Debug(Strings.TokenRefreshStartExecutingCount, refreshCount);
+                NotifoIO.Current.RaiseDebug(Strings.TokenRefreshStartExecutingCount, this, refreshCount);
 
                 var request = new RegisterMobileTokenDto
                 {
@@ -46,7 +45,7 @@ namespace Notifo.SDK.NotifoMobilePush
             }
             finally
             {
-                Log.Debug(Strings.TokenRefreshEndExecutingCount, refreshCount);
+                NotifoIO.Current.RaiseDebug(Strings.TokenRefreshEndExecutingCount, this, refreshCount);
             }
         }
 

@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Helpers;
 using Notifo.SDK.PushEventProvider;
-using Serilog;
 
 namespace Notifo.SDK.NotifoMobilePush
 {
@@ -34,7 +33,7 @@ namespace Notifo.SDK.NotifoMobilePush
         public event EventHandler<NotificationEventArgs> OnNotificationOpened;
 
         /// <inheritdoc/>
-        public event EventHandler<NotificationErrorEventArgs> OnError;
+        public event EventHandler<NotificationLogEventArgs> OnLog;
 
         /// <inheritdoc/>
         public ApiVersion ApiVersion { get; private set; }
@@ -51,17 +50,12 @@ namespace Notifo.SDK.NotifoMobilePush
             this.options = new NotifoOptions(credentialsStore);
             this.seenNotificationsStore = seenNotificationsStore;
             this.commandQueue = commandQueue;
-            this.commandQueue.OnError += CommandQueue_OnError;
+            this.commandQueue.OnLog += CommandQueue_OnError;
             this.commandStore = commandStore;
             this.credentialsStore = credentialsStore;
-            this.Client = NotifoClientBuilder.Create().SetHttpClientProvider(new NotifoHttpClientProvider(options)).Build();
+            this.Client = NotifoClientBuilder.Create().SetOptions(options).Build();
 
             SetupPlatform();
-
-            OnError += (sender, args) =>
-            {
-                Log.Error(args.Error, args.Exception);
-            };
         }
 
         partial void SetupPlatform();
@@ -108,7 +102,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 this.pushEventsProvider.OnTokenRefresh -= PushEventsProvider_OnTokenRefresh;
                 this.pushEventsProvider.OnNotificationReceived -= PushEventsProvider_OnNotificationReceived;
                 this.pushEventsProvider.OnNotificationOpened -= PushEventsProvider_OnNotificationOpened;
-                this.pushEventsProvider.OnError -= PushEventsProvider_OnError;
+                this.pushEventsProvider.OnLog -= PushEventsProvider_OnLog;
             }
 
             this.pushEventsProvider = pushEventsProvider;
@@ -118,7 +112,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 this.pushEventsProvider.OnTokenRefresh += PushEventsProvider_OnTokenRefresh;
                 this.pushEventsProvider.OnNotificationReceived += PushEventsProvider_OnNotificationReceived;
                 this.pushEventsProvider.OnNotificationOpened += PushEventsProvider_OnNotificationOpened;
-                this.pushEventsProvider.OnError += PushEventsProvider_OnError;
+                this.pushEventsProvider.OnLog += PushEventsProvider_OnLog;
             }
 
             pushEventsProvider.GetTokenAsync().ContinueWith(tokenTask =>
@@ -135,7 +129,13 @@ namespace Notifo.SDK.NotifoMobilePush
         /// <inheritdoc/>
         public void RaiseError(string error, Exception? exception, object? source)
         {
-            OnError?.Invoke(this, new NotificationErrorEventArgs(error, exception, source));
+            OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, source, error, null, exception));
+        }
+
+        /// <inheritdoc/>
+        public void RaiseDebug(string message, object? source, params object[] args)
+        {
+            OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Debug, source, message, args, null));
         }
 
         /// <inheritdoc/>
@@ -191,16 +191,16 @@ namespace Notifo.SDK.NotifoMobilePush
             OnNotificationOpened?.Invoke(sender, e);
         }
 
-        private void PushEventsProvider_OnError(object sender, NotificationErrorEventArgs e)
+        private void PushEventsProvider_OnLog(object sender, NotificationLogEventArgs e)
         {
             // Forward the event to the application.
-            OnError?.Invoke(sender, e);
+            OnLog?.Invoke(sender, e);
         }
 
-        private void CommandQueue_OnError(object sender, NotificationErrorEventArgs e)
+        private void CommandQueue_OnError(object sender, NotificationLogEventArgs e)
         {
             // Forward the event to the application.
-            OnError?.Invoke(sender, e);
+            OnLog?.Invoke(sender, e);
         }
 
         private void PushEventsProvider_OnTokenRefresh(object sender, TokenRefreshEventArgs e)

@@ -6,14 +6,10 @@
 // ==========================================================================
 
 using System;
-using System.Net.Http;
 using Notifo.SDK.CommandQueue;
-using Notifo.SDK.Extensions;
-using Notifo.SDK.Helpers;
 using Notifo.SDK.NotifoMobilePush;
 using Notifo.SDK.Services;
 using Plugin.Connectivity;
-using Serilog;
 
 namespace Notifo.SDK
 {
@@ -29,8 +25,6 @@ namespace Notifo.SDK
 
         private static INotifoMobilePush SetupNotifoMobilePush()
         {
-            Log.Logger = ConfigureLogger();
-
             var settings = new Settings();
 
             var commandQueue = new DefaultCommandQueue(
@@ -44,23 +38,6 @@ namespace Notifo.SDK
                 10, TimeSpan.FromSeconds(5));
 
             return new NotifoMobilePushImplementation(settings, commandQueue, settings, settings);
-        }
-
-        private static ILogger ConfigureLogger()
-        {
-            return new LoggerConfiguration()
-#if DEBUG
-                .MinimumLevel.Debug()
-#else
-                .MinimumLevel.Information()
-#endif
-                .WriteTo.PlatformSink()
-                .CreateLogger();
-        }
-
-        private static HttpClient HttpClientFactory()
-        {
-            return new HttpClient(new NotifoHttpMessageHandler());
         }
     }
 }

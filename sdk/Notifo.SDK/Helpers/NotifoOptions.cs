@@ -6,12 +6,21 @@
 // ==========================================================================
 
 using System;
+using System.Net.Http;
+using Microsoft.Extensions.Http;
 using Notifo.SDK.NotifoMobilePush;
+using Polly;
+using Polly.Extensions.Http;
+using Polly.Retry;
 
 namespace Notifo.SDK.Helpers
 {
     internal sealed class NotifoOptions : INotifoOptions
     {
+        private static readonly AsyncRetryPolicy<HttpResponseMessage> RetryPolicy =
+            HttpPolicyExtensions.HandleTransientHttpError()
+                .WaitAndRetryAsync(retryCount: 3, sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(300));
+
         private readonly ICredentialsStore store;
         private string? apiUrl = "https://cloud.squidex.io";
         private string? apiKey;
@@ -63,6 +72,16 @@ namespace Notifo.SDK.Helpers
 
         public void Validate()
         {
+        }
+
+        public HttpClient BuildHttpClient(DelegatingHandler handler)
+        {
+            handler.InnerHandler = new PolicyHttpMessageHandler(RetryPolicy)
+            {
+                InnerHandler = new HttpClientHandler()
+            };
+
+            return new HttpClient(handler);
         }
     }
 }

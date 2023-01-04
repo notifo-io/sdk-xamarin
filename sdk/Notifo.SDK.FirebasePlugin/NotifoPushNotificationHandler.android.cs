@@ -12,7 +12,6 @@ using Notifo.SDK.Extensions;
 using Notifo.SDK.NotifoMobilePush;
 using Notifo.SDK.Resources;
 using Plugin.FirebasePushNotification;
-using Serilog;
 
 namespace Notifo.SDK.FirebasePlugin
 {
@@ -27,7 +26,7 @@ namespace Notifo.SDK.FirebasePlugin
 
         public override void OnReceived(IDictionary<string, object> parameters)
         {
-            Log.Debug(Strings.ReceivedNotification, parameters);
+            NotifoIO.Current.RaiseDebug(Strings.ReceivedNotification, this, parameters);
 
             var notification = new UserNotificationDto()
                 .FromDictionary(new Dictionary<string, object>(parameters));
