@@ -30,7 +30,7 @@ namespace Notifo.SDK.Helpers
 
         public string? ApiUrl
         {
-            get => store.ApiUrl ?? "https://cloud.squidex.io";
+            get => store.ApiUrl ?? "https://app.notifo.io";
             set => store.ApiUrl = value;
         }
 
