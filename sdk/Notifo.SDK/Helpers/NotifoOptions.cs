@@ -22,38 +22,22 @@ namespace Notifo.SDK.Helpers
                 .WaitAndRetryAsync(retryCount: 3, sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(300));
 
         private readonly ICredentialsStore store;
-        private string? apiUrl = "https://cloud.squidex.io";
-        private string? apiKey;
 
         public bool IsConfigured
         {
-            get => !string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(apiUrl);
+            get => !string.IsNullOrEmpty(ApiKey) && !string.IsNullOrEmpty(ApiUrl);
         }
 
         public string? ApiUrl
         {
-            get => apiUrl;
-            set
-            {
-                if (apiUrl != value)
-                {
-                    apiUrl = value;
-                    store.ApiUrl = value;
-                }
-            }
+            get => store.ApiUrl ?? "https://cloud.squidex.io";
+            set => store.ApiUrl = value;
         }
 
         public string? ApiKey
         {
-            get => apiKey;
-            set
-            {
-                if (apiKey != value)
-                {
-                    apiKey = value;
-                    store.ApiKey = value;
-                }
-            }
+            get => store.ApiKey;
+            set => store.ApiKey = value;
         }
 
         public string? ClientId => default;
@@ -65,9 +49,6 @@ namespace Notifo.SDK.Helpers
         public NotifoOptions(ICredentialsStore store)
         {
             this.store = store;
-
-            apiUrl = store.ApiUrl;
-            apiKey = store.ApiKey;
         }
 
         public void Validate()
