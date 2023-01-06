@@ -5,30 +5,26 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Threading.Tasks;
+namespace Notifo.SDK.CommandQueue;
 
-namespace Notifo.SDK.CommandQueue
+internal sealed class TriggerOnStart : ICommandTrigger
 {
-    internal sealed class TriggerOnStart : ICommandTrigger
+    private readonly TimeSpan delay;
+
+    public TriggerOnStart(TimeSpan delay)
     {
-        private readonly TimeSpan delay;
+        this.delay = delay;
+    }
 
-        public TriggerOnStart(TimeSpan delay)
+    public void Start(ICommandQueue queue)
+    {
+        if (delay == TimeSpan.Zero)
         {
-            this.delay = delay;
+            queue.Trigger();
         }
-
-        public void Start(ICommandQueue queue)
+        else
         {
-            if (delay == TimeSpan.Zero)
-            {
-                queue.Trigger();
-            }
-            else
-            {
-                Task.Delay(delay).ContinueWith(_ => queue.Trigger());
-            }
+            Task.Delay(delay).ContinueWith(_ => queue.Trigger());
         }
     }
 }

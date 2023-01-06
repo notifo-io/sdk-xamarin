@@ -7,18 +7,17 @@
 
 using AndroidX.Core.App;
 
-namespace Notifo.SDK
+namespace Notifo.SDK;
+
+/// <summary>
+/// Notification handler interface.
+/// </summary>
+public interface INotificationHandler
 {
     /// <summary>
-    /// Notification handler interface.
+    /// Provides a place for notification customization.
     /// </summary>
-    public interface INotificationHandler
-    {
-        /// <summary>
-        /// Provides a place for notification customization.
-        /// </summary>
-        /// <param name="notificationBuilder">The notification builder.</param>
-        /// <param name="notification">The notification.</param>
-        void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification);
-    }
+    /// <param name="notificationBuilder">The notification builder.</param>
+    /// <param name="notification">The notification.</param>
+    void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification);
 }

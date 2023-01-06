@@ -5,20 +5,15 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+namespace Notifo.SDK.CommandQueue;
 
-namespace Notifo.SDK.CommandQueue
+internal interface ICommandStore
 {
-    internal interface ICommandStore
-    {
-        ValueTask<List<QueuedCommand>> GetCommandsAsync();
+    ValueTask<List<QueuedCommand>> GetCommandsAsync();
 
-        ValueTask StoreAsync(QueuedCommand command);
+    ValueTask StoreAsync(QueuedCommand command);
 
-        ValueTask RemoveAsync(Guid id);
+    ValueTask RemoveAsync(Guid id);
 
-        void Clear();
-    }
+    void Clear();
 }

@@ -13,45 +13,44 @@ using Notifo.SDK.NotifoMobilePush;
 using Notifo.SDK.Resources;
 using Plugin.FirebasePushNotification;
 
-namespace Notifo.SDK.FirebasePlugin
+namespace Notifo.SDK.FirebasePlugin;
+
+internal class NotifoPushNotificationHandler : DefaultPushNotificationHandler
 {
-    internal class NotifoPushNotificationHandler : DefaultPushNotificationHandler
+    private NotifoMobilePushImplementation notifoMobilePush;
+
+    public NotifoPushNotificationHandler()
     {
-        private NotifoMobilePushImplementation notifoMobilePush;
+        notifoMobilePush = (NotifoMobilePushImplementation)NotifoIO.Current;
+    }
 
-        public NotifoPushNotificationHandler()
+    public override void OnReceived(IDictionary<string, object> parameters)
+    {
+        NotifoIO.Current.RaiseDebug(Strings.ReceivedNotification, this, parameters);
+
+        var notification = new UserNotificationDto()
+            .FromDictionary(new Dictionary<string, object>(parameters));
+
+        if (notification.Silent)
         {
-            notifoMobilePush = (NotifoMobilePushImplementation)NotifoIO.Current;
+            return;
         }
 
-        public override void OnReceived(IDictionary<string, object> parameters)
+        if (parameters.TryGetValue(IdKey, out var id))
         {
-            NotifoIO.Current.RaiseDebug(Strings.ReceivedNotification, this, parameters);
+            var notificationId = Math.Abs(id.GetHashCode());
 
-            var notification = new UserNotificationDto()
-                .FromDictionary(new Dictionary<string, object>(parameters));
-
-            if (notification.Silent)
-            {
-                return;
-            }
-
-            if (parameters.TryGetValue(IdKey, out var id))
-            {
-                var notificationId = Math.Abs(id.GetHashCode());
-
-                parameters[IdKey] = notificationId;
-            }
-
-            base.OnReceived(parameters);
+            parameters[IdKey] = notificationId;
         }
 
-        public override void OnBuildNotification(NotificationCompat.Builder notificationBuilder, IDictionary<string, object> parameters)
-        {
-            var notification = new UserNotificationDto()
-                .FromDictionary(new Dictionary<string, object>(parameters));
+        base.OnReceived(parameters);
+    }
 
-            notifoMobilePush.OnBuildNotification(notificationBuilder, notification);
-        }
+    public override void OnBuildNotification(NotificationCompat.Builder notificationBuilder, IDictionary<string, object> parameters)
+    {
+        var notification = new UserNotificationDto()
+            .FromDictionary(new Dictionary<string, object>(parameters));
+
+        notifoMobilePush.OnBuildNotification(notificationBuilder, notification);
     }
 }

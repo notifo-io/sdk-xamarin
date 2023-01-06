@@ -1,14 +1,13 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
 
   <PropertyGroup>
-	  <NoWarn>CS1591;CS0618</NoWarn>
+	<NoWarn>CS1591;CS0618</NoWarn>
     <AssemblyName>Notifo.Xamarin.Worker</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <RootNamespace>Notifo.SDK</RootNamespace>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
     <TargetFrameworks>monoandroid12.0;</TargetFrameworks>
   </PropertyGroup>
 

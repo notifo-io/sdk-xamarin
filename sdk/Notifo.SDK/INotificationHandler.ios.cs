@@ -7,18 +7,17 @@
 
 using UserNotifications;
 
-namespace Notifo.SDK
+namespace Notifo.SDK;
+
+/// <summary>
+/// Notification handler interface.
+/// </summary>
+public interface INotificationHandler
 {
     /// <summary>
-    /// Notification handler interface.
+    /// Provides a place for notification customization.
     /// </summary>
-    public interface INotificationHandler
-    {
-        /// <summary>
-        /// Provides a place for notification customization.
-        /// </summary>
-        /// <param name="content">The notification content.</param>
-        /// <param name="notification">The notification.</param>
-        void OnBuildNotification(UNMutableNotificationContent content, UserNotificationDto notification);
-    }
+    /// <param name="content">The notification content.</param>
+    /// <param name="notification">The notification.</param>
+    void OnBuildNotification(UNMutableNotificationContent content, UserNotificationDto notification);
 }
