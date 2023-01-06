@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
@@ -67,8 +68,7 @@ namespace Notifo.SDK.NotifoMobilePush
                 return;
             }
 
-            var httpClient = NotifoIO.Current.Client.CreateHttpClient();
-            try
+            using (var httpClient = new HttpClient())
             {
                 foreach (var url in urls)
                 {
@@ -76,10 +76,6 @@ namespace Notifo.SDK.NotifoMobilePush
 
                     response.EnsureSuccessStatusCode();
                 }
-            }
-            finally
-            {
-                NotifoIO.Current.Client.ReturnHttpClient(httpClient);
             }
         }
 
