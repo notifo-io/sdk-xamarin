@@ -18,5 +18,12 @@ namespace Notifo.SDK
         /// <param name="notificationHandler">The <see cref="INotificationHandler"/> implementation.</param>
         /// <returns>The current instance.</returns>
         public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler);
+
+        /// <summary>
+        /// Sets the capacity of the image cache.
+        /// </summary>
+        /// <param name="capacity">The capacity in bytes.</param>
+        /// <returns>The current instance.</returns>
+        INotifoMobilePush SetImageCacheCapacity(int capacity);
     }
 }

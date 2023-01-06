@@ -11,13 +11,11 @@ using Microsoft.Extensions.Http;
 using Notifo.SDK.NotifoMobilePush;
 using Polly;
 using Polly.Extensions.Http;
-using Polly.Retry;
 
 namespace Notifo.SDK.Helpers
 {
     internal sealed class NotifoOptions : INotifoOptions
     {
-
         private readonly ICredentialsStore store;
 
         public bool IsConfigured
@@ -25,7 +23,7 @@ namespace Notifo.SDK.Helpers
             get => !string.IsNullOrEmpty(ApiKey) && !string.IsNullOrEmpty(ApiUrl);
         }
 
-        public string? ApiUrl
+        public string ApiUrl
         {
             get => store.ApiUrl ?? "https://app.notifo.io";
             set => store.ApiUrl = value;
@@ -59,8 +57,7 @@ namespace Notifo.SDK.Helpers
 
             inner.InnerHandler =
                 new PolicyHttpMessageHandler(
-                    HttpPolicyExtensions.HandleTransientHttpError()
-                        .WaitAndRetryAsync(retryTimes, _ => retryTime));
+                    HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(retryTimes, _ => retryTime));
 
             return inner;
         }

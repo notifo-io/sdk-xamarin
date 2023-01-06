@@ -41,6 +41,10 @@
     <None Include="**\*.android.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+	<PackageReference Include="Notifo.SDK" Version="1.7.3" />
+  </ItemGroup>
+
   <ItemGroup Condition="$(TargetFramework.StartsWith('xamarinios'))">
 	<PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging" Version="8.10.0.1" />
 	<PackageReference Include="Xamarin.Firebase.iOS.Installations" Version="8.10.0.1" />
@@ -51,11 +55,6 @@
   <ItemGroup Condition="$(TargetFramework.StartsWith('monoandroid'))">
     <PackageReference Include="Xamarin.Firebase.Common" Version="120.0.0.5" />
     <PackageReference Include="Xamarin.Firebase.Messaging" Version="122.0.0.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-	  <PackageReference Include="Notifo.SDK" Version="1.6.4" />
-	  <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

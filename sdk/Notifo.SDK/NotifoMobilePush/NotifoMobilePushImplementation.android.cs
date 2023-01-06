@@ -11,20 +11,32 @@ using Android.Content;
 using Android.Graphics;
 using AndroidX.Core.App;
 using Java.Net;
-using Microsoft.Extensions.Caching.Memory;
 using Notifo.SDK.Extensions;
+using Notifo.SDK.Helpers;
 using Notifo.SDK.Resources;
 
 namespace Notifo.SDK.NotifoMobilePush
 {
     internal partial class NotifoMobilePushImplementation
     {
-        private readonly IMemoryCache bitmapCache = new MemoryCache(new MemoryCacheOptions());
+        private readonly LRUCache<string, Bitmap> bitmapCache = new LRUCache<string, Bitmap>(10_000_000);
         private INotificationHandler? notificationHandler;
 
         partial void SetupPlatform()
         {
             OnNotificationReceived += PushEventsProvider_OnNotificationReceivedAndroid;
+        }
+
+        public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
+        {
+            this.notificationHandler = notificationHandler;
+            return this;
+        }
+
+        public INotifoMobilePush SetImageCacheCapacity(int capacity)
+        {
+            bitmapCache.EnsureCapacity(capacity);
+            return this;
         }
 
         private void PushEventsProvider_OnNotificationReceivedAndroid(object sender, NotificationEventArgs e)
@@ -33,13 +45,6 @@ namespace Notifo.SDK.NotifoMobilePush
             {
                 _ = TrackNotificationsAsync(e.Notification);
             }
-        }
-
-        public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
-        {
-            this.notificationHandler = notificationHandler;
-
-            return this;
         }
 
         internal void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification)
@@ -102,7 +107,7 @@ namespace Notifo.SDK.NotifoMobilePush
                     bitmapUrl = bitmapUrl.AppendQueries("width", width, "height", height);
                 }
 
-                if (bitmapCache.TryGetValue(bitmapUrl, out Bitmap cachedBitmap))
+                if (bitmapCache.TryGetValue(bitmapUrl, out var cachedBitmap))
                 {
                     return cachedBitmap;
                 }
@@ -112,7 +117,7 @@ namespace Notifo.SDK.NotifoMobilePush
 
                 if (bitmapImage != null)
                 {
-                    bitmapCache.Set(bitmapUrl, bitmapImage);
+                    bitmapCache.Set(bitmapUrl, bitmapImage, bitmapImage.ByteCount);
                 }
                 else
                 {
