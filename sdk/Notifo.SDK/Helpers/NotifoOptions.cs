@@ -17,9 +17,6 @@ namespace Notifo.SDK.Helpers
 {
     internal sealed class NotifoOptions : INotifoOptions
     {
-        private static readonly AsyncRetryPolicy<HttpResponseMessage> RetryPolicy =
-            HttpPolicyExtensions.HandleTransientHttpError()
-                .WaitAndRetryAsync(retryCount: 3, sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(300));
 
         private readonly ICredentialsStore store;
 
@@ -55,14 +52,17 @@ namespace Notifo.SDK.Helpers
         {
         }
 
-        public HttpClient BuildHttpClient(DelegatingHandler handler)
+        public DelegatingHandler Configure(DelegatingHandler inner)
         {
-            handler.InnerHandler = new PolicyHttpMessageHandler(RetryPolicy)
-            {
-                InnerHandler = new HttpClientHandler()
-            };
+            var retryTimes = 3;
+            var retryTime = TimeSpan.FromMilliseconds(300);
 
-            return new HttpClient(handler);
+            inner.InnerHandler =
+                new PolicyHttpMessageHandler(
+                    HttpPolicyExtensions.HandleTransientHttpError()
+                        .WaitAndRetryAsync(retryTimes, _ => retryTime));
+
+            return inner;
         }
     }
 }
