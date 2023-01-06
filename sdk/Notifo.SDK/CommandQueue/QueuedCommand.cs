@@ -5,16 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
+namespace Notifo.SDK.CommandQueue;
 
-namespace Notifo.SDK.CommandQueue
+internal sealed class QueuedCommand
 {
-    internal sealed class QueuedCommand
-    {
-        public ICommand Command { get; set; }
+    public ICommand Command { get; set; }
 
-        public int Retries { get; set; }
+    public int Retries { get; set; }
 
-        public Guid CommandId { get; set; }
-    }
+    public Guid CommandId { get; set; }
 }

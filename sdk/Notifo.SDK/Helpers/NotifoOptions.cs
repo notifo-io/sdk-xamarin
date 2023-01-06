@@ -12,54 +12,53 @@ using Notifo.SDK.NotifoMobilePush;
 using Polly;
 using Polly.Extensions.Http;
 
-namespace Notifo.SDK.Helpers
+namespace Notifo.SDK.Helpers;
+
+internal sealed class NotifoOptions : INotifoOptions
 {
-    internal sealed class NotifoOptions : INotifoOptions
+    private readonly ICredentialsStore store;
+
+    public bool IsConfigured
     {
-        private readonly ICredentialsStore store;
+        get => !string.IsNullOrEmpty(ApiKey) && !string.IsNullOrEmpty(ApiUrl);
+    }
 
-        public bool IsConfigured
-        {
-            get => !string.IsNullOrEmpty(ApiKey) && !string.IsNullOrEmpty(ApiUrl);
-        }
+    public string ApiUrl
+    {
+        get => store.ApiUrl ?? "https://app.notifo.io";
+        set => store.ApiUrl = value;
+    }
 
-        public string ApiUrl
-        {
-            get => store.ApiUrl ?? "https://app.notifo.io";
-            set => store.ApiUrl = value;
-        }
+    public string? ApiKey
+    {
+        get => store.ApiKey;
+        set => store.ApiKey = value;
+    }
 
-        public string? ApiKey
-        {
-            get => store.ApiKey;
-            set => store.ApiKey = value;
-        }
+    public string? ClientId => default;
 
-        public string? ClientId => default;
+    public string? ClientSecret => default;
 
-        public string? ClientSecret => default;
+    public TimeSpan Timeout => default;
 
-        public TimeSpan Timeout => default;
+    public NotifoOptions(ICredentialsStore store)
+    {
+        this.store = store;
+    }
 
-        public NotifoOptions(ICredentialsStore store)
-        {
-            this.store = store;
-        }
+    public void Validate()
+    {
+    }
 
-        public void Validate()
-        {
-        }
+    public DelegatingHandler Configure(DelegatingHandler inner)
+    {
+        var retryTimes = 3;
+        var retryTime = TimeSpan.FromMilliseconds(300);
 
-        public DelegatingHandler Configure(DelegatingHandler inner)
-        {
-            var retryTimes = 3;
-            var retryTime = TimeSpan.FromMilliseconds(300);
+        inner.InnerHandler =
+            new PolicyHttpMessageHandler(
+                HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(retryTimes, _ => retryTime));
 
-            inner.InnerHandler =
-                new PolicyHttpMessageHandler(
-                    HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(retryTimes, _ => retryTime));
-
-            return inner;
-        }
+        return inner;
     }
 }

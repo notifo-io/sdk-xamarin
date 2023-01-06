@@ -7,14 +7,13 @@
 
 #pragma warning disable SA1401 // Fields must be private
 
-namespace Notifo.SDK.Helpers
+namespace Notifo.SDK.Helpers;
+
+internal sealed class LRUCacheItem<TKey, TValue>
 {
-    internal sealed class LRUCacheItem<TKey, TValue>
-    {
-        public TKey Key;
+    public TKey Key;
 
-        public TValue Value;
+    public TValue Value;
 
-        public int Size;
-    }
+    public int Size;
 }

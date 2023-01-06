@@ -5,34 +5,30 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 
-namespace Notifo.SDK.NotifoMobilePush
+namespace Notifo.SDK.NotifoMobilePush;
+
+internal sealed class TokenUnregisterCommand : ICommand
 {
-    internal sealed class TokenUnregisterCommand : ICommand
+    public string Token { get; set; }
+
+    public async ValueTask ExecuteAsync(
+        CancellationToken ct)
     {
-        public string Token { get; set; }
-
-        public async ValueTask ExecuteAsync(
-            CancellationToken ct)
+        try
         {
-            try
-            {
-                await NotifoIO.Current.Client.MobilePush.DeleteMyTokenAsync(Token, ct);
-            }
-            catch (Exception ex)
-            {
-                NotifoIO.Current.RaiseError(ex.Message, ex, this);
-                throw ex;
-            }
+            await NotifoIO.Current.Client.MobilePush.DeleteMyTokenAsync(Token, ct);
         }
-
-        public bool Merge(ICommand other)
+        catch (Exception ex)
         {
-            return other is TokenUnregisterCommand;
+            NotifoIO.Current.RaiseError(ex.Message, ex, this);
+            throw ex;
         }
+    }
+
+    public bool Merge(ICommand other)
+    {
+        return other is TokenUnregisterCommand;
     }
 }
