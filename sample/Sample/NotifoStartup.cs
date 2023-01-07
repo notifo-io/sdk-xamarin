@@ -16,6 +16,7 @@ namespace Sample
         public void ConfigureService(INotifoMobilePush notifo)
         {
             notifo
+                .SetSharedName("notifo.Sample")
                 .SetBaseUrl(Constants.ApiUrl)
                 .UseFirebasePluginEventsProvider();
 

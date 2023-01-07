@@ -47,14 +47,20 @@ public partial interface INotifoMobilePush
     /// <summary>
     /// Clears all settings that are currently stored.
     /// </summary>
-    void ClearAllSettings();
+    /// <returns>The current instance.</returns>
+    INotifoMobilePush ClearAllSettings();
+
+    /// <summary>
+    /// Sets the shared name to store settings.
+    /// </summary>
+    /// <param name="sharedName">The shared name.</param>
+    /// <returns>The current instance.</returns>
+    INotifoMobilePush SetSharedName(string sharedName);
 
     /// <summary>
     /// Sets the API key to use.
     /// </summary>
-    /// <param name="apiKey">
-    /// The API key.
-    /// </param>
+    /// <param name="apiKey">The API key.</param>
     /// <returns>The current instance.</returns>
     INotifoMobilePush SetApiKey(string apiKey);
 

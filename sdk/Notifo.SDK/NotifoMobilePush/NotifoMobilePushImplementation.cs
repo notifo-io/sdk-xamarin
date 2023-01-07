@@ -59,11 +59,37 @@ internal partial class NotifoMobilePushImplementation : INotifoMobilePush
     partial void SetupPlatform();
 
     /// <inheritdoc/>
-    public void ClearAllSettings()
+    public INotifoMobilePush ClearAllSettings()
     {
-        commandStore.Clear();
-        credentialsStore.Clear();
-        seenNotificationsStore.Clear();
+        static void Clear(object store)
+        {
+            if (store is IClearableStore clearable)
+            {
+                clearable.Clear();
+            }
+        }
+
+        Clear(commandStore);
+        Clear(credentialsStore);
+        Clear(seenNotificationsStore);
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public INotifoMobilePush SetSharedName(string sharedName)
+    {
+        static void Configure(object store, string sharedName)
+        {
+            if (store is ISettingsStore settings)
+            {
+                settings.SharedName = sharedName;
+            }
+        }
+
+        Configure(commandStore, sharedName);
+        Configure(credentialsStore, sharedName);
+        Configure(seenNotificationsStore, sharedName);
+        return this;
     }
 
     /// <inheritdoc/>
