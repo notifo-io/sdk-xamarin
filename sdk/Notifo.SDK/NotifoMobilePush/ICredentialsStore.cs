@@ -12,6 +12,4 @@ internal interface ICredentialsStore
     string? ApiKey { get; set; }
 
     string? ApiUrl { get; set; }
-
-    void Clear();
 }

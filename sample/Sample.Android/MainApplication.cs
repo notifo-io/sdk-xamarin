@@ -9,6 +9,7 @@ using System;
 using Android.App;
 using Android.OS;
 using Android.Runtime;
+using Notifo.SDK;
 using Notifo.SDK.FirebasePlugin;
 using Plugin.FirebasePushNotification;
 
@@ -31,11 +32,15 @@ namespace Sample.Droid
                 FirebasePushNotificationManager.DefaultNotificationChannelId = "FirebasePushNotificationChannel";
                 FirebasePushNotificationManager.DefaultNotificationChannelName = "General";
             }
+
+            var resetToken = false;
 #if DEBUG
-            NotifoFirebasePlugin.Initialize(this, new NotifoStartup(), new NotificationHandler(), resetToken: true);
-#else
-            NotifoFirebasePlugin.Initialize(this, new NotifoStartup(), new NotificationHandler(), resetToken: false);
+            resetToken = true;
 #endif
+            NotifoIO.Current
+                .SetNotificationHandler(new NotificationHandler())
+                .UseDefaults()
+                .UseFirebasePluginEventsProvider(this, resetToken: resetToken);
         }
     }
 }

@@ -11,9 +11,9 @@ using Xamarin.Forms;
 
 namespace Sample
 {
-    public class NotifoStartup : INotifoStartup
+    public static class NotifoStartup
     {
-        public void ConfigureService(INotifoMobilePush notifo)
+        public static INotifoMobilePush UseDefaults(this INotifoMobilePush notifo)
         {
             notifo
                 .SetSharedName("notifo.Sample")
@@ -21,9 +21,11 @@ namespace Sample
                 .UseFirebasePluginEventsProvider();
 
             notifo.OnNotificationOpened += Current_OnNotificationOpened;
+
+            return notifo;
         }
 
-        private void Current_OnNotificationOpened(object source, NotificationEventArgs e)
+        private static void Current_OnNotificationOpened(object source, NotificationEventArgs e)
         {
             Device.BeginInvokeOnMainThread(() =>
             {

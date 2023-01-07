@@ -15,8 +15,6 @@ internal interface ICommandQueue
 
     void Trigger();
 
-    void Clear();
-
     Task CompleteAsync(
         CancellationToken ct);
 }

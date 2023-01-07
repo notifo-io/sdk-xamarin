@@ -37,7 +37,7 @@ namespace SampleNotificationServiceExtension
 				.SetSharedName("notifo.Sample")
 				.SetNotificationHandler(new NotificationHandler());
 
-			await NotifoIO.DidReceiveNotificationRequestAsync(request, BestAttemptContent);
+			await NotifoIO.Current.DidReceiveNotificationRequestAsync(request, BestAttemptContent);
 
 			// Display the notification.
 			ContentHandler(BestAttemptContent);

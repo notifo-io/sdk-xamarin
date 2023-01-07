@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-
 using AndroidX.Work;
 
 namespace Notifo.SDK;
@@ -30,6 +29,8 @@ public static class NotifoMobilePushExtensions
             return notifoMobilePush;
         }
 
+        isWorkerRegistered = true;
+
         if (period == default)
         {
             period = TimeSpan.FromDays(30);
@@ -38,7 +39,6 @@ public static class NotifoMobilePushExtensions
         var workerRequest = PeriodicWorkRequest.Builder.From<UpdateWorker>(period).Build();
 
         WorkManager.Instance.Enqueue(workerRequest);
-        isWorkerRegistered = true;
 
         return notifoMobilePush;
     }

@@ -15,18 +15,25 @@ namespace Notifo.SDK.FirebasePlugin;
 /// <summary>
 /// The <see cref="INotifoMobilePush"/> extension methods.
 /// </summary>
-public static class NotifoMobilePushExtensions
+public static partial class NotifoMobilePushExtensions
 {
-    private static readonly Lazy<IPushEventsProvider> CurrentPluginEventsProvider =
-        new Lazy<IPushEventsProvider>(() => new PluginEventsProvider(), LazyThreadSafetyMode.PublicationOnly);
+    private static bool isHandlerRegistered;
 
     /// <summary>
     /// Use the firebase plugin as the push events provider.
     /// </summary>
-    /// <param name="notifoMobilePush">The <see cref="INotifoMobilePush"/> instance.</param>
+    /// <param name="notifo">The <see cref="INotifoMobilePush"/> instance.</param>
     /// <returns>The current instance.</returns>
-    public static INotifoMobilePush UseFirebasePluginEventsProvider(this INotifoMobilePush notifoMobilePush)
+    public static INotifoMobilePush UseFirebasePluginEventsProvider(this INotifoMobilePush notifo)
     {
-        return notifoMobilePush.SetPushEventsProvider(CurrentPluginEventsProvider.Value);
+        if (isHandlerRegistered)
+        {
+            return notifo;
+        }
+
+        notifo.SetPushEventsProvider(new PluginEventsProvider());
+        isHandlerRegistered = true;
+
+        return notifo;
     }
 }

@@ -9,38 +9,50 @@ using Android.App;
 using Android.Content;
 using Plugin.FirebasePushNotification;
 using Notifo.SDK;
+using System;
+using System.Threading;
+using Notifo.SDK.NotifoMobilePush;
+using Notifo.SDK.PushEventProvider;
 
 namespace Notifo.SDK.FirebasePlugin;
 
 /// <summary>
-/// Plugin initialization.
+/// The <see cref="INotifoMobilePush"/> extension methods.
 /// </summary>
-public class NotifoFirebasePlugin
+public static partial class NotifoMobilePushExtensions
 {
+    private static bool isAndroidHandlerRegistered;
+
     /// <summary>
-    /// Initializes the firebase plugin.
+    /// Use the firebase plugin as the push events provider.
     /// </summary>
+    /// <param name="notifo">The <see cref="INotifoMobilePush"/> instance.</param>
     /// <param name="context">The current application context.</param>
-    /// <param name="notifoStartup">The <see cref="INotifoStartup"/> implementation.</param>
-    /// <param name="notificationHandler">The <see cref="INotificationHandler"/> implementation.</param>
     /// <param name="resetToken">Set to <see langword="true"/> while debugging.</param>
     /// <param name="autoRegistration">Automatically register for push notifications.</param>
-    public static void Initialize(Context context, INotifoStartup notifoStartup, INotificationHandler notificationHandler = null, bool resetToken = false, bool autoRegistration = true)
+    /// <returns>The current instance.</returns>
+    public static INotifoMobilePush UseFirebasePluginEventsProvider(this INotifoMobilePush notifo, Context context, bool resetToken = false, bool autoRegistration = true)
     {
-        FirebasePushNotificationManager.Initialize(context, new NotifoPushNotificationHandler(), resetToken, createDefaultNotificationChannel: true, autoRegistration);
+        if (isAndroidHandlerRegistered)
+        {
+            return notifo;
+        }
 
-        NotifoIO.Current.SetNotificationHandler(notificationHandler);
-        notifoStartup.ConfigureService(NotifoIO.Current);
+        FirebasePushNotificationManager.Initialize(context, new NotifoPushNotificationHandler(), resetToken, createDefaultNotificationChannel: true, autoRegistration);
+        isAndroidHandlerRegistered = true;
+
+        return notifo.UseFirebasePluginEventsProvider();
     }
 
     /// <summary>
     /// Method for processing open notification intent.
     /// </summary>
+    /// <param name="notifo">The <see cref="INotifoMobilePush"/> instance.</param>
     /// <param name="activity">The current activity.</param>
     /// <param name="intent">The intent for processing.</param>
-    public static void ProcessIntent(Activity activity, Intent intent)
+    public static void ProcessIntent(this INotifoMobilePush notifo, Activity activity, Intent intent)
     {
+        notifo.UseFirebasePluginEventsProvider();
         FirebasePushNotificationManager.ProcessIntent(activity, intent, enableDelayedResponse: true);
-        NotifoIO.Current.UseFirebasePluginEventsProvider();
     }
 }

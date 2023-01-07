@@ -10,6 +10,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
+using Notifo.SDK;
 using Notifo.SDK.FirebasePlugin;
 using Prism;
 using Prism.Ioc;
@@ -30,13 +31,13 @@ namespace Sample.Droid
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             LoadApplication(new App(new AndroidInitializer()));
 
-            NotifoFirebasePlugin.ProcessIntent(this, Intent);
+            NotifoIO.Current.ProcessIntent(this, Intent);
         }
 
         protected override void OnNewIntent(Intent intent)
         {
             base.OnNewIntent(intent);
-            NotifoFirebasePlugin.ProcessIntent(this, intent);
+            NotifoIO.Current.ProcessIntent(this, intent);
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
