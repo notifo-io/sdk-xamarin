@@ -6,88 +6,86 @@
 // ==========================================================================
 
 using System.Collections;
-using System.Collections.Generic;
 
-namespace Notifo.SDK.Helpers
+namespace Notifo.SDK.Helpers;
+
+internal class SlidingSet<T> : ICollection<T>
 {
-    internal class SlidingSet<T> : ICollection<T>
+    private readonly HashSet<T> itemSet = new HashSet<T>();
+    private readonly LinkedList<T> itemHistory = new LinkedList<T>();
+
+    public int Count => itemSet.Count;
+
+    public bool IsReadOnly => false;
+
+    public void Clear()
     {
-        private readonly HashSet<T> itemSet = new HashSet<T>();
-        private readonly LinkedList<T> itemHistory = new LinkedList<T>();
+        itemSet.Clear();
+        itemHistory.Clear();
+    }
 
-        public int Count => itemSet.Count;
+    public void CopyTo(T[] array, int arrayIndex)
+    {
+        itemHistory.CopyTo(array, arrayIndex);
+    }
 
-        public bool IsReadOnly => false;
+    public bool Contains(T item)
+    {
+        return itemSet.Contains(item);
+    }
 
-        public void Clear()
+    public void Add(T item)
+    {
+        Add(item, 0);
+    }
+
+    public void Add(T item, int capacity)
+    {
+        if (!itemSet.Add(item))
         {
-            itemSet.Clear();
-            itemHistory.Clear();
-        }
-
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            itemHistory.CopyTo(array, arrayIndex);
-        }
-
-        public bool Contains(T item)
-        {
-            return itemSet.Contains(item);
-        }
-
-        public void Add(T item)
-        {
-            Add(item, 0);
-        }
-
-        public void Add(T item, int capacity)
-        {
-            if (!itemSet.Add(item))
-            {
-                itemHistory.Remove(item);
-                itemHistory.AddLast(item);
-                return;
-            }
-
-            if (capacity > 0 && itemSet.Count > capacity)
-            {
-                RemoveFirst();
-            }
-
+            itemHistory.Remove(item);
             itemHistory.AddLast(item);
+            return;
         }
 
-        private void RemoveFirst()
+        if (capacity > 0 && itemSet.Count > capacity)
         {
-            var node = itemHistory.First;
-
-            if (node != null)
-            {
-                itemSet.Remove(node.Value);
-                itemHistory.RemoveFirst();
-            }
+            RemoveFirst();
         }
 
-        public bool Remove(T item)
+        itemHistory.AddLast(item);
+    }
+
+    private void RemoveFirst()
+    {
+        var node = itemHistory.First;
+
+        if (node != null)
         {
-            var hasRemoved = itemSet.Remove(item);
-
-            if (hasRemoved)
-            {
-                itemHistory.Remove(item);
-            }
-
-            return hasRemoved;
+            itemSet.Remove(node.Value);
+            itemHistory.RemoveFirst();
         }
+    }
 
-        public IEnumerator<T> GetEnumerator()
+    public bool Remove(T item)
+    {
+        var hasRemoved = itemSet.Remove(item);
+
+        if (hasRemoved)
         {
-            return itemHistory.GetEnumerator();
+            itemHistory.Remove(item);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return itemHistory.GetEnumerator();
-        }
+        return hasRemoved;
+    }
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        return itemHistory.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return itemHistory.GetEnumerator();
     }
 }

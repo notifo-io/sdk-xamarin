@@ -1,10 +1,9 @@
-﻿namespace Plugin.FirebasePushNotification
+﻿namespace Plugin.FirebasePushNotification;
+
+public enum NotificationActionType
 {
-    public enum NotificationActionType
-    {
-        Default,
-        AuthenticationRequired, //Only applies for iOS
-        Foreground,
-        Destructive  //Only applies for iOS
-    }
+    Default,
+    AuthenticationRequired, //Only applies for iOS
+    Foreground,
+    Destructive  //Only applies for iOS
 }

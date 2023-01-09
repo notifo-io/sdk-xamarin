@@ -5,77 +5,73 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Resources;
 using Xamarin.Essentials;
 
-namespace Notifo.SDK.NotifoMobilePush
+namespace Notifo.SDK.NotifoMobilePush;
+
+internal sealed class TokenRegisterCommand : ICommand
 {
-    internal sealed class TokenRegisterCommand : ICommand
+    private static int refreshCount;
+
+    public string Token { get; set; }
+
+    public async ValueTask ExecuteAsync(
+        CancellationToken ct)
     {
-        private static int refreshCount;
+        refreshCount++;
 
-        public string Token { get; set; }
-
-        public async ValueTask ExecuteAsync(
-            CancellationToken ct)
+        try
         {
-            refreshCount++;
+            NotifoIO.Current.RaiseDebug(Strings.TokenRefreshStartExecutingCount, this, refreshCount);
 
-            try
+            var request = new RegisterMobileTokenDto
             {
-                NotifoIO.Current.RaiseDebug(Strings.TokenRefreshStartExecutingCount, this, refreshCount);
+                DeviceIdentifier = Device.DeviceIdentifier,
+                DeviceType = GetDeviceType(),
+                Token = Token
+            };
 
-                var request = new RegisterMobileTokenDto
-                {
-                    DeviceIdentifier = Device.DeviceIdentifier,
-                    DeviceType = GetDeviceType(),
-                    Token = Token
-                };
+            await NotifoIO.Current.Client.MobilePush.PostMyTokenAsync(request, ct);
+        }
+        catch (Exception ex)
+        {
+            NotifoIO.Current.RaiseError(Strings.TokenRefreshFailException, ex, this);
+            throw ex;
+        }
+        finally
+        {
+            NotifoIO.Current.RaiseDebug(Strings.TokenRefreshEndExecutingCount, this, refreshCount);
+        }
+    }
 
-                await NotifoIO.Current.Client.MobilePush.PostMyTokenAsync(request, ct);
-            }
-            catch (Exception ex)
-            {
-                NotifoIO.Current.RaiseError(Strings.TokenRefreshFailException, ex, this);
-                throw ex;
-            }
-            finally
-            {
-                NotifoIO.Current.RaiseDebug(Strings.TokenRefreshEndExecutingCount, this, refreshCount);
-            }
+    private static MobileDeviceType GetDeviceType()
+    {
+        var platform = DeviceInfo.Platform;
+
+        if (platform == DevicePlatform.Android)
+        {
+            return MobileDeviceType.Android;
+        }
+        else if (platform == DevicePlatform.iOS)
+        {
+            return MobileDeviceType.IOS;
+        }
+        else
+        {
+            return MobileDeviceType.Unknown;
+        }
+    }
+
+    public bool Merge(ICommand other)
+    {
+        if (other is TokenRegisterCommand registerCommand)
+        {
+            Token = registerCommand.Token;
+            return true;
         }
 
-        private static MobileDeviceType GetDeviceType()
-        {
-            var platform = DeviceInfo.Platform;
-
-            if (platform == DevicePlatform.Android)
-            {
-                return MobileDeviceType.Android;
-            }
-            else if (platform == DevicePlatform.iOS)
-            {
-                return MobileDeviceType.IOS;
-            }
-            else
-            {
-                return MobileDeviceType.Unknown;
-            }
-        }
-
-        public bool Merge(ICommand other)
-        {
-            if (other is TokenRegisterCommand registerCommand)
-            {
-                Token = registerCommand.Token;
-                return true;
-            }
-
-            return false;
-        }
+        return false;
     }
 }

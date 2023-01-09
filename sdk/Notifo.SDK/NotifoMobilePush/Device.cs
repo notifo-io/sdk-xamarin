@@ -5,29 +5,27 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using Xamarin.Essentials;
 
-namespace Notifo.SDK.NotifoMobilePush
+namespace Notifo.SDK.NotifoMobilePush;
+
+internal static class Device
 {
-    internal static class Device
+    private static string value;
+
+    public static string DeviceIdentifier
     {
-        private static string value;
-
-        public static string DeviceIdentifier
+        get
         {
-            get
+            if (value != null)
             {
-                if (value != null)
-                {
-                    return value;
-                }
-
-                value = Guid.NewGuid().ToString();
-
-                Preferences.Set(nameof(DeviceIdentifier), value);
                 return value;
             }
+
+            value = Guid.NewGuid().ToString();
+
+            Preferences.Set(nameof(DeviceIdentifier), value);
+            return value;
         }
     }
 }

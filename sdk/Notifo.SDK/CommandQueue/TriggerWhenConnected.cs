@@ -7,26 +7,25 @@
 
 using Plugin.Connectivity.Abstractions;
 
-namespace Notifo.SDK.CommandQueue
+namespace Notifo.SDK.CommandQueue;
+
+internal sealed class TriggerWhenConnected : ICommandTrigger
 {
-    internal sealed class TriggerWhenConnected : ICommandTrigger
+    private readonly IConnectivity connectivity;
+
+    public TriggerWhenConnected(IConnectivity connectivity)
     {
-        private readonly IConnectivity connectivity;
+        this.connectivity = connectivity;
+    }
 
-        public TriggerWhenConnected(IConnectivity connectivity)
+    public void Start(ICommandQueue queue)
+    {
+        connectivity.ConnectivityChanged += (sender, e) =>
         {
-            this.connectivity = connectivity;
-        }
-
-        public void Start(ICommandQueue queue)
-        {
-            connectivity.ConnectivityChanged += (sender, e) =>
+            if (e.IsConnected)
             {
-                if (e.IsConnected)
-                {
-                    queue.Trigger();
-                }
-            };
-        }
+                queue.Trigger();
+            }
+        };
     }
 }

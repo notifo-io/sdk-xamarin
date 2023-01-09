@@ -5,134 +5,128 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Resources;
 
-namespace Notifo.SDK.NotifoMobilePush
+namespace Notifo.SDK.NotifoMobilePush;
+
+internal sealed class TrackSeenCommand : ICommand
 {
-    internal sealed class TrackSeenCommand : ICommand
+    [Obsolete]
+    public HashSet<Guid> Ids
     {
-        [Obsolete]
-        public HashSet<Guid> Ids
+        // Convert the old IDs to the new dictionary, so that we can read old commands from the disk.
+        set => IdsAndUrls = value.ToDictionary(x => x, x => (string?)null);
+    }
+
+    public Dictionary<Guid, string?> IdsAndUrls { get; set; }
+
+    public string? Token { get; set; }
+
+    public async ValueTask ExecuteAsync(
+        CancellationToken ct)
+    {
+        try
         {
-            // Convert the old IDs to the new dictionary, so that we can read old commands from the disk.
-            set => IdsAndUrls = value.ToDictionary(x => x, x => (string?)null);
-        }
-
-        public Dictionary<Guid, string?> IdsAndUrls { get; set; }
-
-        public string? Token { get; set; }
-
-        public async ValueTask ExecuteAsync(
-            CancellationToken ct)
-        {
-            try
+            // The notifo based app might receive notifications even though the API key is not configured.
+            if (!NotifoIO.Current.IsConfigured)
             {
-                // The notifo based app might receive notifications even though the API key is not configured.
-                if (!NotifoIO.Current.IsConfigured)
-                {
-                    // Then we have to fallback to URLs.
-                    await TrackWithUrlsAsync(ct);
-                }
-                else
-                {
-                    await TrackWithIdsAsync(ct);
-                }
+                // Then we have to fallback to URLs.
+                await TrackWithUrlsAsync(ct);
             }
-            catch (Exception ex)
+            else
             {
-                NotifoIO.Current.RaiseError(Strings.TrackingException, ex, this);
-                return;
+                await TrackWithIdsAsync(ct);
             }
         }
-
-        private async Task TrackWithUrlsAsync(
-            CancellationToken ct)
+        catch (Exception ex)
         {
-            var urls = IdsAndUrls.Values.Where(x => x != null).ToList();
+            NotifoIO.Current.RaiseError(Strings.TrackingException, ex, this);
+            return;
+        }
+    }
 
-            // If some IDs do not have an URL, we create an error, because this should only happen for old commands.
-            if (urls.Count < IdsAndUrls.Count)
-            {
-                NotifoIO.Current.RaiseError(Strings.TrackingURLMissing, null, this);
-            }
+    private async Task TrackWithUrlsAsync(
+        CancellationToken ct)
+    {
+        var urls = IdsAndUrls.Values.Where(x => x != null).ToList();
 
-            if (!urls.Any())
-            {
-                return;
-            }
-
-            var httpClient = NotifoIO.Current.Client.CreateHttpClient();
-            try
-            {
-                foreach (var url in urls)
-                {
-                    var response = await httpClient.GetAsync(url, ct);
-
-                    response.EnsureSuccessStatusCode();
-                }
-            }
-            finally
-            {
-                NotifoIO.Current.Client.ReturnHttpClient(httpClient);
-            }
+        // If some IDs do not have an URL, we create an error, because this should only happen for old commands.
+        if (urls.Count < IdsAndUrls.Count)
+        {
+            NotifoIO.Current.RaiseError(Strings.TrackingURLMissing, null, this);
         }
 
-        private async Task TrackWithIdsAsync(
-            CancellationToken ct)
+        if (!urls.Any())
         {
-            var seenIds = IdsAndUrls.Select(x => x.Key.ToString()).ToList();
+            return;
+        }
 
-            var trackRequest = new TrackNotificationDto
+        var httpClient = NotifoIO.Current.Client.CreateHttpClient();
+        try
+        {
+            foreach (var url in urls)
             {
-                // Track all notifications at once.
-                Seen = seenIds,
+                var response = await httpClient.GetAsync(url, ct);
 
-                // Track individual channels.
-                Channel = Providers.MobilePush
-            };
-
-            // Track twice to support backwards compatibility with older Notifo versions.
-            await TrackByTokenAsync(trackRequest, ct);
-            await TrackByIdentifierAsync(trackRequest, ct);
+                response.EnsureSuccessStatusCode();
+            }
         }
-
-        private async Task TrackByTokenAsync(TrackNotificationDto trackRequest,
-            CancellationToken ct)
+        finally
         {
-            trackRequest.DeviceIdentifier = Token;
-
-            await NotifoIO.Current.Client.Notifications.ConfirmMeAsync(trackRequest, ct);
+            NotifoIO.Current.Client.ReturnHttpClient(httpClient);
         }
+    }
 
-        private async Task TrackByIdentifierAsync(TrackNotificationDto trackRequest,
-            CancellationToken ct)
+    private async Task TrackWithIdsAsync(
+        CancellationToken ct)
+    {
+        var seenIds = IdsAndUrls.Select(x => x.Key.ToString()).ToList();
+
+        var trackRequest = new TrackNotificationDto
         {
-            trackRequest.DeviceIdentifier = Device.DeviceIdentifier;
+            // Track all notifications at once.
+            Seen = seenIds,
 
-            await NotifoIO.Current.Client.Notifications.ConfirmMeAsync(trackRequest, ct);
-        }
+            // Track individual channels.
+            Channel = Providers.MobilePush
+        };
 
-        public bool Merge(ICommand other)
+        // Track twice to support backwards compatibility with older Notifo versions.
+        await TrackByTokenAsync(trackRequest, ct);
+        await TrackByIdentifierAsync(trackRequest, ct);
+    }
+
+    private async Task TrackByTokenAsync(TrackNotificationDto trackRequest,
+        CancellationToken ct)
+    {
+        trackRequest.DeviceIdentifier = Token;
+
+        await NotifoIO.Current.Client.Notifications.ConfirmMeAsync(trackRequest, ct);
+    }
+
+    private async Task TrackByIdentifierAsync(TrackNotificationDto trackRequest,
+        CancellationToken ct)
+    {
+        trackRequest.DeviceIdentifier = Device.DeviceIdentifier;
+
+        await NotifoIO.Current.Client.Notifications.ConfirmMeAsync(trackRequest, ct);
+    }
+
+    public bool Merge(ICommand other)
+    {
+        // Do not merge commands with different mobile tokens.
+        if (other is TrackSeenCommand trackSeen && string.Equals(Token, trackSeen.Token))
         {
-            // Do not merge commands with different mobile tokens.
-            if (other is TrackSeenCommand trackSeen && string.Equals(Token, trackSeen.Token))
+            foreach (var (id, url) in trackSeen.IdsAndUrls)
             {
-                foreach (var (id, url) in trackSeen.IdsAndUrls)
-                {
-                    // Ensure that we do not override the URL with null.
-                    IdsAndUrls[id] = url ?? IdsAndUrls.GetValueOrDefault(id);
-                }
-
-                return true;
+                // Ensure that we do not override the URL with null.
+                IdsAndUrls[id] = url ?? IdsAndUrls.GetValueOrDefault(id);
             }
 
-            return false;
+            return true;
         }
+
+        return false;
     }
 }

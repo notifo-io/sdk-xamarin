@@ -5,21 +5,16 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+namespace Notifo.SDK.CommandQueue;
 
-namespace Notifo.SDK.CommandQueue
+internal interface ICommandQueue
 {
-    internal interface ICommandQueue
-    {
-        event EventHandler<NotificationLogEventArgs> OnLog;
+    event EventHandler<NotificationLogEventArgs> OnLog;
 
-        void Run(ICommand command);
+    void Run(ICommand command);
 
-        void Trigger();
+    void Trigger();
 
-        Task CompleteAsync(
-            CancellationToken ct);
-    }
+    Task CompleteAsync(
+        CancellationToken ct);
 }

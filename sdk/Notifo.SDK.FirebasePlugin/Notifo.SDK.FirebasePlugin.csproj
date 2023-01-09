@@ -1,10 +1,11 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
 
   <PropertyGroup>
-	  <NoWarn>CS1591;CS0618</NoWarn>
+	<NoWarn>CS1591;CS0618</NoWarn>
     <AssemblyName>Notifo.Xamarin.FirebasePlugin</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <PackageId>Notifo.Xamarin.Firebase</PackageId>
     <RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>

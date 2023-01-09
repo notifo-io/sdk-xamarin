@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -15,137 +14,136 @@ using Microsoft.Extensions.Caching.Memory;
 using Notifo.SDK.Extensions;
 using Notifo.SDK.Resources;
 
-namespace Notifo.SDK.NotifoMobilePush
+namespace Notifo.SDK.NotifoMobilePush;
+
+internal partial class NotifoMobilePushImplementation
 {
-    internal partial class NotifoMobilePushImplementation
+    private readonly IMemoryCache bitmapCache = new MemoryCache(new MemoryCacheOptions());
+    private INotificationHandler? notificationHandler;
+
+    partial void SetupPlatform()
     {
-        private readonly IMemoryCache bitmapCache = new MemoryCache(new MemoryCacheOptions());
-        private INotificationHandler? notificationHandler;
+        OnNotificationReceived += PushEventsProvider_OnNotificationReceivedAndroid;
+    }
 
-        partial void SetupPlatform()
+    private void PushEventsProvider_OnNotificationReceivedAndroid(object sender, NotificationEventArgs e)
+    {
+        if (!string.IsNullOrWhiteSpace(e.Notification.TrackSeenUrl))
         {
-            OnNotificationReceived += PushEventsProvider_OnNotificationReceivedAndroid;
+            _ = TrackNotificationsAsync(e.Notification);
+        }
+    }
+
+    public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
+    {
+        this.notificationHandler = notificationHandler;
+
+        return this;
+    }
+
+    internal void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification)
+    {
+        if (!string.IsNullOrWhiteSpace(notification.Subject))
+        {
+            notificationBuilder.SetContentTitle(notification.Subject);
         }
 
-        private void PushEventsProvider_OnNotificationReceivedAndroid(object sender, NotificationEventArgs e)
+        if (!string.IsNullOrWhiteSpace(notification.ImageSmall))
         {
-            if (!string.IsNullOrWhiteSpace(e.Notification.TrackSeenUrl))
+            var smallWidth = GetDimension(Resource.Dimension.notification_large_icon_width);
+            var smallHeight = GetDimension(Resource.Dimension.notification_large_icon_height);
+
+            var largeIcon = GetBitmap(notification.ImageSmall, smallWidth, smallHeight);
+            if (largeIcon != null)
             {
-                _ = TrackNotificationsAsync(e.Notification);
+                notificationBuilder.SetLargeIcon(largeIcon);
             }
         }
 
-        public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
+        if (!string.IsNullOrWhiteSpace(notification.ImageLarge))
         {
-            this.notificationHandler = notificationHandler;
-
-            return this;
+            var bigPicture = GetBitmap(notification.ImageLarge);
+            if (bigPicture != null)
+            {
+                notificationBuilder.SetStyle(
+                    new NotificationCompat
+                        .BigPictureStyle()
+                        .BigPicture(bigPicture)
+                        .SetSummaryText(notification.Body));
+            }
         }
 
-        internal void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification)
+        notificationBuilder.MActions.Clear();
+
+        if (!string.IsNullOrWhiteSpace(notification.ConfirmUrl) &&
+            !string.IsNullOrWhiteSpace(notification.ConfirmText) &&
+            !notification.IsConfirmed)
         {
-            if (!string.IsNullOrWhiteSpace(notification.Subject))
-            {
-                notificationBuilder.SetContentTitle(notification.Subject);
-            }
-
-            if (!string.IsNullOrWhiteSpace(notification.ImageSmall))
-            {
-                var smallWidth = GetDimension(Resource.Dimension.notification_large_icon_width);
-                var smallHeight = GetDimension(Resource.Dimension.notification_large_icon_height);
-
-                var largeIcon = GetBitmap(notification.ImageSmall, smallWidth, smallHeight);
-                if (largeIcon != null)
-                {
-                    notificationBuilder.SetLargeIcon(largeIcon);
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(notification.ImageLarge))
-            {
-                var bigPicture = GetBitmap(notification.ImageLarge);
-                if (bigPicture != null)
-                {
-                    notificationBuilder.SetStyle(
-                        new NotificationCompat
-                            .BigPictureStyle()
-                            .BigPicture(bigPicture)
-                            .SetSummaryText(notification.Body));
-                }
-            }
-
-            notificationBuilder.MActions.Clear();
-
-            if (!string.IsNullOrWhiteSpace(notification.ConfirmUrl) &&
-                !string.IsNullOrWhiteSpace(notification.ConfirmText) &&
-                !notification.IsConfirmed)
-            {
-                AddAction(notificationBuilder, notification.ConfirmText, notification.ConfirmUrl);
-            }
-
-            if (!string.IsNullOrWhiteSpace(notification.LinkUrl) &&
-                !string.IsNullOrWhiteSpace(notification.LinkText))
-            {
-                AddAction(notificationBuilder, notification.LinkText, notification.LinkUrl);
-            }
-
-            notificationHandler?.OnBuildNotification(notificationBuilder, notification);
+            AddAction(notificationBuilder, notification.ConfirmText, notification.ConfirmUrl);
         }
 
-        private Bitmap? GetBitmap(string bitmapUrl, int? width = null, int? height = null)
+        if (!string.IsNullOrWhiteSpace(notification.LinkUrl) &&
+            !string.IsNullOrWhiteSpace(notification.LinkText))
         {
-            try
+            AddAction(notificationBuilder, notification.LinkText, notification.LinkUrl);
+        }
+
+        notificationHandler?.OnBuildNotification(notificationBuilder, notification);
+    }
+
+    private Bitmap? GetBitmap(string bitmapUrl, int? width = null, int? height = null)
+    {
+        try
+        {
+            // Let the server resize the image to the perfect format.
+            if (width != null && height != null)
             {
-                // Let the server resize the image to the perfect format.
-                if (width != null && height != null)
-                {
-                    bitmapUrl = bitmapUrl.AppendQueries("width", width, "height", height);
-                }
-
-                if (bitmapCache.TryGetValue(bitmapUrl, out Bitmap cachedBitmap))
-                {
-                    return cachedBitmap;
-                }
-
-                var bitmapStream = new URL(bitmapUrl)?.OpenConnection()?.InputStream;
-                var bitmapImage = BitmapFactory.DecodeStream(bitmapStream);
-
-                if (bitmapImage != null)
-                {
-                    bitmapCache.Set(bitmapUrl, bitmapImage);
-                }
-                else
-                {
-                    NotifoIO.Current.RaiseError(Strings.DecodingImageError, null, this);
-                }
-
-                return bitmapImage;
-            }
-            catch (Exception ex)
-            {
-                NotifoIO.Current.RaiseError(Strings.DownloadImageError, ex, this);
+                bitmapUrl = bitmapUrl.AppendQueries("width", width, "height", height);
             }
 
-            return null;
-        }
+            if (bitmapCache.TryGetValue(bitmapUrl, out Bitmap cachedBitmap))
+            {
+                return cachedBitmap;
+            }
 
-        private void AddAction(NotificationCompat.Builder notificationBuilder, string title, string url)
+            var bitmapStream = new URL(bitmapUrl)?.OpenConnection()?.InputStream;
+            var bitmapImage = BitmapFactory.DecodeStream(bitmapStream);
+
+            if (bitmapImage != null)
+            {
+                bitmapCache.Set(bitmapUrl, bitmapImage);
+            }
+            else
+            {
+                NotifoIO.Current.RaiseError(Strings.DecodingImageError, null, this);
+            }
+
+            return bitmapImage;
+        }
+        catch (Exception ex)
         {
-            var notificationIntent = new Intent(Intent.ActionView);
-
-            // Set the URL to open when the button is clicked.
-            notificationIntent.SetData(Android.Net.Uri.Parse(url));
-
-            var buttonIntent = PendingIntent.GetActivity(Application.Context, 0, notificationIntent,
-                PendingIntentFlags.UpdateCurrent |
-                PendingIntentFlags.Immutable);
-
-            notificationBuilder.AddAction(0, title, buttonIntent);
+            NotifoIO.Current.RaiseError(Strings.DownloadImageError, ex, this);
         }
 
-        private int GetDimension(int resourceId)
-        {
-            return Application.Context?.Resources?.GetDimensionPixelSize(resourceId) ?? -1;
-        }
+        return null;
+    }
+
+    private void AddAction(NotificationCompat.Builder notificationBuilder, string title, string url)
+    {
+        var notificationIntent = new Intent(Intent.ActionView);
+
+        // Set the URL to open when the button is clicked.
+        notificationIntent.SetData(Android.Net.Uri.Parse(url));
+
+        var buttonIntent = PendingIntent.GetActivity(Application.Context, 0, notificationIntent,
+            PendingIntentFlags.UpdateCurrent |
+            PendingIntentFlags.Immutable);
+
+        notificationBuilder.AddAction(0, title, buttonIntent);
+    }
+
+    private int GetDimension(int resourceId)
+    {
+        return Application.Context?.Resources?.GetDimensionPixelSize(resourceId) ?? -1;
     }
 }
