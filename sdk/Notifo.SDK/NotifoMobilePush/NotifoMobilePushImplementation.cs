@@ -5,6 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Helpers;
 using Notifo.SDK.PushEventProvider;
@@ -41,6 +46,9 @@ internal partial class NotifoMobilePushImplementation : INotifoMobilePush
 
     /// <inheritdoc/>
     public bool IsConfigured => options.IsConfigured;
+
+    /// <inheritdoc/>
+    public string DeviceIdentifier => credentialsStore.DeviceIdentifier;
 
     public NotifoMobilePushImplementation(
         ISeenNotificationsStore seenNotificationsStore,

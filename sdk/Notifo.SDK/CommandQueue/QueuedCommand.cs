@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+
 namespace Notifo.SDK.CommandQueue;
 
 internal sealed class QueuedCommand

@@ -12,4 +12,6 @@ internal interface ICredentialsStore
     string? ApiKey { get; set; }
 
     string? ApiUrl { get; set; }
+
+    string DeviceIdentifier { get; }
 }
