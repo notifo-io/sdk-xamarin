@@ -16,7 +16,6 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
     <TargetFrameworkVersion>v12.0</TargetFrameworkVersion>
     <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
     <AndroidUseAapt2>true</AndroidUseAapt2>
@@ -134,7 +133,7 @@
       <Name>Notifo.SDK.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sample\Sample.csproj">
-      <Project>{D59C868F-F97E-4931-B667-094C1FBC822E}</Project>
+      <Project>{DD43F8B0-1925-477A-9FF5-BE3E01350E30}</Project>
       <Name>Sample</Name>
     </ProjectReference>
   </ItemGroup>

@@ -57,7 +57,10 @@ internal sealed class NotifoOptions : INotifoOptions
 
         inner.InnerHandler =
             new PolicyHttpMessageHandler(
-                HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(retryTimes, _ => retryTime));
+                HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(retryTimes, _ => retryTime))
+            {
+                InnerHandler = new HttpClientHandler()
+            };
 
         return inner;
     }

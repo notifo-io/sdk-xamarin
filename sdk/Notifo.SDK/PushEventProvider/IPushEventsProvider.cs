@@ -5,6 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+using System.Threading.Tasks;
+
 namespace Notifo.SDK.PushEventProvider;
 
 /// <summary>

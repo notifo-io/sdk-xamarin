@@ -5,6 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Foundation;
 using Notifo.SDK.Extensions;
 using Notifo.SDK.Resources;

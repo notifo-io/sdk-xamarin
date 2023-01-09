@@ -5,6 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Notifo.SDK.PushEventProvider;
 
 namespace Notifo.SDK;
@@ -43,6 +46,11 @@ public partial interface INotifoMobilePush
     /// Indicates whether the client is configured.
     /// </summary>
     bool IsConfigured { get; }
+
+    /// <summary>
+    /// Returns identifier of the device.
+    /// </summary>
+    string DeviceIdentifier { get; }
 
     /// <summary>
     /// Clears all settings that are currently stored.

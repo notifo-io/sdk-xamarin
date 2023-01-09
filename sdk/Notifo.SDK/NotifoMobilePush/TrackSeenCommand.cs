@@ -5,6 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Resources;
 
@@ -101,15 +106,13 @@ internal sealed class TrackSeenCommand : ICommand
         CancellationToken ct)
     {
         trackRequest.DeviceIdentifier = Token;
-
         await NotifoIO.Current.Client.Notifications.ConfirmMeAsync(trackRequest, ct);
     }
 
     private async Task TrackByIdentifierAsync(TrackNotificationDto trackRequest,
         CancellationToken ct)
     {
-        trackRequest.DeviceIdentifier = Device.DeviceIdentifier;
-
+        trackRequest.DeviceIdentifier = NotifoIO.Current.DeviceIdentifier;
         await NotifoIO.Current.Client.Notifications.ConfirmMeAsync(trackRequest, ct);
     }
 

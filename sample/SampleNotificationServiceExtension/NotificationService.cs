@@ -34,7 +34,7 @@ namespace SampleNotificationServiceExtension
 			BestAttemptContent = (UNMutableNotificationContent)request.Content.MutableCopy();
 
 			NotifoIO.Current
-				.SetSharedName("notifo.Sample")
+				.SetSharedName("group.io.notifo.xamarin.sample")
 				.SetNotificationHandler(new NotificationHandler());
 
 			await NotifoIO.Current.DidReceiveNotificationRequestAsync(request, BestAttemptContent);
