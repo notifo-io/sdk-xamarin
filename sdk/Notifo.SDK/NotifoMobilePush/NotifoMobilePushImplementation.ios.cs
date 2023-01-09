@@ -17,24 +17,36 @@ internal partial class NotifoMobilePushImplementation : NSObject
 {
     private INotificationHandler? notificationHandler;
 
+    /// <inheritdoc />
     public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
     {
         this.notificationHandler = notificationHandler;
         return this;
     }
 
-    public async Task DidReceiveNotificationRequestAsync(UNNotificationRequest request, UNMutableNotificationContent bestAttemptContent)
+    /// <inheritdoc />
+    public async Task DidReceiveNotificationRequestAsync(UNNotificationRequest request, UNMutableNotificationContent content)
     {
         RaiseDebug(Strings.ReceivedNotification, this, request.Content.UserInfo);
 
         var notification = new UserNotificationDto().FromDictionary(request.Content.UserInfo.ToDictionary());
 
-        await EnrichNotificationContentAsync(bestAttemptContent, notification);
+        // We have ony limited time in the notification service, so we dot things in the right order.
 
-        // Always track our notifications as seen.
+        // 1. Do the cheap enrichment first.
+        await EnrichBasicAsync(content, notification);
+
+        // 2. Do the tracking to ensure that the request arrives.
         await TrackNotificationsAsync(notification);
+
+        // 3. Enrich with images, which need to be downloaded.
+        await EnrichImagesAsync(content, notification);
+
+        // 4. Custom enrichment code (could be potentially be expensive).
+        EnrichWithCustomCode(content, notification);
     }
 
+    /// <inheritdoc />
     public async Task DidReceivePullRefreshRequestAsync(PullRefreshOptions? options = null)
     {
         options ??= new PullRefreshOptions();
@@ -131,10 +143,15 @@ internal partial class NotifoMobilePushImplementation : NSObject
 
     private async Task ShowLocalNotificationAsync(UserNotificationDto notification)
     {
-        var content = new UNMutableNotificationContent();
+        var content = new UNMutableNotificationContent
+        {
+            UserInfo = notification.ToDictionary().ToNSDictionary()
+        };
 
-        content = await EnrichNotificationContentAsync(content, notification);
-        content.UserInfo = notification.ToDictionary().ToNSDictionary();
+        await EnrichBasicAsync(content, notification);
+        await EnrichImagesAsync(content, notification);
+
+        EnrichWithCustomCode(content, notification);
 
         var request = UNNotificationRequest.FromIdentifier(notification.Id.ToString(), content, trigger: null);
 
@@ -147,7 +164,7 @@ internal partial class NotifoMobilePushImplementation : NSObject
         });
     }
 
-    private async Task<UNMutableNotificationContent> EnrichNotificationContentAsync(UNMutableNotificationContent content, UserNotificationDto notification)
+    private async Task EnrichBasicAsync(UNMutableNotificationContent content, UserNotificationDto notification)
     {
         if (!string.IsNullOrWhiteSpace(notification.Subject))
         {
@@ -158,8 +175,6 @@ internal partial class NotifoMobilePushImplementation : NSObject
         {
             content.Body = notification.Body;
         }
-
-        await AddImageAsync(content, notification);
 
         var actions = new List<UNNotificationAction>();
 
@@ -226,12 +241,15 @@ internal partial class NotifoMobilePushImplementation : NSObject
 
         content.Sound ??= UNNotificationSound.Default;
 
-        notificationHandler?.OnBuildNotification(content, notification);
-
-        return content;
+        EnrichWithCustomCode(content, notification);
     }
 
-    private async Task AddImageAsync(UNMutableNotificationContent content, UserNotificationDto notification)
+    private void EnrichWithCustomCode(UNMutableNotificationContent content, UserNotificationDto notification)
+    {
+        notificationHandler?.OnBuildNotification(content, notification);
+    }
+
+    private async Task EnrichImagesAsync(UNMutableNotificationContent content, UserNotificationDto notification)
     {
         var image = string.IsNullOrWhiteSpace(notification.ImageLarge) ? notification.ImageSmall : notification.ImageLarge;
 

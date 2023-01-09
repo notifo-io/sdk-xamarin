@@ -22,9 +22,9 @@ public partial interface INotifoMobilePush
     /// Method for processing notification before delivery.
     /// </summary>
     /// <param name="request">The request that was received.</param>
-    /// <param name="bestAttemptContent">The notification content.</param>
+    /// <param name="content">The notification content to enrich.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    Task DidReceiveNotificationRequestAsync(UNNotificationRequest request, UNMutableNotificationContent bestAttemptContent);
+    Task DidReceiveNotificationRequestAsync(UNNotificationRequest request, UNMutableNotificationContent content);
 
     /// <summary>
     /// Method for pulling pending notifications.

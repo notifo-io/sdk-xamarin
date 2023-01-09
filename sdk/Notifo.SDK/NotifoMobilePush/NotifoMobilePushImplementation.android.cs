@@ -27,12 +27,14 @@ internal partial class NotifoMobilePushImplementation
         OnNotificationReceived += PushEventsProvider_OnNotificationReceivedAndroid;
     }
 
+    /// <inheritdoc />
     public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
     {
         this.notificationHandler = notificationHandler;
         return this;
     }
 
+    /// <inheritdoc />
     public INotifoMobilePush SetImageCacheCapacity(int capacity)
     {
         bitmapCache.EnsureCapacity(capacity);
