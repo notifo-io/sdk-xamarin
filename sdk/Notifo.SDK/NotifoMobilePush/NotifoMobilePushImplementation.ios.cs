@@ -246,8 +246,6 @@ internal partial class NotifoMobilePushImplementation : NSObject
         }
 
         content.Sound ??= UNNotificationSound.Default;
-
-        EnrichWithCustomCode(content, notification);
     }
 
     private void EnrichWithCustomCode(UNMutableNotificationContent content, UserNotificationDto notification)
