@@ -43,10 +43,7 @@ internal partial class NotifoMobilePushImplementation
 
     private void PushEventsProvider_OnNotificationReceivedAndroid(object sender, NotificationEventArgs e)
     {
-        if (!string.IsNullOrWhiteSpace(e.Notification.TrackSeenUrl))
-        {
-            _ = TrackNotificationsAsync(e.Notification);
-        }
+        TrackNotificationsAsync(e.Notification).Forget();
     }
 
     internal void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification)

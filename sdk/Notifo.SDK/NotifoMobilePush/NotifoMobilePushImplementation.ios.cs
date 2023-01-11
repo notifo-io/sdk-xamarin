@@ -60,6 +60,8 @@ internal partial class NotifoMobilePushImplementation : NSObject
         // iOS does not maintain a queue of undelivered notifications, therefore we have to query here.
         var notifications = await GetPendingNotificationsAsync(options.Take, options.Period, default);
 
+        List<UserNotificationDto>? trackImmediatly = null;
+
         foreach (var notification in notifications)
         {
             if (options.RaiseEvent)
@@ -67,18 +69,20 @@ internal partial class NotifoMobilePushImplementation : NSObject
                 OnReceived(new NotificationEventArgs(notification));
             }
 
-            if (notification.Silent)
+            if (notification.Silent || !options.PresentNotification)
             {
+                trackImmediatly ??= new List<UserNotificationDto>();
+                trackImmediatly.Add(notification);
                 continue;
             }
 
-            if (options.PresentNotification)
-            {
-                await ShowLocalNotificationAsync(notification);
-            }
+            await ShowLocalNotificationAsync(notification);
         }
 
-        await TrackNotificationsAsync(notifications.ToArray());
+        if (trackImmediatly != null)
+        {
+            await TrackNotificationsAsync(notifications.ToArray());
+        }
     }
 
     private async Task<IEnumerable<UserNotificationDto>> GetPendingNotificationsAsync(int take, TimeSpan maxAge,
@@ -167,6 +171,10 @@ internal partial class NotifoMobilePushImplementation : NSObject
             {
                 NotifoIO.Current.RaiseError(error.LocalizedDescription, null, this);
             }
+            else
+            {
+                TrackNotificationsAsync(notification).Forget();
+            }
         });
     }
 
@@ -240,7 +248,7 @@ internal partial class NotifoMobilePushImplementation : NSObject
             UNUserNotificationCenter.Current.SetNotificationCategories(new NSSet<UNNotificationCategory>(categories.ToArray()));
 
             // Without this call action buttons will not be added or updated.
-            _ = await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
+            await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
 
             content.CategoryIdentifier = categoryId;
         }

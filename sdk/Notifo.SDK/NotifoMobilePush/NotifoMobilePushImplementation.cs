@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
+using Notifo.SDK.Extensions;
 using Notifo.SDK.Helpers;
 using Notifo.SDK.PushEventProvider;
 using Notifo.SDK.Resources;
@@ -196,7 +197,7 @@ internal partial class NotifoMobilePushImplementation : INotifoMobilePush
             Register(tokenToRegister);
         }
 
-        _ = RegisterAsync();
+        RegisterAsync().Forget();
     }
 
     /// <inheritdoc/>
