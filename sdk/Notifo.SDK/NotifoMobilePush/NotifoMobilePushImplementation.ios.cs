@@ -48,14 +48,16 @@ internal partial class NotifoMobilePushImplementation : NSObject
         // 3. Enrich with images, which need to be downloaded.
         await EnrichImagesAsync(content, notification);
 
+        await HandlePendingNotificationsAsync();
+
         // 4. Custom enrichment code (could be potentially be expensive).
         EnrichWithCustomCode(content, notification);
     }
 
     /// <inheritdoc />
-    public async Task DidReceivePullRefreshRequestAsync(PullRefreshOptions? options = null)
+    public async Task HandlePendingNotificationsAsync()
     {
-        options ??= new PullRefreshOptions();
+        var options = new PullRefreshOptions();
 
         // iOS does not maintain a queue of undelivered notifications, therefore we have to query here.
         var notifications = await GetPendingNotificationsAsync(options.Take, options.Period, default);
