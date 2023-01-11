@@ -51,7 +51,7 @@ namespace Sample.iOS
         public override async void DidReceiveRemoteNotification(UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
 #pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
         {
-            await NotifoIO.Current.DidReceiveMessageAsync(userInfo);
+            NotifoIO.Current.DidReceiveMessageAsync(userInfo);
             completionHandler(UIBackgroundFetchResult.NewData);
         }
 

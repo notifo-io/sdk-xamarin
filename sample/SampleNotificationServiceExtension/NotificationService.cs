@@ -33,17 +33,25 @@ namespace SampleNotificationServiceExtension
 			//Save the notification and create a mutable copy
 			BestAttemptContent = (UNMutableNotificationContent)request.Content.MutableCopy();
 
-			NotifoIO.Current
+			var notifo = NotifoIO.Current
 				.SetSharedName("group.io.notifo.xamarin.sample")
 				.SetNotificationHandler(new NotificationHandler());
 
-			await NotifoIO.Current.DidReceiveNotificationRequestAsync(request, BestAttemptContent);
+            notifo.OnLog += On_Log;
+
+
+            await NotifoIO.Current.DidReceiveNotificationRequestAsync(request, BestAttemptContent);
 
 			// Display the notification.
 			ContentHandler(BestAttemptContent);
 		}
 
-		public override void TimeWillExpire()
+        private static void On_Log(object source, NotificationLogEventArgs e)
+        {
+            Console.WriteLine($"DEBUG: Log {e.Message} Message Args: {e.MessageArgs}", e.Message, e.MessageArgs);
+        }
+
+        public override void TimeWillExpire()
 		{
 			// Called just before the extension will be terminated by the system.
 			// Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.

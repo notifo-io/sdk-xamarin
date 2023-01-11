@@ -51,22 +51,10 @@ public static partial class NotifoMobilePushExtensions
     /// <param name="notifo">The <see cref="INotifoMobilePush"/> instance.</param>
     /// <param name="data">The notification data dictionary.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    public static async Task DidReceiveMessageAsync(this INotifoMobilePush notifo, NSDictionary data)
+    public static void DidReceiveMessageAsync(this INotifoMobilePush notifo, NSDictionary data)
     {
         notifo.RaiseDebug(Strings.ReceivedNotification, null, data);
-
-        static bool ContainsPullRefreshRequest(NSDictionary data)
-        {
-            var aps = data?.ObjectForKey(new NSString(Constants.ApsKey)) as NSDictionary;
-
-            return aps?.ContainsKey(new NSString(Constants.ContentAvailableKey)) == true;
-        }
-
-        if (ContainsPullRefreshRequest(data))
-        {
-            await notifo.DidReceivePullRefreshRequestAsync();
-        }
-
+        
         FirebasePushNotificationManager.DidReceiveMessage(data);
     }
 
@@ -99,7 +87,7 @@ public static partial class NotifoMobilePushExtensions
     /// <param name="completionHandler">The action to execute when you have finished processing the user's response.</param>
     public static void DidReceiveNotificationResponse(this INotifoMobilePush notifo, UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
     {
-        notifo.DidReceiveNotificationResponse(center, response, completionHandler);
+        notifo.DidReceiveNotificationResponse(response);
 
         if (CrossFirebasePushNotification.Current is IUNUserNotificationCenterDelegate notificationDelegate)
         {
