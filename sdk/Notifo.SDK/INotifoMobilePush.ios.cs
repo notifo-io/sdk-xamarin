@@ -30,13 +30,19 @@ public partial interface INotifoMobilePush
     /// <summary>
     /// Method for pulling pending notifications.
     /// </summary>
-    /// <param name="options">The options for handling the pending notifications pull refresh request.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    Task DidReceivePullRefreshRequestAsync(PullRefreshOptions? options = null);
+    Task DidReceivePullRefreshRequestAsync();
 
     /// <summary>
     /// Method for processing the user's response to a delivered notification.
     /// </summary>
     /// <param name="response">The user's response to the notification.</param>
     void DidReceiveNotificationResponse(UNNotificationResponse response);
+
+    /// <summary>
+    /// Sets the options that are used when new notifications are pulled.
+    /// </summary>
+    /// <param name="refreshOptions">The options.</param>
+    /// <returns>The current instance.</returns>
+    INotifoMobilePush SetRefreshOptions(PullRefreshOptions refreshOptions);
 }

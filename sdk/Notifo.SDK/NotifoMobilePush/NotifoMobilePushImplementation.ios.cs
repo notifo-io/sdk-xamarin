@@ -21,7 +21,15 @@ namespace Notifo.SDK.NotifoMobilePush;
 
 internal partial class NotifoMobilePushImplementation : NSObject
 {
+    private PullRefreshOptions refreshOptions;
     private INotificationHandler? notificationHandler;
+
+    /// <inheritdoc />
+    public INotifoMobilePush SetRefreshOptions(PullRefreshOptions refreshOptions)
+    {
+        this.refreshOptions = refreshOptions ?? new PullRefreshOptions();
+        return this;
+    }
 
     /// <inheritdoc />
     public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
@@ -53,29 +61,24 @@ internal partial class NotifoMobilePushImplementation : NSObject
     }
 
     /// <inheritdoc />
-    public async Task DidReceivePullRefreshRequestAsync(PullRefreshOptions? options = null)
+    public async Task DidReceivePullRefreshRequestAsync()
     {
-        options ??= new PullRefreshOptions();
-
         // iOS does not maintain a queue of undelivered notifications, therefore we have to query here.
-        var notifications = await GetPendingNotificationsAsync(options.Take, options.Period, default);
+        var notifications = await GetPendingNotificationsAsync(refreshOptions.Take, refreshOptions.Period, default);
 
         foreach (var notification in notifications)
         {
-            if (options.RaiseEvent)
+            if (refreshOptions.RaiseEvent)
             {
                 OnReceived(new NotificationEventArgs(notification));
             }
 
-            if (notification.Silent)
+            if (notification.Silent || !refreshOptions.PresentNotification)
             {
                 continue;
             }
 
-            if (options.PresentNotification)
-            {
-                await ShowLocalNotificationAsync(notification);
-            }
+            await ShowLocalNotificationAsync(notification);
         }
 
         await TrackNotificationsAsync(notifications.ToArray());
