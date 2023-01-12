@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -17,7 +18,7 @@ using Notifo.SDK.Resources;
 
 namespace Notifo.SDK.NotifoMobilePush;
 
-internal partial class NotifoMobilePushImplementation
+internal partial class NotifoMobilePushImplementation : InternalAndroidPushAdapter
 {
     private readonly LRUCache<string, Bitmap> bitmapCache = new LRUCache<string, Bitmap>(10_000_000);
     private INotificationHandler? notificationHandler;
@@ -25,6 +26,14 @@ internal partial class NotifoMobilePushImplementation
     partial void SetupPlatform()
     {
         OnNotificationReceived += PushEventsProvider_OnNotificationReceivedAndroid;
+    }
+
+    private void PushEventsProvider_OnNotificationReceivedAndroid(object sender, NotificationEventArgs e)
+    {
+        if (!string.IsNullOrWhiteSpace(e.Notification.TrackSeenUrl))
+        {
+            _ = TrackNotificationsAsync(e.Notification);
+        }
     }
 
     /// <inheritdoc />
@@ -41,15 +50,8 @@ internal partial class NotifoMobilePushImplementation
         return this;
     }
 
-    private void PushEventsProvider_OnNotificationReceivedAndroid(object sender, NotificationEventArgs e)
-    {
-        if (!string.IsNullOrWhiteSpace(e.Notification.TrackSeenUrl))
-        {
-            _ = TrackNotificationsAsync(e.Notification);
-        }
-    }
-
-    internal void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification)
+    /// <inheritdoc />
+    public async Task OnBuildNotificationAsync(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification)
     {
         if (!string.IsNullOrWhiteSpace(notification.Subject))
         {
@@ -96,7 +98,10 @@ internal partial class NotifoMobilePushImplementation
             AddAction(notificationBuilder, notification.LinkText, notification.LinkUrl);
         }
 
-        notificationHandler?.OnBuildNotification(notificationBuilder, notification);
+        if (notificationHandler != null)
+        {
+            await notificationHandler.OnBuildNotificationAsync(notificationBuilder, notification, default);
+        }
     }
 
     private Bitmap? GetBitmap(string bitmapUrl, int? width = null, int? height = null)

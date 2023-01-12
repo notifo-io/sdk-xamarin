@@ -126,6 +126,9 @@
   <data name="DownloadImageError" xml:space="preserve">
     <value>Could not download image.</value>
   </data>
+  <data name="GeneralException" xml:space="preserve">
+    <value>Unexpected exception.</value>
+  </data>
   <data name="NotificationOpenedEventSubscribeException" xml:space="preserve">
     <value>You were trying to subscribe to the NotificationOpened event, but not supply the push notification events provider. Use the SetPushEventsProvider method to inject push events provider implementation.</value>
   </data>

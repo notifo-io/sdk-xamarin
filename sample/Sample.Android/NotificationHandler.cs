@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Threading;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -15,16 +17,18 @@ namespace Sample.Droid
 {
     public class NotificationHandler : INotificationHandler
     {
-        public void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification)
+        public Task OnBuildNotificationAsync(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification,
+            CancellationToken ct)
         {
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var soundUri = Android.Net.Uri.Parse($"{ContentResolver.SchemeAndroidResource}://{Application.Context.PackageName}/raw/announcement");
 
             notificationBuilder.SetSound(soundUri);
+            return Task.CompletedTask;
         }
     }
 }
