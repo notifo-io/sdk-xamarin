@@ -58,6 +58,8 @@ internal partial class NotifoMobilePushImplementation : NSObject, InternalIOSPus
         // iOS does not maintain a queue of undelivered notifications, therefore we have to query here.
         var notifications = await GetPendingNotificationsAsync(refreshOptions.Take, refreshOptions.Period, default);
 
+        List<UserNotificationDto>? trackImmediatly = null;
+
         foreach (var notification in notifications)
         {
             if (refreshOptions.RaiseEvent)
@@ -67,13 +69,18 @@ internal partial class NotifoMobilePushImplementation : NSObject, InternalIOSPus
 
             if (notification.Silent || !refreshOptions.PresentNotification)
             {
+                trackImmediatly ??= new List<UserNotificationDto>();
+                trackImmediatly.Add(notification);
                 continue;
             }
 
             await ShowLocalNotificationAsync(notification);
         }
 
-        await TrackNotificationsAsync(notifications.ToArray());
+        if (trackImmediatly != null)
+        {
+            await TrackNotificationsAsync(trackImmediatly.ToArray());
+        }
     }
 
     private async Task<IEnumerable<UserNotificationDto>> GetPendingNotificationsAsync(int take, TimeSpan maxAge,
@@ -159,6 +166,10 @@ internal partial class NotifoMobilePushImplementation : NSObject, InternalIOSPus
             if (error != null)
             {
                 NotifoIO.Current.RaiseError(error.LocalizedDescription, null, this);
+            }
+            else
+            {
+                TrackNotificationsAsync(notification).Forget();
             }
         });
     }

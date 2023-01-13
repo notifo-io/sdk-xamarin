@@ -28,14 +28,6 @@ internal partial class NotifoMobilePushImplementation : InternalAndroidPushAdapt
         OnNotificationReceived += PushEventsProvider_OnNotificationReceivedAndroid;
     }
 
-    private void PushEventsProvider_OnNotificationReceivedAndroid(object sender, NotificationEventArgs e)
-    {
-        if (!string.IsNullOrWhiteSpace(e.Notification.TrackSeenUrl))
-        {
-            _ = TrackNotificationsAsync(e.Notification);
-        }
-    }
-
     /// <inheritdoc />
     public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
     {
@@ -48,6 +40,11 @@ internal partial class NotifoMobilePushImplementation : InternalAndroidPushAdapt
     {
         bitmapCache.EnsureCapacity(capacity);
         return this;
+    }
+
+    private void PushEventsProvider_OnNotificationReceivedAndroid(object sender, NotificationEventArgs e)
+    {
+        TrackNotificationsAsync(e.Notification).Forget();
     }
 
     /// <inheritdoc />
