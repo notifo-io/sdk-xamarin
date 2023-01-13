@@ -5,9 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 namespace Notifo.SDK;
 
-internal static class Constants
+public static class Constants
 {
     public const string ApsAlertBodyKey = "aps.alert.body";
 

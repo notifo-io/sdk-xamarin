@@ -17,19 +17,11 @@ namespace Notifo.SDK.FirebasePlugin;
 
 internal class NotifoPushNotificationHandler : DefaultPushNotificationHandler
 {
-    private NotifoMobilePushImplementation notifoMobilePush;
-
-    public NotifoPushNotificationHandler()
-    {
-        notifoMobilePush = (NotifoMobilePushImplementation)NotifoIO.Current;
-    }
-
     public override void OnReceived(IDictionary<string, object> parameters)
     {
         NotifoIO.Current.RaiseDebug(Strings.ReceivedNotification, this, parameters);
 
-        var notification = new UserNotificationDto()
-            .FromDictionary(new Dictionary<string, object>(parameters));
+        var notification = new UserNotificationDto().FromDictionary(parameters);
 
         if (notification.Silent)
         {
@@ -48,9 +40,11 @@ internal class NotifoPushNotificationHandler : DefaultPushNotificationHandler
 
     public override void OnBuildNotification(NotificationCompat.Builder notificationBuilder, IDictionary<string, object> parameters)
     {
-        var notification = new UserNotificationDto()
-            .FromDictionary(new Dictionary<string, object>(parameters));
+        var notification = new UserNotificationDto().FromDictionary(parameters);
 
-        notifoMobilePush.OnBuildNotification(notificationBuilder, notification);
+        if (NotifoIO.Current is InternalAndroidPushAdapter adapter)
+        {
+            _ = adapter.OnBuildNotificationAsync(notificationBuilder, notification);
+        }
     }
 }

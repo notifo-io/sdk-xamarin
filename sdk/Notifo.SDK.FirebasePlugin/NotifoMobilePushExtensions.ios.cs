@@ -62,9 +62,9 @@ public static partial class NotifoMobilePushExtensions
             return aps?.ContainsKey(new NSString(Constants.ContentAvailableKey)) == true;
         }
 
-        if (ContainsPullRefreshRequest(data))
+        if (ContainsPullRefreshRequest(data) && notifo is InternalIOSPushAdapter adapter)
         {
-            await notifo.DidReceivePullRefreshRequestAsync();
+            await adapter.DidReceivePullRefreshRequestAsync();
         }
 
         FirebasePushNotificationManager.DidReceiveMessage(data);
@@ -99,7 +99,10 @@ public static partial class NotifoMobilePushExtensions
     /// <param name="completionHandler">The action to execute when you have finished processing the user's response.</param>
     public static void DidReceiveNotificationResponse(this INotifoMobilePush notifo, UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
     {
-        notifo.DidReceiveNotificationResponse(center, response, completionHandler);
+        if (notifo is InternalIOSPushAdapter adapter)
+        {
+            adapter.DidReceiveNotificationResponse(response);
+        }
 
         if (CrossFirebasePushNotification.Current is IUNUserNotificationCenterDelegate notificationDelegate)
         {

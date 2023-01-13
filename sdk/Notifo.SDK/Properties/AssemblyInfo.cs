@@ -7,6 +7,5 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Notifo.Xamarin.FirebasePlugin")]
 [assembly: InternalsVisibleTo("Notifo.SDK.UnitTests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

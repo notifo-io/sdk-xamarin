@@ -8,9 +8,11 @@
 using System;
 using System.Collections.Generic;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 namespace Notifo.SDK.Extensions;
 
-internal static class UserNotificationDtoExtensions
+public static class UserNotificationDtoExtensions
 {
     public static Dictionary<string, string> ToDictionary(this UserNotificationDto notification)
     {
@@ -81,7 +83,7 @@ internal static class UserNotificationDtoExtensions
         return data;
     }
 
-    public static UserNotificationDto FromDictionary(this UserNotificationDto notification, Dictionary<string, object> data)
+    public static UserNotificationDto FromDictionary(this UserNotificationDto notification, IDictionary<string, object> data)
     {
         if (data.TryGetValue(Constants.IdKey, out var id) && Guid.TryParse(id.ToString(), out var guid))
         {

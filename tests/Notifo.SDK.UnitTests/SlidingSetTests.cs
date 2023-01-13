@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Linq;
 using Newtonsoft.Json;
 using Notifo.SDK.Helpers;
 using Xunit;
