@@ -1,6 +1,6 @@
 name: Publish Nuget
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   build:
@@ -8,10 +8,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set default Xamarin SDK versions
-        run: |
-          $VM_ASSETS/select-xamarin-sdk-v2.sh --mono=6.12 --ios=14.10
 
       - name: Setup .NET Core SDK 7.0.x
         uses: actions/setup-dotnet@v3
