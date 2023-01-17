@@ -8,8 +8,8 @@
     <LangVersion>latest</LangVersion>
     <PackageId>Notifo.Xamarin.Firebase</PackageId>
     <RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+    <RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>True</RunAnalyzersDuringLiveAnalysis>
     <TargetFrameworks>netstandard2.1;xamarinios10;monoandroid12.0;</TargetFrameworks>
   </PropertyGroup>
 
