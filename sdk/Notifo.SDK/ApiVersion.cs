@@ -5,20 +5,21 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.SDK;
-
-/// <summary>
-/// The target version.
-/// </summary>
-public enum ApiVersion
+namespace Notifo.SDK
 {
     /// <summary>
-    /// Uses only old API versions.
+    /// The target version.
     /// </summary>
-    Version_1_0,
+    public enum ApiVersion
+    {
+        /// <summary>
+        /// Uses only old API versions.
+        /// </summary>
+        Version_1_0,
 
-    /// <summary>
-    /// Uses also APIs that are only available after 1.5.
-    /// </summary>
-    Version_1_5
+        /// <summary>
+        /// Uses also APIs that are only available after 1.5.
+        /// </summary>
+        Version_1_5
+    }
 }

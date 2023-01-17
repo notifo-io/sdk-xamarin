@@ -9,35 +9,39 @@ using System;
 using System.Threading;
 using Plugin.Connectivity.Abstractions;
 
-namespace Notifo.SDK.CommandQueue;
-
-internal sealed class TriggerPeriodically : ICommandTrigger, IDisposable
+namespace Notifo.SDK.CommandQueue
 {
-    private readonly TimeSpan interval;
-    private readonly IConnectivity connectivity;
-    private Timer? timer;
-
-    public TriggerPeriodically(TimeSpan interval, IConnectivity connectivity)
+    internal sealed class TriggerPeriodically : ICommandTrigger, IDisposable
     {
-        this.interval = interval;
-        this.connectivity = connectivity;
-    }
+        private readonly TimeSpan interval;
+        private readonly IConnectivity connectivity;
+        private Timer timer;
 
-    public void Dispose()
-    {
-        timer?.Dispose();
-    }
-
-    public void Start(ICommandQueue queue)
-    {
-        timer ??= new Timer(x =>
+        public TriggerPeriodically(TimeSpan interval, IConnectivity connectivity)
         {
-            if (connectivity.IsConnected)
-            {
-                queue.Trigger();
-            }
-        });
+            this.interval = interval;
+            this.connectivity = connectivity;
+        }
 
-        timer.Change((int)interval.TotalMilliseconds, (int)interval.TotalMilliseconds);
+        public void Dispose()
+        {
+            timer?.Dispose();
+        }
+
+        public void Start(ICommandQueue queue)
+        {
+            if (timer == null)
+            {
+                timer = new Timer(x =>
+                {
+                    if (connectivity.IsConnected)
+                    {
+                        queue.Trigger();
+                    }
+                });
+            }
+
+            timer.Change((int)interval.TotalMilliseconds, (int)interval.TotalMilliseconds);
+        }
     }
 }

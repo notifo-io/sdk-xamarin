@@ -9,15 +9,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Notifo.SDK.CommandQueue;
-
-internal interface ICommandStore
+namespace Notifo.SDK.CommandQueue
 {
-    ValueTask<List<QueuedCommand>> GetCommandsAsync();
+    internal interface ICommandStore
+    {
+        ValueTask<List<QueuedCommand>> GetCommandsAsync();
 
-    ValueTask StoreAsync(QueuedCommand command);
+        ValueTask StoreAsync(QueuedCommand command);
 
-    ValueTask RemoveAsync(Guid id);
+        ValueTask RemoveAsync(Guid id);
 
-    void Clear();
+        void Clear();
+    }
 }

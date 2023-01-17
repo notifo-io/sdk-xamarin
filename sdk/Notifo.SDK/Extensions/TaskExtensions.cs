@@ -9,43 +9,44 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Notifo.SDK.Extensions;
-
-internal static class TaskExtensions
+namespace Notifo.SDK.Extensions
 {
-    private static readonly Action<Task> IgnoreTaskContinuation = t => { var ignored = t.Exception; };
-
-    public static void Forget(this Task task)
+    internal static class TaskExtensions
     {
-        if (task.IsCompleted)
-        {
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-            var ignored = task.Exception;
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
-        }
-        else
-        {
-            task.ContinueWith(
-                IgnoreTaskContinuation,
-                CancellationToken.None,
-                TaskContinuationOptions.OnlyOnFaulted |
-                TaskContinuationOptions.ExecuteSynchronously,
-                TaskScheduler.Default);
-        }
-    }
+        private static readonly Action<Task> IgnoreTaskContinuation = t => { var ignored = t.Exception; };
 
-    public static async Task WithCancellation(this Task task, CancellationToken cancellationToken)
-    {
-        var tcs = new TaskCompletionSource<bool>();
-
-        using (cancellationToken.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+        public static void Forget(this Task task)
         {
-            if (task != await Task.WhenAny(task, tcs.Task).ConfigureAwait(false))
+            if (task.IsCompleted)
             {
-                throw new OperationCanceledException(cancellationToken);
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
+                var ignored = task.Exception;
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
             }
+            else
+            {
+                task.ContinueWith(
+                    IgnoreTaskContinuation,
+                    CancellationToken.None,
+                    TaskContinuationOptions.OnlyOnFaulted |
+                    TaskContinuationOptions.ExecuteSynchronously,
+                    TaskScheduler.Default);
+            }
+        }
 
-            await task; // Already completed; propagate any exception
+        public static async Task WithCancellation(this Task task, CancellationToken cancellationToken)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+
+            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+            {
+                if (task != await Task.WhenAny(task, tcs.Task).ConfigureAwait(false))
+                {
+                    throw new OperationCanceledException(cancellationToken);
+                }
+
+                await task; // Already completed; propagate any exception
+            }
         }
     }
 }

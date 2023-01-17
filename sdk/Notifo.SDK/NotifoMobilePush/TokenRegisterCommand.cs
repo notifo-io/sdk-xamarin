@@ -12,69 +12,70 @@ using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Resources;
 using Xamarin.Essentials;
 
-namespace Notifo.SDK.NotifoMobilePush;
-
-internal sealed class TokenRegisterCommand : ICommand
+namespace Notifo.SDK.NotifoMobilePush
 {
-    private static int refreshCount;
-
-    public string Token { get; set; }
-
-    public async ValueTask ExecuteAsync(
-        CancellationToken ct)
+    internal sealed class TokenRegisterCommand : ICommand
     {
-        refreshCount++;
+        private static int refreshCount;
 
-        try
+        public string Token { get; set; }
+
+        public async ValueTask ExecuteAsync(
+            CancellationToken ct)
         {
-            NotifoIO.Current.RaiseDebug(Strings.TokenRefreshStartExecutingCount, this, refreshCount);
+            refreshCount++;
 
-            var request = new RegisterMobileTokenDto
+            try
             {
-                DeviceIdentifier = NotifoIO.Current.DeviceIdentifier,
-                DeviceType = GetDeviceType(),
-                Token = Token
-            };
+                NotifoIO.Current.RaiseDebug(Strings.TokenRefreshStartExecutingCount, this, refreshCount);
 
-            await NotifoIO.Current.Client.MobilePush.PostMyTokenAsync(request, ct);
-        }
-        catch (Exception ex)
-        {
-            NotifoIO.Current.RaiseError(Strings.TokenRefreshFailException, ex, this);
-            throw ex;
-        }
-        finally
-        {
-            NotifoIO.Current.RaiseDebug(Strings.TokenRefreshEndExecutingCount, this, refreshCount);
-        }
-    }
+                var request = new RegisterMobileTokenDto
+                {
+                    DeviceIdentifier = NotifoIO.Current.DeviceIdentifier,
+                    DeviceType = GetDeviceType(),
+                    Token = Token
+                };
 
-    private static MobileDeviceType GetDeviceType()
-    {
-        var platform = DeviceInfo.Platform;
-
-        if (platform == DevicePlatform.Android)
-        {
-            return MobileDeviceType.Android;
-        }
-        else if (platform == DevicePlatform.iOS)
-        {
-            return MobileDeviceType.IOS;
-        }
-        else
-        {
-            return MobileDeviceType.Unknown;
-        }
-    }
-
-    public bool Merge(ICommand other)
-    {
-        if (other is TokenRegisterCommand registerCommand)
-        {
-            Token = registerCommand.Token;
-            return true;
+                await NotifoIO.Current.Client.MobilePush.PostMyTokenAsync(request, ct);
+            }
+            catch (Exception ex)
+            {
+                NotifoIO.Current.RaiseError(Strings.TokenRefreshFailException, ex, this);
+                throw ex;
+            }
+            finally
+            {
+                NotifoIO.Current.RaiseDebug(Strings.TokenRefreshEndExecutingCount, this, refreshCount);
+            }
         }
 
-        return false;
+        private static MobileDeviceType GetDeviceType()
+        {
+            var platform = DeviceInfo.Platform;
+
+            if (platform == DevicePlatform.Android)
+            {
+                return MobileDeviceType.Android;
+            }
+            else if (platform == DevicePlatform.iOS)
+            {
+                return MobileDeviceType.IOS;
+            }
+            else
+            {
+                return MobileDeviceType.Unknown;
+            }
+        }
+
+        public bool Merge(ICommand other)
+        {
+            if (other is TokenRegisterCommand registerCommand)
+            {
+                Token = registerCommand.Token;
+                return true;
+            }
+
+            return false;
+        }
     }
 }

@@ -10,31 +10,32 @@ using System.Threading;
 using Android.Runtime;
 using AndroidX.Work;
 
-namespace Notifo.SDK;
-
-internal sealed class UpdateWorker : Worker
+namespace Notifo.SDK
 {
-    public UpdateWorker(IntPtr javaReference, JniHandleOwnership transfer)
-        : base(javaReference, transfer)
+    internal sealed class UpdateWorker : Worker
     {
-    }
-
-    public override Result DoWork()
-    {
-        NotifoIO.Current.Register();
-
-        try
+        public UpdateWorker(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
         {
-            using (var cts = new CancellationTokenSource(TimeSpan.FromMinutes(10)))
+        }
+
+        public override Result DoWork()
+        {
+            NotifoIO.Current.Register();
+
+            try
             {
-                NotifoIO.Current.WaitForBackgroundTasksAsync(cts.Token).Wait(cts.Token);
+                using (var cts = new CancellationTokenSource(TimeSpan.FromMinutes(10)))
+                {
+                    NotifoIO.Current.WaitForBackgroundTasksAsync(cts.Token).Wait(cts.Token);
+                }
             }
-        }
-        catch (OperationCanceledException)
-        {
-            return new Result.Retry();
-        }
+            catch (OperationCanceledException)
+            {
+                return new Result.Retry();
+            }
 
-        return new Result.Success();
+            return new Result.Success();
+        }
     }
 }

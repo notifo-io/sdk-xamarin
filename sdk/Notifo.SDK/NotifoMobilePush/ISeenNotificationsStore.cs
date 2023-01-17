@@ -10,11 +10,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Notifo.SDK.Helpers;
 
-namespace Notifo.SDK.NotifoMobilePush;
-
-internal interface ISeenNotificationsStore
+namespace Notifo.SDK.NotifoMobilePush
 {
-    ValueTask AddSeenNotificationIdsAsync(int maxCapacity, IEnumerable<Guid> ids);
+    internal interface ISeenNotificationsStore
+    {
+        ValueTask AddSeenNotificationIdsAsync(int maxCapacity, IEnumerable<Guid> ids);
 
-    ValueTask<SlidingSet<Guid>> GetSeenNotificationIdsAsync();
+        ValueTask<SlidingSet<Guid>> GetSeenNotificationIdsAsync();
+    }
 }

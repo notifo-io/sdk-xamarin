@@ -5,9 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.SDK.CommandQueue;
-
-internal interface ICommandTrigger
+namespace Notifo.SDK.CommandQueue
 {
-    void Start(ICommandQueue queue);
+    internal interface ICommandTrigger
+    {
+        void Start(ICommandQueue queue);
+    }
 }

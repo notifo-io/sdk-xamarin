@@ -5,17 +5,10 @@
     <AssemblyName>Notifo.Xamarin.Worker</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <LangVersion>latest</LangVersion>
     <RootNamespace>Notifo.SDK</RootNamespace>
     <TargetFrameworks>monoandroid12.0;</TargetFrameworks>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
   <ItemGroup>
     <None Include="logo-squared.png" Pack="true" PackagePath="\" />
   </ItemGroup>

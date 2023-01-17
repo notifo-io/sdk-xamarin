@@ -5,7 +5,6 @@
     <AssemblyName>Notifo.Xamarin.FirebasePlugin</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <LangVersion>latest</LangVersion>
     <PackageId>Notifo.Xamarin.Firebase</PackageId>
     <RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>
     <RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
@@ -13,12 +12,6 @@
     <TargetFrameworks>netstandard2.1;xamarinios10;monoandroid12.0;</TargetFrameworks>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
   <ItemGroup>
     <None Include="logo-squared.png" Pack="true" PackagePath="\" />
   </ItemGroup>
@@ -48,7 +41,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-	<PackageReference Include="Notifo.SDK" Version="1.7.3" />
+	<PackageReference Include="Notifo.SDK" Version="1.7.4" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('xamarinios'))">

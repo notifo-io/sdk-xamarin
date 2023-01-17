@@ -8,12 +8,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Notifo.SDK.CommandQueue;
-
-internal interface ICommand
+namespace Notifo.SDK.CommandQueue
 {
-    ValueTask ExecuteAsync(
-        CancellationToken ct);
+    internal interface ICommand
+    {
+        ValueTask ExecuteAsync(
+            CancellationToken ct);
 
-    bool Merge(ICommand other);
+        bool Merge(ICommand other);
+    }
 }

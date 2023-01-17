@@ -7,141 +7,141 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
-namespace Notifo.SDK.Helpers;
-
-internal sealed class LRUCache<TKey, TValue> where TKey : notnull
+namespace Notifo.SDK.Helpers
 {
-    private readonly Dictionary<TKey, LinkedListNode<LRUCacheItem<TKey, TValue>>> cacheMap = new Dictionary<TKey, LinkedListNode<LRUCacheItem<TKey, TValue>>>();
-    private readonly LinkedList<LRUCacheItem<TKey, TValue>> cacheHistory = new LinkedList<LRUCacheItem<TKey, TValue>>();
-    private int totalCapacity;
-    private int totalSize;
-
-    public int Size => totalSize;
-
-    public LRUCache(int capacity)
+    internal sealed class LRUCache<TKey, TValue>
     {
-        EnsureCapacity(capacity);
-    }
+        private readonly Dictionary<TKey, LinkedListNode<LRUCacheItem<TKey, TValue>>> cacheMap = new Dictionary<TKey, LinkedListNode<LRUCacheItem<TKey, TValue>>>();
+        private readonly LinkedList<LRUCacheItem<TKey, TValue>> cacheHistory = new LinkedList<LRUCacheItem<TKey, TValue>>();
+        private int totalCapacity;
+        private int totalSize;
 
-    public void EnsureCapacity(int capacity)
-    {
-        if (capacity <= 0)
+        public int Size => totalSize;
+
+        public LRUCache(int capacity)
         {
-            throw new ArgumentException("Capacity must be positive.", nameof(capacity));
+            EnsureCapacity(capacity);
         }
 
-        lock (cacheMap)
+        public void EnsureCapacity(int capacity)
         {
-            while (totalCapacity > capacity)
+            if (capacity <= 0)
             {
-                RemoveFirst();
+                throw new ArgumentException("Capacity must be positive.", nameof(capacity));
             }
 
-            totalCapacity = capacity;
-        }
-    }
-
-    public void Clear()
-    {
-        lock (cacheMap)
-        {
-            cacheHistory.Clear();
-            cacheMap.Clear();
-
-            totalSize = 0;
-        }
-    }
-
-    public bool Set(TKey key, TValue value, int size = 1)
-    {
-        lock (cacheMap)
-        {
-            if (cacheMap.TryGetValue(key, out var node))
+            lock (cacheMap)
             {
-                node.Value.Value = value;
+                while (totalCapacity > capacity)
+                {
+                    RemoveFirst();
+                }
 
-                cacheHistory.Remove(node);
+                totalCapacity = capacity;
+            }
+        }
+
+        public void Clear()
+        {
+            lock (cacheMap)
+            {
+                cacheHistory.Clear();
+                cacheMap.Clear();
+
+                totalSize = 0;
+            }
+        }
+
+        public bool Set(TKey key, TValue value, int size = 1)
+        {
+            lock (cacheMap)
+            {
+                if (cacheMap.TryGetValue(key, out var node))
+                {
+                    node.Value.Value = value;
+
+                    cacheHistory.Remove(node);
+                    cacheHistory.AddLast(node);
+
+                    cacheMap[key] = node;
+
+                    return true;
+                }
+
+                totalSize += size;
+
+                if (totalSize > totalCapacity)
+                {
+                    RemoveFirst();
+                }
+
+                var cacheItem = new LRUCacheItem<TKey, TValue> { Key = key, Value = value, Size = size };
+
+                node = new LinkedListNode<LRUCacheItem<TKey, TValue>>(cacheItem);
+
+                cacheMap.Add(key, node);
                 cacheHistory.AddLast(node);
 
-                cacheMap[key] = node;
-
-                return true;
+                return false;
             }
+        }
 
-            totalSize += size;
-
-            if (totalSize > totalCapacity)
+        public bool Remove(TKey key)
+        {
+            lock (cacheMap)
             {
-                RemoveFirst();
+                if (cacheMap.TryGetValue(key, out var node))
+                {
+                    cacheMap.Remove(key);
+                    cacheHistory.Remove(node);
+
+                    return true;
+                }
+
+                return false;
             }
-
-            var cacheItem = new LRUCacheItem<TKey, TValue> { Key = key, Value = value, Size = size };
-
-            node = new LinkedListNode<LRUCacheItem<TKey, TValue>>(cacheItem);
-
-            cacheMap.Add(key, node);
-            cacheHistory.AddLast(node);
-
-            return false;
         }
-    }
 
-    public bool Remove(TKey key)
-    {
-        lock (cacheMap)
+        public bool TryGetValue(TKey key, out TValue value)
         {
-            if (cacheMap.TryGetValue(key, out var node))
+            lock (cacheMap)
             {
-                cacheMap.Remove(key);
-                cacheHistory.Remove(node);
+                value = default(TValue);
 
-                return true;
+                if (cacheMap.TryGetValue(key, out var node))
+                {
+                    value = node.Value.Value;
+
+                    cacheHistory.Remove(node);
+                    cacheHistory.AddLast(node);
+
+                    return true;
+                }
+
+                return false;
             }
-
-            return false;
         }
-    }
 
-    public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
-    {
-        lock (cacheMap)
+        public bool Contains(TKey key)
         {
-            value = default!;
-
-            if (cacheMap.TryGetValue(key, out var node))
+            lock (cacheMap)
             {
-                value = node.Value.Value;
-
-                cacheHistory.Remove(node);
-                cacheHistory.AddLast(node);
-
-                return true;
+                return cacheMap.ContainsKey(key);
             }
-
-            return false;
         }
-    }
 
-    public bool Contains(TKey key)
-    {
-        lock (cacheMap)
+        private void RemoveFirst()
         {
-            return cacheMap.ContainsKey(key);
-        }
-    }
+            var node = cacheHistory.First;
 
-    private void RemoveFirst()
-    {
-        var node = cacheHistory.First;
+            if (node != null)
+            {
+                cacheMap.Remove(node.Value.Key);
+                cacheHistory.RemoveFirst();
 
-        if (node != null)
-        {
-            cacheMap.Remove(node.Value.Key);
-            cacheHistory.RemoveFirst();
-
-            totalSize -= node.Value.Size;
+                totalSize -= node.Value.Size;
+            }
         }
     }
 }

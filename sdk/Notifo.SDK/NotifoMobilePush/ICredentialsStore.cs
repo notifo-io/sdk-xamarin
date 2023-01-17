@@ -5,13 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.SDK.NotifoMobilePush;
-
-internal interface ICredentialsStore
+namespace Notifo.SDK.NotifoMobilePush
 {
-    string? ApiKey { get; set; }
+    internal interface ICredentialsStore
+    {
+        string ApiKey { get; set; }
 
-    string? ApiUrl { get; set; }
+        string ApiUrl { get; set; }
 
-    string DeviceIdentifier { get; }
+        string DeviceIdentifier { get; }
+    }
 }

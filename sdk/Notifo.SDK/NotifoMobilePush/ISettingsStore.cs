@@ -9,6 +9,6 @@ namespace Notifo.SDK.NotifoMobilePush
 {
     internal interface ISettingsStore
     {
-        string? SharedName { get; set; }
+        string SharedName { get; set; }
     }
 }
