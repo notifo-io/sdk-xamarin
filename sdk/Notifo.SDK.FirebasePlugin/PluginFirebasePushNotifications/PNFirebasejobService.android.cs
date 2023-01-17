@@ -1,16 +1,17 @@
 ﻿using Android.App.Job;
 
-namespace Plugin.FirebasePushNotification;
-
-public class PNFirebaseJobService : JobService
+namespace Plugin.FirebasePushNotification
 {
-    public override bool OnStartJob(JobParameters @params)
+    public class PNFirebaseJobService : JobService
     {
-        return false;
-    }
+        public override bool OnStartJob(JobParameters @params)
+        {
+            return false;
+        }
 
-    public override bool OnStopJob(JobParameters @params)
-    {
-        return false;
+        public override bool OnStopJob(JobParameters @params)
+        {
+            return false;
+        }
     }
 }

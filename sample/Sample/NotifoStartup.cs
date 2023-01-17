@@ -1,21 +1,23 @@
-﻿// ==========================================================================
+// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using Notifo.SDK;
 using Notifo.SDK.FirebasePlugin;
 using Xamarin.Forms;
 
 namespace Sample
 {
-    public class NotifoStartup : INotifoStartup
+    public static class NotifoStartup
     {
-        public void ConfigureService(INotifoMobilePush notifo)
+        public static INotifoMobilePush UseDefaults(this INotifoMobilePush notifo)
         {
             notifo
+                .SetSharedName("group.io.notifo.xamarin.sample")
                 .SetBaseUrl(Constants.ApiUrl)
                 .SetApiVersion(ApiVersion.Version_1_5)
                 .UseFirebasePluginEventsProvider();
@@ -23,19 +25,21 @@ namespace Sample
             notifo.OnNotificationOpened += Current_OnNotificationOpened;
             notifo.OnNotificationReceived += Notifo_OnNotificationReceived;
             notifo.OnLog += Notifo_OnLog;
+
+            return notifo;
         }
 
-        private void Notifo_OnLog(object sender, NotificationLogEventArgs e)
+        private static void Notifo_OnLog(object sender, NotificationLogEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("Notification log message: " + e.Message);
         }
 
-        private void Notifo_OnNotificationReceived(object sender, NotificationEventArgs e)
+        private static void Notifo_OnNotificationReceived(object sender, NotificationEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("Notification received: " + e.Notification.Subject);
         }
 
-        private void Current_OnNotificationOpened(object source, NotificationEventArgs e)
+        private static void Current_OnNotificationOpened(object source, NotificationEventArgs e)
         {
             Device.BeginInvokeOnMainThread(() =>
             {

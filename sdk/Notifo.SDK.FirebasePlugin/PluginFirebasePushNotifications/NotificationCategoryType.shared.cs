@@ -1,9 +1,10 @@
-﻿namespace Plugin.FirebasePushNotification;
-
-//This just applies for iOS on Android is always set as default when used
-public enum NotificationCategoryType
+﻿namespace Plugin.FirebasePushNotification
 {
-    Default,
-    Custom,
-    Dismiss
+    //This just applies for iOS on Android is always set as default when used
+    public enum NotificationCategoryType
+    {
+        Default,
+        Custom,
+        Dismiss
+    }
 }

@@ -5,12 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+
 namespace Notifo.SDK;
 
 /// <summary>
 /// Options for handling the pending notifications pull refresh request.
 /// </summary>
-public class PullRefreshOptions
+public sealed class PullRefreshOptions
 {
     /// <summary>
     /// The pull refresh request should raise the received event. Default: true.

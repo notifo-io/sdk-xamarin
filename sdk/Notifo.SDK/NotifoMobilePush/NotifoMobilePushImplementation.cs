@@ -5,14 +5,23 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
+using Notifo.SDK.Extensions;
 using Notifo.SDK.Helpers;
 using Notifo.SDK.PushEventProvider;
+using Notifo.SDK.Resources;
 
 namespace Notifo.SDK.NotifoMobilePush;
 
 internal partial class NotifoMobilePushImplementation : INotifoMobilePush
 {
+    private const int Capacity = 500;
+    private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1);
     private readonly ISeenNotificationsStore seenNotificationsStore;
     private readonly ICommandQueue commandQueue;
     private readonly ICommandStore commandStore;
@@ -39,6 +48,9 @@ internal partial class NotifoMobilePushImplementation : INotifoMobilePush
     /// <inheritdoc/>
     public bool IsConfigured => options.IsConfigured;
 
+    /// <inheritdoc/>
+    public string DeviceIdentifier => credentialsStore.DeviceIdentifier;
+
     public NotifoMobilePushImplementation(
         ISeenNotificationsStore seenNotificationsStore,
         ICommandQueue commandQueue,
@@ -59,11 +71,37 @@ internal partial class NotifoMobilePushImplementation : INotifoMobilePush
     partial void SetupPlatform();
 
     /// <inheritdoc/>
-    public void ClearAllSettings()
+    public INotifoMobilePush ClearAllSettings()
     {
-        commandStore.Clear();
-        credentialsStore.Clear();
-        seenNotificationsStore.Clear();
+        static void Clear(object store)
+        {
+            if (store is IClearableStore clearable)
+            {
+                clearable.Clear();
+            }
+        }
+
+        Clear(commandStore);
+        Clear(credentialsStore);
+        Clear(seenNotificationsStore);
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public INotifoMobilePush SetSharedName(string sharedName)
+    {
+        static void Configure(object store, string sharedName)
+        {
+            if (store is ISettingsStore settings)
+            {
+                settings.SharedName = sharedName;
+            }
+        }
+
+        Configure(commandStore, sharedName);
+        Configure(credentialsStore, sharedName);
+        Configure(seenNotificationsStore, sharedName);
+        return this;
     }
 
     /// <inheritdoc/>
@@ -159,7 +197,7 @@ internal partial class NotifoMobilePushImplementation : INotifoMobilePush
             Register(tokenToRegister);
         }
 
-        _ = RegisterAsync();
+        RegisterAsync().Forget();
     }
 
     /// <inheritdoc/>
@@ -224,6 +262,59 @@ internal partial class NotifoMobilePushImplementation : INotifoMobilePush
             {
                 Register(newToken);
             }
+        }
+    }
+
+    public async Task<HashSet<Guid>> GetSeenNotificationsAsync()
+    {
+        await semaphoreSlim.WaitAsync();
+        try
+        {
+            // Always load the notifications from the preferences, because they could have been modified by the service extension.
+            var loaded = await seenNotificationsStore.GetSeenNotificationIdsAsync();
+
+            return loaded.ToHashSet();
+        }
+        catch (Exception ex)
+        {
+            NotifoIO.Current.RaiseError(Strings.TrackingException, ex, this);
+            return new HashSet<Guid>();
+        }
+        finally
+        {
+            semaphoreSlim.Release();
+        }
+    }
+
+    public async Task TrackNotificationsAsync(params UserNotificationDto[] notifications)
+    {
+        await semaphoreSlim.WaitAsync();
+        try
+        {
+            var idsAndUrls = notifications.ToDictionary(x => x.Id, x => (string?)x.TrackSeenUrl);
+
+            // Always load the notifications from the preferences, because they could have been modified by the service extension.
+            var loaded = await seenNotificationsStore.GetSeenNotificationIdsAsync();
+
+            // Store the seen notifications immediately as a cache, if the actual command to the server fails.
+            await seenNotificationsStore.AddSeenNotificationIdsAsync(Capacity, idsAndUrls.Keys);
+
+            foreach (var id in idsAndUrls.Keys)
+            {
+                loaded.Add(id, Capacity);
+            }
+
+            // Track all notifications with one HTTP request.
+            commandQueue.Run(new TrackSeenCommand { IdsAndUrls = idsAndUrls, Token = token });
+        }
+        catch (Exception ex)
+        {
+            NotifoIO.Current.RaiseError(Strings.TrackingException, ex, this);
+            return;
+        }
+        finally
+        {
+            semaphoreSlim.Release();
         }
     }
 }

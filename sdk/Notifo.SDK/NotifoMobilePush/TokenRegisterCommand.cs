@@ -5,6 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Notifo.SDK.CommandQueue;
 using Notifo.SDK.Resources;
 using Xamarin.Essentials;
@@ -28,7 +31,7 @@ internal sealed class TokenRegisterCommand : ICommand
 
             var request = new RegisterMobileTokenDto
             {
-                DeviceIdentifier = Device.DeviceIdentifier,
+                DeviceIdentifier = NotifoIO.Current.DeviceIdentifier,
                 DeviceType = GetDeviceType(),
                 Token = Token
             };

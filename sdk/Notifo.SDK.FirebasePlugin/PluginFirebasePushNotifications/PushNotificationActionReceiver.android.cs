@@ -3,39 +3,40 @@
 using Android.App;
 using Android.Content;
 
-namespace Plugin.FirebasePushNotification;
-
-[BroadcastReceiver]
-public class PushNotificationActionReceiver : BroadcastReceiver
+namespace Plugin.FirebasePushNotification
 {
-    public override void OnReceive(Context context, Intent intent)
+    [BroadcastReceiver]
+    public class PushNotificationActionReceiver : BroadcastReceiver
     {
-        IDictionary<string, object> parameters = new Dictionary<string, object>();
-        var extras = intent.Extras;
-
-        if (extras != null && !extras.IsEmpty)
+        public override void OnReceive(Context context, Intent intent)
         {
-            foreach (var key in extras.KeySet())
-            {
-                parameters.Add(key, $"{extras.Get(key)}");
-                System.Diagnostics.Debug.WriteLine(key, $"{extras.Get(key)}");
-            }
-        }
-        FirebasePushNotificationManager.RegisterAction(parameters);
+            IDictionary<string, object> parameters = new Dictionary<string, object>();
+            var extras = intent.Extras;
 
-        var manager = context.GetSystemService(Context.NotificationService) as NotificationManager;
-        var notificationId = extras.GetInt(DefaultPushNotificationHandler.ActionNotificationIdKey, -1);
-        if (notificationId != -1)
-        {
-            var notificationTag = extras.GetString(DefaultPushNotificationHandler.ActionNotificationTagKey, string.Empty);
-
-            if (notificationTag == null)
+            if (extras != null && !extras.IsEmpty)
             {
-                manager.Cancel(notificationId);
+                foreach (var key in extras.KeySet())
+                {
+                    parameters.Add(key, $"{extras.Get(key)}");
+                    System.Diagnostics.Debug.WriteLine(key, $"{extras.Get(key)}");
+                }
             }
-            else
+            FirebasePushNotificationManager.RegisterAction(parameters);
+
+            var manager = context.GetSystemService(Context.NotificationService) as NotificationManager;
+            var notificationId = extras.GetInt(DefaultPushNotificationHandler.ActionNotificationIdKey, -1);
+            if (notificationId != -1)
             {
-                manager.Cancel(notificationTag, notificationId);
+                var notificationTag = extras.GetString(DefaultPushNotificationHandler.ActionNotificationTagKey, string.Empty);
+
+                if (notificationTag == null)
+                {
+                    manager.Cancel(notificationId);
+                }
+                else
+                {
+                    manager.Cancel(notificationTag, notificationId);
+                }
             }
         }
     }

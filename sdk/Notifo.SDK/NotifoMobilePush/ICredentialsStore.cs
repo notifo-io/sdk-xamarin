@@ -13,5 +13,5 @@ internal interface ICredentialsStore
 
     string? ApiUrl { get; set; }
 
-    void Clear();
+    string DeviceIdentifier { get; }
 }

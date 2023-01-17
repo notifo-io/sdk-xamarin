@@ -7,6 +7,7 @@
 
 using System;
 using Foundation;
+using Notifo.SDK;
 using Notifo.SDK.FirebasePlugin;
 using Prism;
 using Prism.Ioc;
@@ -26,7 +27,11 @@ namespace Sample.iOS
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App(new iOSInitializer()));
 
-            NotifoFirebasePlugin.Initialize(launchOptions, new NotifoStartup(), new NotificationHandler(), true);
+            NotifoIO.Current
+                .SetNotificationHandler(new NotificationHandler())
+                .UseDefaults()
+                .UseFirebasePluginEventsProvider(launchOptions, true);
+
             UNUserNotificationCenter.Current.Delegate = this;
 
             return base.FinishedLaunching(uiApplication, launchOptions);
@@ -34,25 +39,27 @@ namespace Sample.iOS
 
         public override void RegisteredForRemoteNotifications(UIApplication application, NSData deviceToken)
         {
-            NotifoFirebasePlugin.DidRegisterRemoteNotifications(deviceToken);
+            NotifoIO.Current.DidRegisterRemoteNotifications(deviceToken);
         }
 
         public override void FailedToRegisterForRemoteNotifications(UIApplication application, NSError error)
         {
-            NotifoFirebasePlugin.RemoteNotificationRegistrationFailed(error);
+            NotifoIO.Current.RemoteNotificationRegistrationFailed(error);
         }
 
 #pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
         public override async void DidReceiveRemoteNotification(UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
 #pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
         {
-            await NotifoFirebasePlugin.DidReceiveMessageAsync(userInfo);
+            await NotifoIO.Current.DidReceiveMessageAsync(userInfo);
             completionHandler(UIBackgroundFetchResult.NewData);
         }
 
         [Export("userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:")]
-        public void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler) =>
-            NotifoFirebasePlugin.DidReceiveNotificationResponse(center, response, completionHandler);
+        public void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
+        {
+            NotifoIO.Current.DidReceiveNotificationResponse(center, response, completionHandler);
+        }
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable IDE1006 // Naming Styles

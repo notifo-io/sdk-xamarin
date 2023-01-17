@@ -33,9 +33,11 @@ namespace SampleNotificationServiceExtension
 			//Save the notification and create a mutable copy
 			BestAttemptContent = (UNMutableNotificationContent)request.Content.MutableCopy();
 
-			NotifoIO.Current.SetNotificationHandler(new NotificationHandler());
+			NotifoIO.Current
+				.SetSharedName("group.io.notifo.xamarin.sample")
+				.SetNotificationHandler(new NotificationHandler());
 
-			await NotifoIO.DidReceiveNotificationRequestAsync(request, BestAttemptContent);
+            await NotifoIO.Current.DidReceiveNotificationRequestAsync(request, BestAttemptContent);
 
 			// Display the notification.
 			ContentHandler(BestAttemptContent);

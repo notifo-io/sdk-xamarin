@@ -5,20 +5,22 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
 using AndroidX.Core.App;
 using Java.Net;
-using Microsoft.Extensions.Caching.Memory;
 using Notifo.SDK.Extensions;
+using Notifo.SDK.Helpers;
 using Notifo.SDK.Resources;
 
 namespace Notifo.SDK.NotifoMobilePush;
 
-internal partial class NotifoMobilePushImplementation
+internal partial class NotifoMobilePushImplementation : InternalAndroidPushAdapter
 {
-    private readonly IMemoryCache bitmapCache = new MemoryCache(new MemoryCacheOptions());
+    private readonly LRUCache<string, Bitmap> bitmapCache = new LRUCache<string, Bitmap>(10_000_000);
     private INotificationHandler? notificationHandler;
 
     partial void SetupPlatform()
@@ -26,22 +28,27 @@ internal partial class NotifoMobilePushImplementation
         OnNotificationReceived += PushEventsProvider_OnNotificationReceivedAndroid;
     }
 
-    private void PushEventsProvider_OnNotificationReceivedAndroid(object sender, NotificationEventArgs e)
-    {
-        if (!string.IsNullOrWhiteSpace(e.Notification.TrackSeenUrl))
-        {
-            _ = TrackNotificationsAsync(e.Notification);
-        }
-    }
-
+    /// <inheritdoc />
     public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
     {
         this.notificationHandler = notificationHandler;
-
         return this;
     }
 
-    internal void OnBuildNotification(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification)
+    /// <inheritdoc />
+    public INotifoMobilePush SetImageCacheCapacity(int capacity)
+    {
+        bitmapCache.EnsureCapacity(capacity);
+        return this;
+    }
+
+    private void PushEventsProvider_OnNotificationReceivedAndroid(object sender, NotificationEventArgs e)
+    {
+        TrackNotificationsAsync(e.Notification).Forget();
+    }
+
+    /// <inheritdoc />
+    public async Task OnBuildNotificationAsync(NotificationCompat.Builder notificationBuilder, UserNotificationDto notification)
     {
         if (!string.IsNullOrWhiteSpace(notification.Subject))
         {
@@ -88,7 +95,10 @@ internal partial class NotifoMobilePushImplementation
             AddAction(notificationBuilder, notification.LinkText, notification.LinkUrl);
         }
 
-        notificationHandler?.OnBuildNotification(notificationBuilder, notification);
+        if (notificationHandler != null)
+        {
+            await notificationHandler.OnBuildNotificationAsync(notificationBuilder, notification, default);
+        }
     }
 
     private Bitmap? GetBitmap(string bitmapUrl, int? width = null, int? height = null)
@@ -101,7 +111,7 @@ internal partial class NotifoMobilePushImplementation
                 bitmapUrl = bitmapUrl.AppendQueries("width", width, "height", height);
             }
 
-            if (bitmapCache.TryGetValue(bitmapUrl, out Bitmap cachedBitmap))
+            if (bitmapCache.TryGetValue(bitmapUrl, out var cachedBitmap))
             {
                 return cachedBitmap;
             }
@@ -111,7 +121,7 @@ internal partial class NotifoMobilePushImplementation
 
             if (bitmapImage != null)
             {
-                bitmapCache.Set(bitmapUrl, bitmapImage);
+                bitmapCache.Set(bitmapUrl, bitmapImage, bitmapImage.ByteCount);
             }
             else
             {

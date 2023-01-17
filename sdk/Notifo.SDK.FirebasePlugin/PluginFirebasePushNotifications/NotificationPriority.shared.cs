@@ -1,10 +1,11 @@
-﻿namespace Plugin.FirebasePushNotification;
-
-public enum NotificationPriority
+﻿namespace Plugin.FirebasePushNotification
 {
-    Max,
-    High,
-    Default,
-    Low,
-    Min
+    public enum NotificationPriority
+    {
+        Max,
+        High,
+        Default,
+        Low,
+        Min
+    }
 }

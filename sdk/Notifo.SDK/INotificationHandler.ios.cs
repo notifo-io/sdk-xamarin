@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Threading;
+using System.Threading.Tasks;
 using UserNotifications;
 
 namespace Notifo.SDK;
@@ -19,5 +21,8 @@ public interface INotificationHandler
     /// </summary>
     /// <param name="content">The notification content.</param>
     /// <param name="notification">The notification.</param>
-    void OnBuildNotification(UNMutableNotificationContent content, UserNotificationDto notification);
+    /// <param name="ct">The cancellation token to abort waiting.</param>
+    /// <returns>The tasks.</returns>
+    Task OnBuildNotificationAsync(UNMutableNotificationContent content, UserNotificationDto notification,
+        CancellationToken ct);
 }

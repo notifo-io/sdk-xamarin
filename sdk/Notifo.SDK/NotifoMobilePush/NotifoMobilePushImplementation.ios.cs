@@ -5,6 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Foundation;
 using Notifo.SDK.Extensions;
 using Notifo.SDK.Resources;
@@ -13,54 +19,76 @@ using Xamarin.Essentials;
 
 namespace Notifo.SDK.NotifoMobilePush;
 
-internal partial class NotifoMobilePushImplementation : NSObject
+internal partial class NotifoMobilePushImplementation : NSObject, InternalIOSPushAdapter
 {
+    private PullRefreshOptions refreshOptions;
     private INotificationHandler? notificationHandler;
 
+    /// <inheritdoc />
+    public INotifoMobilePush SetRefreshOptions(PullRefreshOptions refreshOptions)
+    {
+        this.refreshOptions = refreshOptions ?? new PullRefreshOptions();
+        return this;
+    }
+
+    /// <inheritdoc />
     public INotifoMobilePush SetNotificationHandler(INotificationHandler? notificationHandler)
     {
         this.notificationHandler = notificationHandler;
         return this;
     }
 
-    public async Task DidReceiveNotificationRequestAsync(UNNotificationRequest request, UNMutableNotificationContent bestAttemptContent)
+    /// <inheritdoc />
+    public async Task DidReceiveNotificationRequestAsync(UNNotificationRequest request, UNMutableNotificationContent content)
     {
         RaiseDebug(Strings.ReceivedNotification, this, request.Content.UserInfo);
 
         var notification = new UserNotificationDto().FromDictionary(request.Content.UserInfo.ToDictionary());
 
-        await EnrichNotificationContentAsync(bestAttemptContent, notification);
-
-        // Always track our notifications as seen.
+        // Do the tracking first.
         await TrackNotificationsAsync(notification);
+
+        // We only have 30 seconds in this flow.
+        await EnrichAsync(content, notification, TimeSpan.FromSeconds(20));
+
+        // pull + track pending notifications
+        await PullPendingNotificationsAndTrack();
     }
 
-    public async Task DidReceivePullRefreshRequestAsync(PullRefreshOptions? options = null)
+    /// <inheritdoc />
+    public async Task DidReceivePullRefreshRequestAsync()
     {
-        options ??= new PullRefreshOptions();
+        await PullPendingNotificationsAndTrack();
+    }
 
+    private async Task PullPendingNotificationsAndTrack()
+    {
         // iOS does not maintain a queue of undelivered notifications, therefore we have to query here.
-        var notifications = await GetPendingNotificationsAsync(options.Take, options.Period, default);
+        var notifications = await GetPendingNotificationsAsync(refreshOptions.Take, refreshOptions.Period, default);
+
+        List<UserNotificationDto>? trackImmediatly = null;
 
         foreach (var notification in notifications)
         {
-            if (options.RaiseEvent)
+            if (refreshOptions.RaiseEvent)
             {
                 OnReceived(new NotificationEventArgs(notification));
             }
 
-            if (notification.Silent)
+            if (notification.Silent || !refreshOptions.PresentNotification)
             {
+                trackImmediatly ??= new List<UserNotificationDto>();
+                trackImmediatly.Add(notification);
                 continue;
             }
 
-            if (options.PresentNotification)
-            {
-                await ShowLocalNotificationAsync(notification);
-            }
+            await ShowLocalNotificationAsync(notification);
         }
 
-        await TrackNotificationsAsync(notifications.ToArray());
+        if (trackImmediatly != null)
+        {
+            await TrackNotificationsAsync(trackImmediatly.ToArray());
+        }
     }
 
     private async Task<IEnumerable<UserNotificationDto>> GetPendingNotificationsAsync(int take, TimeSpan maxAge,
@@ -131,10 +159,13 @@ internal partial class NotifoMobilePushImplementation : NSObject
 
     private async Task ShowLocalNotificationAsync(UserNotificationDto notification)
     {
-        var content = new UNMutableNotificationContent();
+        var content = new UNMutableNotificationContent
+        {
+            UserInfo = notification.ToDictionary().ToNSDictionary()
+        };
 
-        content = await EnrichNotificationContentAsync(content, notification);
-        content.UserInfo = notification.ToDictionary().ToNSDictionary();
+        // We only have 30 seconds in the other flow, so we keep the time for consistency.
+        await EnrichAsync(content, notification, TimeSpan.FromSeconds(20));
 
         var request = UNNotificationRequest.FromIdentifier(notification.Id.ToString(), content, trigger: null);
 
@@ -144,10 +175,33 @@ internal partial class NotifoMobilePushImplementation : NSObject
             {
                 NotifoIO.Current.RaiseError(error.LocalizedDescription, null, this);
             }
+            else
+            {
+                TrackNotificationsAsync(notification).Forget();
+            }
         });
     }
 
-    private async Task<UNMutableNotificationContent> EnrichNotificationContentAsync(UNMutableNotificationContent content, UserNotificationDto notification)
+    private async Task EnrichAsync(UNMutableNotificationContent content, UserNotificationDto notification, TimeSpan timeout)
+    {
+        // Give enough time for other operations.
+        using (var cts = new CancellationTokenSource(timeout))
+        {
+            try
+            {
+                // We have ony limited time in the notification service, so we dot things in the right order.
+                await EnrichBasicAsync(content, notification);
+                await EnrichImagesAsync(content, notification, cts.Token);
+                await EnrichWithCustomCodeAsync(content, notification, cts.Token);
+            }
+            catch (Exception ex)
+            {
+                RaiseError(Strings.GeneralException, ex, this);
+            }
+        }
+    }
+
+    private async Task EnrichBasicAsync(UNMutableNotificationContent content, UserNotificationDto notification)
     {
         if (!string.IsNullOrWhiteSpace(notification.Subject))
         {
@@ -158,8 +212,6 @@ internal partial class NotifoMobilePushImplementation : NSObject
         {
             content.Body = notification.Body;
         }
-
-        await AddImageAsync(content, notification);
 
         var actions = new List<UNNotificationAction>();
 
@@ -219,19 +271,16 @@ internal partial class NotifoMobilePushImplementation : NSObject
             UNUserNotificationCenter.Current.SetNotificationCategories(new NSSet<UNNotificationCategory>(categories.ToArray()));
 
             // Without this call action buttons will not be added or updated.
-            _ = await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
+            await UNUserNotificationCenter.Current.GetNotificationCategoriesAsync();
 
             content.CategoryIdentifier = categoryId;
         }
 
         content.Sound ??= UNNotificationSound.Default;
-
-        notificationHandler?.OnBuildNotification(content, notification);
-
-        return content;
     }
 
-    private async Task AddImageAsync(UNMutableNotificationContent content, UserNotificationDto notification)
+    private async Task EnrichImagesAsync(UNMutableNotificationContent content, UserNotificationDto notification,
+        CancellationToken ct)
     {
         var image = string.IsNullOrWhiteSpace(notification.ImageLarge) ? notification.ImageSmall : notification.ImageLarge;
 
@@ -240,7 +289,7 @@ internal partial class NotifoMobilePushImplementation : NSObject
             return;
         }
 
-        var imagePath = await GetImageAsync(image);
+        var imagePath = await GetImageAsync(image, ct);
 
         if (string.IsNullOrWhiteSpace(imagePath))
         {
@@ -275,6 +324,63 @@ internal partial class NotifoMobilePushImplementation : NSObject
         content.Attachments = new UNNotificationAttachment[] { attachement };
     }
 
+    private async Task<string?> GetImageAsync(string imageUrl,
+        CancellationToken ct)
+    {
+        try
+        {
+            // Convert the hash of the url to create short files names. Base64 will create longer file names.
+            var imagePath = Path.Combine(FileSystem.CacheDirectory, imageUrl.Sha256());
+
+            if (File.Exists(imagePath))
+            {
+                return imagePath;
+            }
+
+            // Let the server decide how the image should be delivered.
+            imageUrl = imageUrl.AppendQueries("preset", "MobileIOS");
+
+            // Copy directly from the web stream to the image stream to reduce memory allocations.
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                var httpClient = Client.CreateHttpClient();
+                try
+                {
+                    var response = await httpClient.GetAsync(imageUrl, ct);
+
+                    response.EnsureSuccessStatusCode();
+
+                    using (var imageStream = await response.Content.ReadAsStreamAsync())
+                    {
+                        await imageStream.CopyToAsync(fileStream, ct);
+                    }
+                }
+                finally
+                {
+                    Client.ReturnHttpClient(httpClient);
+                }
+            }
+
+            return imagePath;
+        }
+        catch (Exception ex)
+        {
+            NotifoIO.Current.RaiseError(Strings.DownloadImageError, ex, this);
+        }
+
+        return null;
+    }
+
+    private async Task EnrichWithCustomCodeAsync(UNMutableNotificationContent content, UserNotificationDto notification,
+        CancellationToken ct)
+    {
+        if (notificationHandler != null)
+        {
+            await notificationHandler.OnBuildNotificationAsync(content, notification, ct);
+        }
+    }
+
+    /// <inheritdoc />
     public void DidReceiveNotificationResponse(UNNotificationResponse response)
     {
         var userInfo = response.Notification.Request.Content.UserInfo.ToDictionary();
@@ -297,47 +403,5 @@ internal partial class NotifoMobilePushImplementation : NSObject
         {
             Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
         }
-    }
-
-    private async Task<string?> GetImageAsync(string imageUrl)
-    {
-        try
-        {
-            // Convert the hash of the url to create short files names. Base64 will create longer file names.
-            var imagePath = Path.Combine(FileSystem.CacheDirectory, imageUrl.Sha256());
-
-            if (File.Exists(imagePath))
-            {
-                return imagePath;
-            }
-
-            // Let the server decide how the image should be delivered.
-            imageUrl = imageUrl.AppendQueries("preset", "MobileIOS");
-
-            // Copy directly from the web stream to the image stream to reduce memory allocations.
-            using (var fileStream = new FileStream(imagePath, FileMode.Create))
-            {
-                var httpClient = Client.CreateHttpClient();
-                try
-                {
-                    using (var imageStream = await httpClient.GetStreamAsync(imageUrl))
-                    {
-                        await imageStream.CopyToAsync(fileStream);
-                    }
-                }
-                finally
-                {
-                    Client.ReturnHttpClient(httpClient);
-                }
-            }
-
-            return imagePath;
-        }
-        catch (Exception ex)
-        {
-            NotifoIO.Current.RaiseError(Strings.DownloadImageError, ex, this);
-        }
-
-        return null;
     }
 }

@@ -5,7 +5,15 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Runtime.CompilerServices;
+#pragma warning disable SA1401 // Fields must be private
 
-[assembly: InternalsVisibleTo("Notifo.SDK.UnitTests")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+namespace Notifo.SDK.Helpers;
+
+internal sealed class LRUCacheItem<TKey, TValue>
+{
+    public TKey Key;
+
+    public TValue Value;
+
+    public int Size;
+}

@@ -1,19 +1,20 @@
 ﻿using System.Collections.Generic;
 
-namespace Plugin.FirebasePushNotification;
-
-public class NotificationResponse
+namespace Plugin.FirebasePushNotification
 {
-    public string Identifier { get; }
-
-    public IDictionary<string, object> Data { get; }
-
-    public NotificationCategoryType Type { get; }
-
-    public NotificationResponse(IDictionary<string, object> data, string identifier = "", NotificationCategoryType type = NotificationCategoryType.Default)
+    public class NotificationResponse
     {
-        Identifier = identifier;
-        Data = data;
-        Type = type;
+        public string Identifier { get; }
+
+        public IDictionary<string, object> Data { get; }
+
+        public NotificationCategoryType Type { get; }
+
+        public NotificationResponse(IDictionary<string, object> data, string identifier = "", NotificationCategoryType type = NotificationCategoryType.Default)
+        {
+            Identifier = identifier;
+            Data = data;
+            Type = type;
+        }
     }
 }

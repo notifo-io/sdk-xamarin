@@ -5,7 +5,6 @@
     <AssemblyName>Notifo.Xamarin.Worker</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	<ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <RootNamespace>Notifo.SDK</RootNamespace>
     <TargetFrameworks>monoandroid12.0;</TargetFrameworks>
@@ -44,8 +43,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'monoandroid12.0'">
-    <PackageReference Include="Xamarin.Android.Arch.Work.Runtime">
-      <Version>1.0.0.3</Version>
+    <PackageReference Include="Xamarin.Android.Arch.Work.Runtime" Version="1.0.0.3">
     </PackageReference>
   </ItemGroup>
 </Project>

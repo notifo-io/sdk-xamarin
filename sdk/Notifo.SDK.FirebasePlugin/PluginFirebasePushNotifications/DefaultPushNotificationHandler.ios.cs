@@ -1,23 +1,24 @@
 ﻿using System.Collections.Generic;
 
-namespace Plugin.FirebasePushNotification;
-
-public class DefaultPushNotificationHandler : IPushNotificationHandler
+namespace Plugin.FirebasePushNotification
 {
-    public const string DomainTag = "DefaultPushNotificationHandler";
-
-    public virtual void OnError(string error)
+    public class DefaultPushNotificationHandler : IPushNotificationHandler
     {
-        System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnError - {error}");
-    }
+        public const string DomainTag = "DefaultPushNotificationHandler";
 
-    public virtual void OnOpened(NotificationResponse response)
-    {
-        System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnOpened");
-    }
+        public virtual void OnError(string error)
+        {
+            System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnError - {error}");
+        }
 
-    public virtual void OnReceived(IDictionary<string, object> parameters)
-    {
-        System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnReceived");
+        public virtual void OnOpened(NotificationResponse response)
+        {
+            System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnOpened");
+        }
+
+        public virtual void OnReceived(IDictionary<string, object> parameters)
+        {
+            System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnReceived");
+        }
     }
 }
