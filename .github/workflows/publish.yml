@@ -18,6 +18,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           nuget restore
+          cd sdk/Notifo.SDK.Core/
           msbuild Notifo.SDK.Core.csproj
           cd ../Notifo.SDK.FirebasePlugin/
           msbuild Notifo.SDK.FirebasePlugin.csproj
@@ -28,7 +29,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           nuget restore
-          cd sdk/Notifo.SDK/
+          cd sdk/Notifo.SDK.Core/
           msbuild Notifo.SDK.Core.csproj /p:Configuration=Release
           dotnet nuget push bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate -n
           cd ../Notifo.SDK.FirebasePlugin/
