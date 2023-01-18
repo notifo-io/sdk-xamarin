@@ -20,9 +20,9 @@ jobs:
         if: github.event_name != 'push' || !contains(github.ref, 'refs/tags/')
         run: |
           nuget restore
-          msbuild sdk/Notifo.SDK/Notifo.SDK.Core.csproj /t:Rebuild /p:Configuration=Release
-          msbuild sdk/Notifo.SDK.FirebasePlugin/Notifo.SDK.FirebasePlugin.csproj /t:Rebuild /p:Configuration=Release
-          msbuild sdk/Notifo.SDK.Worker/Notifo.SDK.Worker.csproj /t:Rebuild /p:Configuration=Release
+          msbuild sdk/Notifo.SDK/Notifo.SDK.Core.csproj
+          msbuild sdk/Notifo.SDK.FirebasePlugin/Notifo.SDK.FirebasePlugin.csproj
+          msbuild sdk/Notifo.SDK.Worker/Notifo.SDK.Worker.csproj
 
       - name: build release
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -31,16 +31,15 @@ jobs:
           VERSION="${tagParts[2]}"
           VERSION="${VERSION//v}"
           nuget restore
-          msbuild sdk/Notifo.SDK/Notifo.SDK.Core.csproj /t:Rebuild /p:Configuration=Release /p:Version=$VERSION
-          msbuild sdk/Notifo.SDK.FirebasePlugin/Notifo.SDK.FirebasePlugin.csproj /t:Rebuild /p:Configuration=Release /p:Version=$VERSION
-          msbuild sdk/Notifo.SDK.Worker/Notifo.SDK.Worker.csproj /t:Rebuild /p:Configuration=Release /p:Version=$VERSION
+          msbuild sdk/Notifo.SDK/Notifo.SDK.Core.csproj /t:Rebuild /p:Configuration=Release
+          msbuild sdk/Notifo.SDK.FirebasePlugin/Notifo.SDK.FirebasePlugin.csproj /t:Rebuild /p:Configuration=Release
+          msbuild sdk/Notifo.SDK.Worker/Notifo.SDK.Worker.csproj /t:Rebuild /p:Configuration=Release
 
       - name: publish
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         run: |
-          dotnet nuget push sdk/Notifo.SDK/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
-          dotnet nuget push sdk/Notifo.SDK.FirebasePlugin/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
-          dotnet nuget push sdk/Notifo.SDK.Worker/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
+          dotnet nuget push sdk/Notifo.SDK/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate -n
+          dotnet nuget push sdk/Notifo.SDK.FirebasePlugin/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate -n
+          dotnet nuget push sdk/Notifo.SDK.Worker/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate -n
           
           
           
