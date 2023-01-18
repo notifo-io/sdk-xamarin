@@ -111,7 +111,7 @@
     <Compile Include="NotificationService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\sdk\Notifo.SDK\Notifo.SDK.Core.csproj">
+    <ProjectReference Include="..\..\sdk\Notifo.SDK.Core\Notifo.SDK.Core.csproj">
       <Project>{4F928A67-C5E7-44E2-BE71-6ED155AFED9C}</Project>
       <Name>Notifo.SDK.Core</Name>
     </ProjectReference>

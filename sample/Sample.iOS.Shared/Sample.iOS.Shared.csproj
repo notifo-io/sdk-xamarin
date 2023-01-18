@@ -44,7 +44,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\sdk\Notifo.SDK\Notifo.SDK.Core.csproj">
+    <ProjectReference Include="..\..\sdk\Notifo.SDK.Core\Notifo.SDK.Core.csproj">
       <Project>{4f928a67-c5e7-44e2-be71-6ed155afed9c}</Project>
       <Name>Notifo.SDK.Core</Name>
     </ProjectReference>

@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\sdk\Notifo.SDK\Notifo.SDK.Core.csproj" />
+    <ProjectReference Include="..\..\sdk\Notifo.SDK.Core\Notifo.SDK.Core.csproj" />
   </ItemGroup>
 
 </Project>
