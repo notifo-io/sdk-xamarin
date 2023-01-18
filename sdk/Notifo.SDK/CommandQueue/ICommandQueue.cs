@@ -9,16 +9,17 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Notifo.SDK.CommandQueue;
-
-internal interface ICommandQueue
+namespace Notifo.SDK.CommandQueue
 {
-    event EventHandler<NotificationLogEventArgs> OnLog;
+    internal interface ICommandQueue
+    {
+        event EventHandler<NotificationLogEventArgs> OnLog;
 
-    void Run(ICommand command);
+        void Run(ICommand command);
 
-    void Trigger();
+        void Trigger();
 
-    Task CompleteAsync(
-        CancellationToken ct);
+        Task CompleteAsync(
+            CancellationToken ct);
+    }
 }

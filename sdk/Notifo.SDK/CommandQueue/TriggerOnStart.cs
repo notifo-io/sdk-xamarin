@@ -8,26 +8,27 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Notifo.SDK.CommandQueue;
-
-internal sealed class TriggerOnStart : ICommandTrigger
+namespace Notifo.SDK.CommandQueue
 {
-    private readonly TimeSpan delay;
-
-    public TriggerOnStart(TimeSpan delay)
+    internal sealed class TriggerOnStart : ICommandTrigger
     {
-        this.delay = delay;
-    }
+        private readonly TimeSpan delay;
 
-    public void Start(ICommandQueue queue)
-    {
-        if (delay == TimeSpan.Zero)
+        public TriggerOnStart(TimeSpan delay)
         {
-            queue.Trigger();
+            this.delay = delay;
         }
-        else
+
+        public void Start(ICommandQueue queue)
         {
-            Task.Delay(delay).ContinueWith(_ => queue.Trigger());
+            if (delay == TimeSpan.Zero)
+            {
+                queue.Trigger();
+            }
+            else
+            {
+                Task.Delay(delay).ContinueWith(_ => queue.Trigger());
+            }
         }
     }
 }

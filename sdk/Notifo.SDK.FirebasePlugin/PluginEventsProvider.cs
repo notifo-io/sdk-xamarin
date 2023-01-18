@@ -12,76 +12,77 @@ using Notifo.SDK.Extensions;
 using Notifo.SDK.PushEventProvider;
 using Plugin.FirebasePushNotification;
 
-namespace Notifo.SDK.FirebasePlugin;
-
-internal class PluginEventsProvider : IPushEventsProvider
+namespace Notifo.SDK.FirebasePlugin
 {
-    public event EventHandler<TokenRefreshEventArgs> OnTokenRefresh;
-
-    public event EventHandler<Notifo.SDK.NotificationEventArgs> OnNotificationReceived;
-
-    public event EventHandler<Notifo.SDK.NotificationEventArgs> OnNotificationOpened;
-
-    public event EventHandler<Notifo.SDK.NotificationLogEventArgs> OnLog;
-
-    public PluginEventsProvider()
+    internal class PluginEventsProvider : IPushEventsProvider
     {
-        CrossFirebasePushNotification.Current.OnTokenRefresh += FirebasePushNotification_OnTokenRefresh;
-        CrossFirebasePushNotification.Current.OnNotificationReceived += FirebasePushNotification_OnNotificationReceived;
-        CrossFirebasePushNotification.Current.OnNotificationOpened += FirebasePushNotification_OnNotificationOpened;
-        CrossFirebasePushNotification.Current.OnNotificationError += Current_OnNotificationError;
-    }
+        public event EventHandler<TokenRefreshEventArgs> OnTokenRefresh;
 
-    private void FirebasePushNotification_OnTokenRefresh(object source, FirebasePushNotificationTokenEventArgs e)
-    {
-        OnTokenRefresh?.Invoke(this, new TokenRefreshEventArgs(e.Token));
-    }
+        public event EventHandler<Notifo.SDK.NotificationEventArgs> OnNotificationReceived;
 
-    private void Current_OnNotificationError(object source, FirebasePushNotificationErrorEventArgs e)
-    {
-        OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, source, e.Message, null, null));
-    }
+        public event EventHandler<Notifo.SDK.NotificationEventArgs> OnNotificationOpened;
 
-    private void FirebasePushNotification_OnNotificationReceived(object source, FirebasePushNotificationDataEventArgs e)
-    {
-        if (!IsNotificationData(e.Data))
+        public event EventHandler<Notifo.SDK.NotificationLogEventArgs> OnLog;
+
+        public PluginEventsProvider()
         {
-            return;
+            CrossFirebasePushNotification.Current.OnTokenRefresh += FirebasePushNotification_OnTokenRefresh;
+            CrossFirebasePushNotification.Current.OnNotificationReceived += FirebasePushNotification_OnNotificationReceived;
+            CrossFirebasePushNotification.Current.OnNotificationOpened += FirebasePushNotification_OnNotificationOpened;
+            CrossFirebasePushNotification.Current.OnNotificationError += Current_OnNotificationError;
         }
 
-        var args =
-            new NotificationEventArgs(
-                new UserNotificationDto().FromDictionary(new Dictionary<string, object>(e.Data)));
-
-        OnNotificationReceived?.Invoke(this, args);
-    }
-
-    private void FirebasePushNotification_OnNotificationOpened(object source, FirebasePushNotificationResponseEventArgs e)
-    {
-        if (!IsNotificationData(e.Data))
+        private void FirebasePushNotification_OnTokenRefresh(object source, FirebasePushNotificationTokenEventArgs e)
         {
-            return;
+            OnTokenRefresh?.Invoke(this, new TokenRefreshEventArgs(e.Token));
         }
 
-        var args =
-            new NotificationEventArgs(
-                new UserNotificationDto().FromDictionary(new Dictionary<string, object>(e.Data)));
-
-        OnNotificationOpened?.Invoke(this, args);
-    }
-
-    private bool IsNotificationData(IDictionary<string, object> data)
-    {
-        if (data == null)
+        private void Current_OnNotificationError(object source, FirebasePushNotificationErrorEventArgs e)
         {
-            return false;
+            OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, source, e.Message, null, null));
         }
 
-        return data.ContainsKey(Constants.SubjectKey) || data.ContainsKey(Constants.ApsAlertTitleKey);
-    }
+        private void FirebasePushNotification_OnNotificationReceived(object source, FirebasePushNotificationDataEventArgs e)
+        {
+            if (!IsNotificationData(e.Data))
+            {
+                return;
+            }
 
-    public Task<string> GetTokenAsync()
-    {
-        return CrossFirebasePushNotification.Current.GetTokenAsync();    
+            var args =
+                new NotificationEventArgs(
+                    new UserNotificationDto().FromDictionary(new Dictionary<string, object>(e.Data)));
+
+            OnNotificationReceived?.Invoke(this, args);
+        }
+
+        private void FirebasePushNotification_OnNotificationOpened(object source, FirebasePushNotificationResponseEventArgs e)
+        {
+            if (!IsNotificationData(e.Data))
+            {
+                return;
+            }
+
+            var args =
+                new NotificationEventArgs(
+                    new UserNotificationDto().FromDictionary(new Dictionary<string, object>(e.Data)));
+
+            OnNotificationOpened?.Invoke(this, args);
+        }
+
+        private bool IsNotificationData(IDictionary<string, object> data)
+        {
+            if (data == null)
+            {
+                return false;
+            }
+
+            return data.ContainsKey(Constants.SubjectKey) || data.ContainsKey(Constants.ApsAlertTitleKey);
+        }
+
+        public Task<string> GetTokenAsync()
+        {
+            return CrossFirebasePushNotification.Current.GetTokenAsync();
+        }
     }
 }

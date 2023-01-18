@@ -1,29 +1,33 @@
 name: Publish Nuget
 on:
   push:
-   tags:        
-      - '**'
-
-  workflow_dispatch:
+    branches:
+      - 'master'
+  pull_request:
+    branches:
+      - 'master'
 
 jobs:
   build:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Deploy
+      - uses: actions/checkout@v3
+
+      - name: build
         run: |
           tagParts=(${GITHUB_REF//\// })
           VERSION="${tagParts[2]}"
           VERSION="${VERSION//v}"
           nuget restore
-          cd sdk/Notifo.SDK/
-          msbuild Notifo.SDK.Core.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION
-          dotnet nuget push bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
-          cd ../Notifo.SDK.FirebasePlugin/
-          msbuild Notifo.SDK.FirebasePlugin.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION
-          dotnet nuget push bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
+          msbuild sdk/Notifo.SDK/Notifo.SDK.Core.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION
+          msbuild sdk/Notifo.SDK.FirebasePlugin/Notifo.SDK.FirebasePlugin.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION
+          msbuild sdk/Notifo.SDK.Worker/Notifo.SDK.Worker.csproj /verbosity:normal /t:Rebuild /p:Configuration=Release /p:Version=$VERSION
+
+      - name: publish
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        run: |
+          dotnet nuget push bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate#
           
           
           

@@ -7,24 +7,25 @@
 
 using System;
 
-namespace Notifo.SDK;
-
-/// <summary>
-/// Event arguments containing a device token.
-/// </summary>
-public class TokenRefreshEventArgs : EventArgs
+namespace Notifo.SDK
 {
     /// <summary>
-    /// Gets the device token.
+    /// Event arguments containing a device token.
     /// </summary>
-    public string Token { get; private set; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TokenRefreshEventArgs"/> class.
-    /// </summary>
-    /// <param name="token">The device token.</param>
-    public TokenRefreshEventArgs(string token)
+    public class TokenRefreshEventArgs : EventArgs
     {
-        Token = token;
+        /// <summary>
+        /// Gets the device token.
+        /// </summary>
+        public string Token { get; private set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenRefreshEventArgs"/> class.
+        /// </summary>
+        /// <param name="token">The device token.</param>
+        public TokenRefreshEventArgs(string token)
+        {
+            Token = token;
+        }
     }
 }

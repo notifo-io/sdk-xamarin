@@ -1,4 +1,4 @@
-﻿// ==========================================================================
+// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
@@ -19,17 +19,24 @@ namespace Sample
             notifo
                 .SetSharedName("group.io.notifo.xamarin.sample")
                 .SetBaseUrl(Constants.ApiUrl)
+                .SetApiVersion(ApiVersion.Version_1_5)
                 .UseFirebasePluginEventsProvider();
 
             notifo.OnNotificationOpened += Current_OnNotificationOpened;
-            notifo.OnLog += JustLog;
+            notifo.OnNotificationReceived += Notifo_OnNotificationReceived;
+            notifo.OnLog += Notifo_OnLog;
 
             return notifo;
         }
 
-        private static void JustLog(object source, NotificationLogEventArgs e)
+        private static void Notifo_OnLog(object sender, NotificationLogEventArgs e)
         {
-            Console.WriteLine($"DEBUG: Log {e.Message} Message Args: {e.MessageArgs}", e.Message, e.MessageArgs);
+            System.Diagnostics.Debug.WriteLine("Notification log message: " + e.Message);
+        }
+
+        private static void Notifo_OnNotificationReceived(object sender, NotificationEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("Notification received: " + e.Notification.Subject);
         }
 
         private static void Current_OnNotificationOpened(object source, NotificationEventArgs e)

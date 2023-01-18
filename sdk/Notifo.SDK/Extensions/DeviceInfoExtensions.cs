@@ -7,22 +7,23 @@
 
 using Xamarin.Essentials;
 
-namespace Notifo.SDK.Extensions;
-
-internal static class DeviceInfoExtensions
+namespace Notifo.SDK.Extensions
 {
-    public static MobileDeviceType ToMobileDeviceType(this DevicePlatform platform)
+    internal static class DeviceInfoExtensions
     {
-        if (platform == DevicePlatform.Android)
+        public static MobileDeviceType ToMobileDeviceType(this DevicePlatform platform)
         {
-            return MobileDeviceType.Android;
-        }
+            if (platform == DevicePlatform.Android)
+            {
+                return MobileDeviceType.Android;
+            }
 
-        if (platform == DevicePlatform.iOS)
-        {
-            return MobileDeviceType.IOS;
-        }
+            if (platform == DevicePlatform.iOS)
+            {
+                return MobileDeviceType.IOS;
+            }
 
-        return MobileDeviceType.Unknown;
+            return MobileDeviceType.Unknown;
+        }
     }
 }

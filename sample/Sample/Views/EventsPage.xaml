@@ -4,6 +4,8 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:prism="http://prismlibrary.com"
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+    ios:Page.UseSafeArea="True"
     prism:ViewModelLocator.AutowireViewModel="True"
     BackgroundColor="White"
     Title="Events">
@@ -19,17 +21,15 @@
                                     Margin="8,0"
                                     FontAttributes="Bold"
                                     FontSize="18"
-                                    Text="{Binding Subject}"
-                                    TextColor="Black" />
-                                
+                                    Text="{Binding Subject}"/>
+
                                 <Label
                                     Margin="8,0"
                                     FontAttributes="None"
                                     FontSize="14"
-                                    Text="{Binding Body}"
-                                    TextColor="Black" />
-                                
-                                <Label
+                                    Text="{Binding Body}"/>
+
+                                    <Label
                                     Margin="8,0"
                                     FontAttributes="None"
                                     FontSize="14"

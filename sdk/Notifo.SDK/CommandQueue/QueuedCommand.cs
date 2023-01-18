@@ -7,13 +7,14 @@
 
 using System;
 
-namespace Notifo.SDK.CommandQueue;
-
-internal sealed class QueuedCommand
+namespace Notifo.SDK.CommandQueue
 {
-    public ICommand Command { get; set; }
+    internal sealed class QueuedCommand
+    {
+        public ICommand Command { get; set; }
 
-    public int Retries { get; set; }
+        public int Retries { get; set; }
 
-    public Guid CommandId { get; set; }
+        public Guid CommandId { get; set; }
+    }
 }

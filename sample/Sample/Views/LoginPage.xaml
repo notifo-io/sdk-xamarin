@@ -5,6 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:prism="http://prismlibrary.com"
     prism:ViewModelLocator.AutowireViewModel="True"
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+    ios:Page.UseSafeArea="True"
     Title="Login">
 
     <ContentPage.Content>
@@ -21,7 +23,7 @@
                 Text="Enter API Key"
                 HorizontalOptions="CenterAndExpand" />
 
-            <Entry Text="{Binding ApiKey, Mode=TwoWay}" />
+            <Editor Text="{Binding ApiKey, Mode=TwoWay}" TextColor="Magenta" BackgroundColor="WhiteSmoke"  />
 
             <Button Command="{Binding LoginCommand}" Text="Login" />
         </StackLayout>

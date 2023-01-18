@@ -15,185 +15,186 @@ using System.Threading.Tasks;
 using Notifo.SDK.Extensions;
 using Notifo.SDK.Resources;
 
-namespace Notifo.SDK.CommandQueue;
-
-internal sealed class DefaultCommandQueue : ICommandQueue
+namespace Notifo.SDK.CommandQueue
 {
-    private readonly ICommandStore commandStore;
-    private readonly ICommandTrigger[] commandTriggers;
-    private readonly int maxRetries;
-    private readonly TimeSpan timeout;
-    private readonly Task task;
-    private readonly BlockingCollection<QueuedCommand> queue = new BlockingCollection<QueuedCommand>();
-    private readonly Queue<QueuedCommand> retryQueue = new Queue<QueuedCommand>();
-
-    public event EventHandler<NotificationLogEventArgs> OnLog;
-
-    public DefaultCommandQueue(
-        ICommandStore commandStore,
-        ICommandTrigger[] commandTriggers,
-        int maxRetries,
-        TimeSpan timeout)
+    internal sealed class DefaultCommandQueue : ICommandQueue
     {
-        this.commandStore = commandStore;
-        this.commandTriggers = commandTriggers;
-        this.maxRetries = maxRetries;
-        this.timeout = timeout;
+        private readonly ICommandStore commandStore;
+        private readonly ICommandTrigger[] commandTriggers;
+        private readonly int maxRetries;
+        private readonly TimeSpan timeout;
+        private readonly Task task;
+        private readonly BlockingCollection<QueuedCommand> queue = new BlockingCollection<QueuedCommand>();
+        private readonly Queue<QueuedCommand> retryQueue = new Queue<QueuedCommand>();
 
-        task = Task.Run(RunAsync);
-    }
+        public event EventHandler<NotificationLogEventArgs> OnLog;
 
-    public async Task CompleteAsync(
-        CancellationToken ct)
-    {
-        queue.CompleteAdding();
-
-        Trigger();
-
-        foreach (var trigger in commandTriggers.OfType<IDisposable>())
+        public DefaultCommandQueue(
+            ICommandStore commandStore,
+            ICommandTrigger[] commandTriggers,
+            int maxRetries,
+            TimeSpan timeout)
         {
-            trigger.Dispose();
+            this.commandStore = commandStore;
+            this.commandTriggers = commandTriggers;
+            this.maxRetries = maxRetries;
+            this.timeout = timeout;
+
+            task = Task.Run(RunAsync);
         }
 
-        await task.WithCancellation(ct);
-    }
-
-    public void Dispose()
-    {
-        queue.CompleteAdding();
-
-        foreach (var trigger in commandTriggers.OfType<IDisposable>())
+        public async Task CompleteAsync(
+            CancellationToken ct)
         {
-            trigger.Dispose();
-        }
+            queue.CompleteAdding();
 
-        task.Wait();
-    }
+            Trigger();
 
-    public void Run(ICommand command)
-    {
-        var queudCommand = new QueuedCommand
-        {
-            Command = command,
-            CommandId = Guid.NewGuid()
-        };
-
-        lock (retryQueue)
-        {
-            foreach (var existing in retryQueue)
+            foreach (var trigger in commandTriggers.OfType<IDisposable>())
             {
-                if (existing.Command.Merge(command))
-                {
-                    return;
-                }
+                trigger.Dispose();
             }
 
-            retryQueue.Enqueue(queudCommand);
+            await task.WithCancellation(ct);
         }
 
-        Trigger();
-
-        _ = StoreAsync(queudCommand);
-    }
-
-    private async Task StoreAsync(QueuedCommand queudCommand)
-    {
-        try
+        public void Dispose()
         {
-            await commandStore.StoreAsync(queudCommand).AsTask();
-        }
-        catch (Exception ex)
-        {
-            OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, this, Strings.CommandError, null, ex));
-        }
-    }
+            queue.CompleteAdding();
 
-    public void Trigger()
-    {
-        lock (retryQueue)
-        {
-            if (retryQueue.TryDequeue(out var dequeued))
+            foreach (var trigger in commandTriggers.OfType<IDisposable>())
             {
-                queue.Add(dequeued);
+                trigger.Dispose();
             }
+
+            task.Wait();
         }
-    }
 
-    private async Task RunAsync()
-    {
-        try
+        public void Run(ICommand command)
         {
-            var pendingCommands = await commandStore.GetCommandsAsync();
-
-            foreach (var command in pendingCommands)
+            var queudCommand = new QueuedCommand
             {
-                retryQueue.Enqueue(command);
-            }
-        }
-        catch (Exception ex)
-        {
-            OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, this, Strings.CommandError, null, ex));
-        }
+                Command = command,
+                CommandId = Guid.NewGuid()
+            };
 
-        foreach (var trigger in commandTriggers)
-        {
-            trigger.Start(this);
-        }
-
-        try
-        {
-            foreach (var enqueued in queue.GetConsumingEnumerable())
+            lock (retryQueue)
             {
-                try
+                foreach (var existing in retryQueue)
                 {
-                    if (!Debugger.IsAttached)
+                    if (existing.Command.Merge(command))
                     {
-                        using (var cts = new CancellationTokenSource(timeout))
-                        {
-                            await enqueued.Command.ExecuteAsync(cts.Token);
-                        }
-                    }
-                    else
-                    {
-                        await enqueued.Command.ExecuteAsync(default);
-                    }
-
-                    // We have completed the command successfully, so we can remove it here.
-                    try
-                    {
-                        await commandStore.RemoveAsync(enqueued.CommandId);
-                    }
-                    catch (Exception ex)
-                    {
-                        OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, this, Strings.CommandError, null, ex));
-                    }
-
-                    // We have just completed a command, so it is very likely that the next one will be successful as well.
-                    Trigger();
-                }
-                catch
-                {
-                    if (enqueued.Retries < maxRetries)
-                    {
-                        enqueued.Retries++;
-
-                        lock (retryQueue)
-                        {
-                            retryQueue.Enqueue(enqueued);
-                        }
+                        return;
                     }
                 }
+
+                retryQueue.Enqueue(queudCommand);
             }
+
+            Trigger();
+
+            _ = StoreAsync(queudCommand);
         }
-        catch
+
+        private async Task StoreAsync(QueuedCommand queudCommand)
         {
             try
             {
-                queue.CompleteAdding();
+                await commandStore.StoreAsync(queudCommand).AsTask();
+            }
+            catch (Exception ex)
+            {
+                OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, this, Strings.CommandError, null, ex));
+            }
+        }
+
+        public void Trigger()
+        {
+            lock (retryQueue)
+            {
+                if (retryQueue.TryDequeue(out var dequeued))
+                {
+                    queue.Add(dequeued);
+                }
+            }
+        }
+
+        private async Task RunAsync()
+        {
+            try
+            {
+                var pendingCommands = await commandStore.GetCommandsAsync();
+
+                foreach (var command in pendingCommands)
+                {
+                    retryQueue.Enqueue(command);
+                }
+            }
+            catch (Exception ex)
+            {
+                OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, this, Strings.CommandError, null, ex));
+            }
+
+            foreach (var trigger in commandTriggers)
+            {
+                trigger.Start(this);
+            }
+
+            try
+            {
+                foreach (var enqueued in queue.GetConsumingEnumerable())
+                {
+                    try
+                    {
+                        if (!Debugger.IsAttached)
+                        {
+                            using (var cts = new CancellationTokenSource(timeout))
+                            {
+                                await enqueued.Command.ExecuteAsync(cts.Token);
+                            }
+                        }
+                        else
+                        {
+                            await enqueued.Command.ExecuteAsync(default(CancellationToken));
+                        }
+
+                        // We have completed the command successfully, so we can remove it here.
+                        try
+                        {
+                            await commandStore.RemoveAsync(enqueued.CommandId);
+                        }
+                        catch (Exception ex)
+                        {
+                            OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, this, Strings.CommandError, null, ex));
+                        }
+
+                        // We have just completed a command, so it is very likely that the next one will be successful as well.
+                        Trigger();
+                    }
+                    catch
+                    {
+                        if (enqueued.Retries < maxRetries)
+                        {
+                            enqueued.Retries++;
+
+                            lock (retryQueue)
+                            {
+                                retryQueue.Enqueue(enqueued);
+                            }
+                        }
+                    }
+                }
             }
             catch
             {
-                return;
+                try
+                {
+                    queue.CompleteAdding();
+                }
+                catch
+                {
+                    return;
+                }
             }
         }
     }
