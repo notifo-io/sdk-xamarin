@@ -66,6 +66,7 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <MtouchDebug>true</MtouchDebug>
     <CodesignProvision>VS: io.notifo.xamarin.sample Development</CodesignProvision>
+    <DeviceSpecificBuild>false</DeviceSpecificBuild>
   </PropertyGroup>
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>

@@ -35,7 +35,8 @@ namespace SampleNotificationServiceExtension
 
 			NotifoIO.Current
 				.SetSharedName("group.io.notifo.xamarin.sample")
-				.SetNotificationHandler(new NotificationHandler());
+				.SetRefreshOptions(new PullRefreshOptions())
+                .SetNotificationHandler(new NotificationHandler());
 
             await NotifoIO.Current.DidReceiveNotificationRequestAsync(request, BestAttemptContent);
 

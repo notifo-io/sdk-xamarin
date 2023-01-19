@@ -30,6 +30,7 @@ namespace Sample.iOS
             NotifoIO.Current
                 .SetNotificationHandler(new NotificationHandler())
                 .UseDefaults()
+                .SetRefreshOptions(new PullRefreshOptions())
                 .UseFirebasePluginEventsProvider(launchOptions, true);
 
             UNUserNotificationCenter.Current.Delegate = this;

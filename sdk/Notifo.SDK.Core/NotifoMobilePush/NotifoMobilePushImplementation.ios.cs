@@ -82,7 +82,7 @@ namespace Notifo.SDK.NotifoMobilePush
                     continue;
                 }
 
-                await ShowLocalNotificationAsync(notification);
+                ShowLocalNotificationAsync(notification).Forget();
             }
 
             if (trackImmediatly != null)

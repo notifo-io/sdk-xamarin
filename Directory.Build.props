@@ -9,6 +9,6 @@
     <PackageProjectUrl>https://notifo.io</PackageProjectUrl>
     <PackageTags>notifo xamarin firebase</PackageTags>
     <Version>1.2.0-beta1</Version>
-    <LangVersion>7</LangVersion>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 </Project>
