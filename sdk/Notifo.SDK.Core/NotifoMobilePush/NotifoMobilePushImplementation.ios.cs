@@ -24,10 +24,15 @@ namespace Notifo.SDK.NotifoMobilePush
         private PullRefreshOptions refreshOptions;
         private INotificationHandler notificationHandler;
 
+        partial void SetupPlatform()
+        {
+            this.refreshOptions = new PullRefreshOptions();
+        }
+
         /// <inheritdoc />
         public INotifoMobilePush SetRefreshOptions(PullRefreshOptions refreshOptions)
         {
-            this.refreshOptions = refreshOptions ?? new PullRefreshOptions();
+            this.refreshOptions = refreshOptions;
             return this;
         }
 
