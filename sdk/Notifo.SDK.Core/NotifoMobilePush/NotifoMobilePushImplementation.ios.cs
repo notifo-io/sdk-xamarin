@@ -24,10 +24,15 @@ namespace Notifo.SDK.NotifoMobilePush
         private PullRefreshOptions refreshOptions;
         private INotificationHandler notificationHandler;
 
+        partial void SetupPlatform()
+        {
+            this.refreshOptions = new PullRefreshOptions();
+        }
+
         /// <inheritdoc />
         public INotifoMobilePush SetRefreshOptions(PullRefreshOptions refreshOptions)
         {
-            this.refreshOptions = refreshOptions ?? new PullRefreshOptions();
+            this.refreshOptions = refreshOptions;
             return this;
         }
 
@@ -82,7 +87,10 @@ namespace Notifo.SDK.NotifoMobilePush
                     continue;
                 }
 
-                await ShowLocalNotificationAsync(notification);
+                // Do not "await" here. Trying to save time because of the 30 sec limit of the notification service extension.
+                // Notifications are pushed as quickly as possible to the ios notification scheduler.
+                // This could be a memory issue if there is a large amount of notifications.
+                ShowLocalNotificationAsync(notification).Forget();
             }
 
             if (trackImmediatly != null)

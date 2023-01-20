@@ -8,11 +8,10 @@
 using System;
 using System.Threading;
 using Android.Runtime;
-using AndroidX.Work;
 
 namespace Notifo.SDK
 {
-    internal sealed class UpdateWorker : Worker
+    internal sealed class UpdateWorker : AndroidX.Work.Worker
     {
         public UpdateWorker(IntPtr javaReference, JniHandleOwnership transfer)
             : base(javaReference, transfer)

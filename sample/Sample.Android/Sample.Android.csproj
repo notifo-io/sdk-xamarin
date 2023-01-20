@@ -83,6 +83,12 @@
     <PackageReference Include="System.Numerics.Vectors">
       <Version>4.5.0</Version>
     </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.Wear">
+      <Version>1.2.0.7</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.Work.Runtime">
+      <Version>2.7.1.5</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Firebase.Common">
       <Version>120.0.0.5</Version>
     </PackageReference>
@@ -131,6 +137,10 @@
     <ProjectReference Include="..\..\sdk\Notifo.SDK.Core\Notifo.SDK.Core.csproj">
       <Project>{4f928a67-c5e7-44e2-be71-6ed155afed9c}</Project>
       <Name>Notifo.SDK.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\sdk\Notifo.SDK.Worker\Notifo.SDK.Worker.csproj">
+      <Project>{938b1a56-1c33-40cb-8569-8625997945c8}</Project>
+      <Name>Notifo.SDK.Worker</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sample\Sample.csproj">
       <Project>{DD43F8B0-1925-477A-9FF5-BE3E01350E30}</Project>
