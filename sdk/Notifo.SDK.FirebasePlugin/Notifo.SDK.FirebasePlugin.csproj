@@ -1,10 +1,10 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
 
   <PropertyGroup>
-	  <NoWarn>CS1591;CS0618</NoWarn>
     <AssemblyName>Notifo.Xamarin.FirebasePlugin</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <NoWarn>CS1591;CS0618</NoWarn>
     <PackageId>Notifo.Xamarin.Firebase</PackageId>
     <RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>
     <RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
@@ -41,7 +41,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-	<PackageReference Include="Notifo.SDK" Version="1.7.4" />
+	  <PackageReference Include="Notifo.SDK" Version="1.7.4" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('xamarinios'))">

@@ -136,7 +136,7 @@ namespace Notifo.SDK.Services
 
             if (!string.IsNullOrWhiteSpace(serialized))
             {
-                return JsonConvert.DeserializeObject<SlidingSet<Guid>>(serialized, SerializerSettings);
+                return JsonConvert.DeserializeObject<SlidingSet<Guid>>(serialized, SerializerSettings)!;
             }
 
             return new SlidingSet<Guid>();
@@ -155,7 +155,7 @@ namespace Notifo.SDK.Services
 
             if (!string.IsNullOrWhiteSpace(serialized))
             {
-                return JsonConvert.DeserializeObject<Dictionary<Guid, QueuedCommand>>(serialized, SerializerSettings);
+                return JsonConvert.DeserializeObject<Dictionary<Guid, QueuedCommand>>(serialized, SerializerSettings)!;
             }
 
             return new Dictionary<Guid, QueuedCommand>();

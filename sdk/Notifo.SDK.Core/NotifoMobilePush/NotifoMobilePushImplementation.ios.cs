@@ -71,7 +71,7 @@ namespace Notifo.SDK.NotifoMobilePush
             // iOS does not maintain a queue of undelivered notifications, therefore we have to query here.
             var notifications = await GetPendingNotificationsAsync(refreshOptions.Take, refreshOptions.Period, default(CancellationToken));
 
-            List<UserNotificationDto> trackImmediatly = null;
+            List<UserNotificationDto>? trackImmediatly = null;
 
             foreach (var notification in notifications)
             {
@@ -302,7 +302,7 @@ namespace Notifo.SDK.NotifoMobilePush
 
             var imagePath = await GetImageAsync(image, ct);
 
-            if (string.IsNullOrWhiteSpace(imagePath))
+            if (string.IsNullOrWhiteSpace(imagePath) || imagePath == null)
             {
                 return;
             }
@@ -335,7 +335,7 @@ namespace Notifo.SDK.NotifoMobilePush
             content.Attachments = new UNNotificationAttachment[] { attachement };
         }
 
-        private async Task<string> GetImageAsync(string imageUrl,
+        private async Task<string?> GetImageAsync(string imageUrl,
             CancellationToken ct)
         {
             try
@@ -396,7 +396,7 @@ namespace Notifo.SDK.NotifoMobilePush
         {
             var userInfo = response.Notification.Request.Content.UserInfo.ToDictionary();
 
-            object value = null;
+            object? value = null;
 
             switch (response.ActionIdentifier)
             {

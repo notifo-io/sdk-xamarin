@@ -8,7 +8,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://notifo.io</PackageProjectUrl>
     <PackageTags>notifo xamarin firebase</PackageTags>
-    <Version>1.2.0-beta1</Version>
+    <Version>1.2.1-beta1</Version>
     <LangVersion>9</LangVersion>
   </PropertyGroup>
 </Project>

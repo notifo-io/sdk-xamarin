@@ -15,7 +15,7 @@ namespace Notifo.SDK.CommandQueue
     {
         private readonly TimeSpan interval;
         private readonly IConnectivity connectivity;
-        private Timer timer;
+        private Timer? timer;
 
         public TriggerPeriodically(TimeSpan interval, IConnectivity connectivity)
         {
@@ -30,16 +30,13 @@ namespace Notifo.SDK.CommandQueue
 
         public void Start(ICommandQueue queue)
         {
-            if (timer == null)
+            timer ??= new Timer(x =>
             {
-                timer = new Timer(x =>
+                if (connectivity.IsConnected)
                 {
-                    if (connectivity.IsConnected)
-                    {
-                        queue.Trigger();
-                    }
-                });
-            }
+                    queue.Trigger();
+                }
+            });
 
             timer.Change((int)interval.TotalMilliseconds, (int)interval.TotalMilliseconds);
         }

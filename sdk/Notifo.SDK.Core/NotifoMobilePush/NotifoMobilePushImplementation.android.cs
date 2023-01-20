@@ -102,7 +102,7 @@ namespace Notifo.SDK.NotifoMobilePush
             }
         }
 
-        private Bitmap GetBitmap(string bitmapUrl, int? width = null, int? height = null)
+        private Bitmap? GetBitmap(string bitmapUrl, int? width = null, int? height = null)
         {
             try
             {

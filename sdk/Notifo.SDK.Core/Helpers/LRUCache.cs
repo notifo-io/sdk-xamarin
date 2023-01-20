@@ -107,7 +107,7 @@ namespace Notifo.SDK.Helpers
         {
             lock (cacheMap)
             {
-                value = default(TValue);
+                value = default(TValue)!;
 
                 if (cacheMap.TryGetValue(key, out var node))
                 {

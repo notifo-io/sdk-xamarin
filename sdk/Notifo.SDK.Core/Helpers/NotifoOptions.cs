@@ -35,9 +35,9 @@ namespace Notifo.SDK.Helpers
             set => store.ApiKey = value;
         }
 
-        public string ClientId => null;
+        public string? ClientId => null;
 
-        public string ClientSecret => null;
+        public string? ClientSecret => null;
 
         public TimeSpan Timeout => default(TimeSpan);
 
