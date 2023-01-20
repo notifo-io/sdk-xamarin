@@ -5,6 +5,7 @@
     <AssemblyName>Notifo.Xamarin.Worker</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Nullable>enable</Nullable>
     <RootNamespace>Notifo.SDK.Worker</RootNamespace>
     <TargetFrameworks>monoandroid12.0;</TargetFrameworks>
   </PropertyGroup>

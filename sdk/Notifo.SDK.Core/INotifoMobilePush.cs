@@ -99,7 +99,7 @@ namespace Notifo.SDK
         /// <param name="error">The error message.</param>
         /// <param name="exception">The exception.</param>
         /// <param name="source">The source of the error.</param>
-        void RaiseError(string error, Exception exception, object source);
+        void RaiseError(string error, Exception? exception, object? source);
 
         /// <summary>
         /// Raises a debug message.
@@ -107,7 +107,7 @@ namespace Notifo.SDK
         /// <param name="message">The debug message.</param>
         /// <param name="source">The source of the error.</param>
         /// <param name="args">The message arguments.</param>
-        void RaiseDebug(string message, object source, params object[] args);
+        void RaiseDebug(string message, object? source, params object[] args);
 
         /// <summary>
         /// Register for notifications on demand.

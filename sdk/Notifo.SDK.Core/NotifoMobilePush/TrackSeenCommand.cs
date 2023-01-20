@@ -21,10 +21,10 @@ namespace Notifo.SDK.NotifoMobilePush
         public HashSet<Guid> Ids
         {
             // Convert the old IDs to the new dictionary, so that we can read old commands from the disk.
-            set => IdsAndUrls = value.ToDictionary(x => x, x => (string)null);
+            set => IdsAndUrls = value.ToDictionary(x => x, x => (string?)null);
         }
 
-        public Dictionary<Guid, string> IdsAndUrls { get; set; }
+        public Dictionary<Guid, string?> IdsAndUrls { get; set; }
 
         public string Token { get; set; }
 

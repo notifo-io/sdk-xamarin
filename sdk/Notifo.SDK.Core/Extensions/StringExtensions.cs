@@ -37,17 +37,17 @@ namespace Notifo.SDK.Extensions
             }
         }
 
-        public static string AppendQueries(this string url, string key1, object value1)
+        public static string AppendQueries(this string url, string? key1, object? value1)
         {
             return AppendQueries(url, key1, value1, null, null);
         }
 
-        public static string AppendQueries(this string url, string key1, object value1, string key2, object value2)
+        public static string AppendQueries(this string url, string? key1, object? value1, string? key2, object? value2)
         {
             return AppendQueries(url, key1, value1, key2, value2, null, null);
         }
 
-        public static string AppendQueries(this string url, string key1, object value1, string key2, object value2, string key3, object value3)
+        public static string AppendQueries(this string url, string? key1, object? value1, string? key2, object? value2, string? key3, object? value3)
         {
             if (string.IsNullOrWhiteSpace(url))
             {
@@ -58,7 +58,7 @@ namespace Notifo.SDK.Extensions
 
             var hasQuery = url.Contains('?', StringComparison.OrdinalIgnoreCase);
 
-            void Append(string key, object value)
+            void Append(string? key, object? value)
             {
                 if (string.IsNullOrWhiteSpace(key) || value == null)
                 {

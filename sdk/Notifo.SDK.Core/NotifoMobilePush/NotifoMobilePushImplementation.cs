@@ -163,13 +163,13 @@ namespace Notifo.SDK.NotifoMobilePush
         }
 
         /// <inheritdoc/>
-        public void RaiseError(string error, Exception exception, object source)
+        public void RaiseError(string error, Exception? exception, object? source)
         {
             OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Error, source, error, null, exception));
         }
 
         /// <inheritdoc/>
-        public void RaiseDebug(string message, object source, params object[] args)
+        public void RaiseDebug(string message, object? source, params object[] args)
         {
             OnLog?.Invoke(this, new NotificationLogEventArgs(NotificationLogType.Debug, source, message, args, null));
         }
@@ -291,7 +291,7 @@ namespace Notifo.SDK.NotifoMobilePush
             await semaphoreSlim.WaitAsync();
             try
             {
-                var idsAndUrls = notifications.ToDictionary(x => x.Id, x => x.TrackSeenUrl);
+                var idsAndUrls = notifications.ToDictionary(x => x.Id, x => (string?)x.TrackSeenUrl);
 
                 // Always load the notifications from the preferences, because they could have been modified by the service extension.
                 var loaded = await seenNotificationsStore.GetSeenNotificationIdsAsync();

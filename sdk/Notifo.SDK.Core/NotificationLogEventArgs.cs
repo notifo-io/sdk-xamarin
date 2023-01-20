@@ -27,17 +27,17 @@ namespace Notifo.SDK
         /// <summary>
         /// Gets the source.
         /// </summary>
-        public object Source { get; private set; }
+        public object? Source { get; private set; }
 
         /// <summary>
         /// Gets the additional arguments.
         /// </summary>
-        public object[] MessageArgs { get; private set; }
+        public object[]? MessageArgs { get; private set; }
 
         /// <summary>
         /// Gets the exception.
         /// </summary>
-        public Exception Exception { get; private set; }
+        public Exception? Exception { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationLogEventArgs"/> class with the message and source.
@@ -47,7 +47,7 @@ namespace Notifo.SDK
         /// <param name="message">The message.</param>
         /// <param name="messageArgs">The message arguments.</param>
         /// <param name="exception">The exception.</param>
-        public NotificationLogEventArgs(NotificationLogType type, object source, string message, object[] messageArgs, Exception exception)
+        public NotificationLogEventArgs(NotificationLogType type, object? source, string message, object[]? messageArgs, Exception? exception)
         {
             Type = type;
             Source = source;

@@ -3,6 +3,7 @@
     <AssemblyName>Notifo.Xamarin.Core</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Nullable>enable</Nullable>
     <RootNamespace>Notifo.SDK</RootNamespace>
     <TargetFrameworks>netstandard2.1;xamarinios10;monoandroid12.0;</TargetFrameworks>
   </PropertyGroup>
