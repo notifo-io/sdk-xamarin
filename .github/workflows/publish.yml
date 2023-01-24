@@ -19,11 +19,11 @@ jobs:
         run: |
           nuget restore
           cd sdk/Notifo.SDK.Core/
-          msbuild Notifo.SDK.Core.csproj
+          mono '/Applications/Visual\ Studio.app/Contents/MonoBundle/MSBuild/Current/bin/MSBuild.dll' Notifo.SDK.Core.csproj
           cd ../Notifo.SDK.FirebasePlugin/
-          msbuild Notifo.SDK.FirebasePlugin.csproj
+          mono '/Applications/Visual\ Studio.app/Contents/MonoBundle/MSBuild/Current/bin/MSBuild.dll' Notifo.SDK.FirebasePlugin.csproj
           cd ../Notifo.SDK.Worker/
-          msbuild Notifo.SDK.Worker.csproj
+          mono '/Applications/Visual\ Studio.app/Contents/MonoBundle/MSBuild/Current/bin/MSBuild.dll' Notifo.SDK.Worker.csproj
 
       - name: publish
         if: github.event_name != 'pull_request'
