@@ -155,7 +155,7 @@ namespace Notifo.SDK.NotifoMobilePush
         private async Task<List<UserNotificationDto>> GetPendingNotifications1_4Async(int take, DateTime after,
             CancellationToken ct)
         {
-            var result = await Client.Notifications.GetMyDeviceNotificationsAsync(DeviceIdentifier, after, true, take, ct);
+            var result = await Client.Notifications.GetMyDeviceNotificationsAsync(DeviceIdentifier, after, true, take * 2, ct);
 
             return result.Items;
         }
