@@ -23,18 +23,27 @@ namespace Sample.ViewModels
         }
 
         public DelegateCommand LoginCommand { get; }
+        public DelegateCommand LogoutCommand { get; }
 
         public LoginPageViewModel(INotifoMobilePush notifoService)
         {
             this.notifoService = notifoService;
 
             LoginCommand = new DelegateCommand(Login, () => !string.IsNullOrWhiteSpace(ApiKey)).ObservesProperty(() => ApiKey);
+            LogoutCommand = new DelegateCommand(Logout, () => !string.IsNullOrWhiteSpace(ApiKey)).ObservesProperty(() => ApiKey);
         }
 
         private void Login()
         {
             notifoService.SetApiKey(ApiKey);
             notifoService.Register();
+        }
+
+        private void Logout()
+        {
+            notifoService.Unregister();
+            notifoService.WaitForBackgroundTasksAsync();
+            notifoService.ClearAllSettings();
         }
     }
 }
