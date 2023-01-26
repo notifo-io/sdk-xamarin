@@ -155,6 +155,8 @@ namespace Notifo.SDK.NotifoMobilePush
         private async Task<List<UserNotificationDto>> GetPendingNotifications1_4Async(int take, DateTime after,
             CancellationToken ct)
         {
+            // use DeviceIdentifier because Token could change over time and you could miss pending notifications. DeviceIdentifier should be more stable.
+            // take is not returning the exact amount of entries. It's taking the X last entries, then filters for messages that are unseen.
             var result = await Client.Notifications.GetMyDeviceNotificationsAsync(DeviceIdentifier, after, true, take * 2, ct);
 
             return result.Items;
