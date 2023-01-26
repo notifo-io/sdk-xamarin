@@ -26,6 +26,8 @@
             <Editor Text="{Binding ApiKey, Mode=TwoWay}" TextColor="Magenta" BackgroundColor="WhiteSmoke"  />
 
             <Button Command="{Binding LoginCommand}" Text="Login" />
+            <Button Command="{Binding LogoutCommand}" Text="Logout" />
+
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
