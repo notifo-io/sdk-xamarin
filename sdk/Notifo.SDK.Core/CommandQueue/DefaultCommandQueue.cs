@@ -46,8 +46,6 @@ namespace Notifo.SDK.CommandQueue
         public async Task CompleteAsync(
             CancellationToken ct)
         {
-            queue.CompleteAdding();
-
             Trigger();
 
             foreach (var trigger in commandTriggers.OfType<IDisposable>())
