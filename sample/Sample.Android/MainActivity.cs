@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Android;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -52,6 +53,25 @@ namespace Sample.Droid
             public void RegisterTypes(IContainerRegistry containerRegistry)
             {
                 // Register any platform specific implementations
+            }
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            const int requestLocationId = 0;
+
+            string[] notiPermission =
+            {
+                Manifest.Permission.PostNotifications
+            };
+
+            if ((int)Build.VERSION.SdkInt < 33)
+                return;
+
+            if (this.CheckSelfPermission(Manifest.Permission.PostNotifications) != Permission.Granted)
+            {
+                this.RequestPermissions(notiPermission, requestLocationId);
             }
         }
     }
