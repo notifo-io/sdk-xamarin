@@ -9,7 +9,7 @@
     <RootNamespace>Notifo.SDK.FirebasePlugin</RootNamespace>
     <RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>True</RunAnalyzersDuringLiveAnalysis>
-    <TargetFrameworks>netstandard2.1;xamarinios10;monoandroid12.0;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;xamarinios10;monoandroid13.0;</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
